@@ -3,38 +3,41 @@
 This document defines the entire game state structure for TypeScript and Zustand.
 
 ## Main State Interface
+
 ```typescript
 interface GameState {
   // Meta
   version: string;
   lastSaveTime: number; // ms timestamp
-  totalPlayTime: number; //
-  ms
-currentRun: number; // 1-10
-// Current Position
-currentOrbit: OrbitType;
-// Resources
-resources: Resources;
-// Ships & Buildings
-ships: Ships;
-shipUpgrades: ShipUpgrades;
-// Progression
-techTree: TechTree;
-upgrades: Upgrades;
-milestones: Milestones;
-// Active Systems
-derelicts: Derelict[];
-missions: Mission[];
-colonies: Colony[];
-contracts: Contract[];
-// Prestige
-prestige: PrestigeData;
-// Statistics
-stats: Statistics;
-// UI State (optional: could be separate store)
-ui: UIState;
+  totalPlayTime: number; // ms
+  currentRun: number; // 1-10
+  // Current Position
+  currentOrbit: OrbitType;
+  // Resources
+  resources: Resources;
+  // Ships & Buildings
+  ships: Ships;
+  shipUpgrades: ShipUpgrades;
+  // Progression
+  techTree: TechTree;
+  upgrades: Upgrades;
+  milestones: Milestones;
+  // Active Systems
+  derelicts: Derelict[];
+  missions: Mission[];
+  colonies: Colony[];
+  contracts: Contract[];
+  // Prestige
+  prestige: PrestigeData;
+  // Statistics
+  stats: Statistics;
+  // UI State (optional: could be separate store)
+  ui: UIState;
 }
+```
+
 ## Resource Definitions
+
 ```typescript
 enum ResourceType {
   DEBRIS = 'debris',
@@ -62,6 +65,7 @@ interface Resources {
 ```
 
 ## Ship Definitions
+
 ```typescript
 enum ShipType {
   SALVAGE_DRONE = 'salvageDrone',
@@ -107,6 +111,7 @@ interface ShipUpgrades {
 ```
 
 ## Orbit Definitions
+
 ```typescript
 enum OrbitType {
   LEO = 'leo',
@@ -123,23 +128,23 @@ interface OrbitConfig {
   id: OrbitType;
   name: string;
   index: number; // 0-7
-  
+
   // Production multipliers
   metalMultiplier: number;
   electronicsMultiplier: number;
   rareMultiplier: number;
-  
+
   // Travel costs
   fuelCost: number;
   travelTime: number; // ms
-  
+
   // Unlock requirements
   unlockRequirements: {
     resources?: Partial<Resources>;
     tech?: string[];
     colonies?: OrbitType[];
   };
-  
+
   // Derelict spawn table
   spawnRates: {
     common: number;
@@ -148,13 +153,14 @@ interface OrbitConfig {
     epic: number;
     legendary: number;
   };
-  
+
   spawnMultiplier: number; // affects base spawn rate
   discoveryMultiplier: number; // affects scout success
 }
 ```
 
 ## Derelict System
+
 ```typescript
 enum DerelictRarity {
   COMMON = 'common',
@@ -187,19 +193,19 @@ interface Derelict {
   orbit: OrbitType;
   discoveredAt: number; // timestamp
   expiresAt: number; // timestamp (24 hours after discovery)
-  
+
   // Salvage requirements
   requiredShip: ShipType; // minimum ship type needed
   fuelCost: number;
   baseMissionTime: number; // ms
-  
+
   // Risk
   isHazardous: boolean;
   riskLevel: number; // 0-1, affects success rate
-  
+
   // Rewards
   rewards: DerelictReward[];
-  
+
   // Special flags
   isArkComponent?: boolean;
   arkComponentType?: ArkComponentType;
@@ -221,6 +227,7 @@ enum DerelictAction {
 ```
 
 ## Mission System
+
 ```typescript
 enum MissionType {
   SCOUT = 'scout',
@@ -239,25 +246,25 @@ interface Mission {
   id: string;
   type: MissionType;
   status: MissionStatus;
-  
+
   // Ship assignment
   shipType: ShipType;
   shipId?: string; // if specific ship instance
-  
+
   // Timing
   startTime: number; // ms timestamp
   endTime: number; // ms timestamp
-  
+
   // Target
   targetOrbit: OrbitType;
   targetDerelict?: string; // derelict ID for salvage missions
-  
+
   // Costs
   fuelCost: number;
-  
+
   // Action
   action?: DerelictAction; // for salvage missions
-  
+
   // Results (populated on completion)
   success?: boolean;
   rewards?: Partial<Resources>;
@@ -266,6 +273,7 @@ interface Mission {
 ```
 
 ## Tech Tree
+
 ```typescript
 enum TechBranch {
   EFFICIENCY = 'efficiency',
@@ -279,13 +287,13 @@ interface TechNode {
   description: string;
   branch: TechBranch;
   tier: number; // 1-5
-  
+
   // Costs
   dataFragmentCost: number;
-  
+
   // Requirements
   prerequisites: string[]; // other tech IDs
-  
+
   // Effects
   effects: TechEffect[];
 }
@@ -309,6 +317,7 @@ interface TechTree {
 ```
 
 ## Prestige System
+
 ```typescript
 enum ArkComponentType {
   PROPULSION_CORE = 'propulsionCore',
@@ -327,7 +336,7 @@ interface ArkComponent {
   assembled: boolean;
   assemblyStartTime?: number; // ms timestamp
   assemblyEndTime?: number; // ms timestamp
-  
+
   // Assembly requirements
   assemblyCost: Partial<Resources>;
   assemblyDuration: number; // ms
@@ -337,17 +346,17 @@ interface PrestigeData {
   // Currency
   darkMatter: number; // current spendable
   totalDarkMatter: number; // lifetime earned
-  
+
   // Perks
   purchasedPerks: string[]; // perk IDs
-  
+
   // Ark progress
   arkComponents: {
     [key in ArkComponentType]: ArkComponent;
   };
   arkUnlocked: boolean; // can see Ark UI
   arkComplete: boolean; // all 8 assembled
-  
+
   // Meta
   totalRuns: number;
   fastestRun: number; // ms
@@ -356,6 +365,7 @@ interface PrestigeData {
 ```
 
 ## Statistics
+
 ```typescript
 interface Statistics {
   // Resources
@@ -364,27 +374,27 @@ interface Statistics {
   totalElectronicsGained: number;
   totalFuelSynthesized: number;
   // ... for each resource
-  
+
   // Actions
   totalClicks: number;
   totalShipsPurchased: number;
   totalMissionsLaunched: number;
   totalMissionsSucceeded: number;
   totalMissionsFailed: number;
-  
+
   // Derelicts
   totalDerelictsDiscovered: number;
   totalDerelictsSalvaged: number;
   derelictsByRarity: {
     [key in DerelictRarity]: number;
   };
-  
+
   // Progression
   orbitsUnlocked: OrbitType[];
   coloniesEstablished: number;
   techsPurchased: number;
   prestigeCount: number;
-  
+
   // Time
   totalPlayTime: number; // ms
   totalIdleTime: number; // ms
@@ -393,13 +403,14 @@ interface Statistics {
 ```
 
 ## Colonies & Formations
+
 ```typescript
 interface Colony {
   id: string;
   orbit: OrbitType;
   establishedAt: number; // timestamp
   level: number; // upgrades
-  
+
   // Benefits
   productionBonus: number; // 0.25 = +25%
   autoSalvage: boolean; // upgraded to auto-salvage common derelicts
@@ -417,10 +428,10 @@ interface Formation {
   type: FormationType;
   active: boolean;
   lastSwitchTime: number; // timestamp for cooldown
-  
+
   // Requirements
   requiredShips: Partial<Ships>;
-  
+
   // Benefits
   effects: FormationEffect[];
 }
@@ -433,6 +444,7 @@ interface FormationEffect {
 ```
 
 ## Contracts
+
 ```typescript
 enum ContractType {
   SALVAGE_QUOTA = 'salvageQuota',
@@ -445,38 +457,39 @@ enum ContractType {
 interface Contract {
   id: string;
   type: ContractType;
-  
+
   // Requirements
   targetOrbit?: OrbitType;
   targetAmount: number; // varies by type
-  
+
   // Timing
   startTime: number; // timestamp
   expiresAt: number; // timestamp
   duration: number; // ms
-  
+
   // Progress
   progress: number;
   completed: boolean;
-  
+
   // Rewards
   rewards: Partial<Resources>;
 }
 ```
 
 ## UI State
+
 ```typescript
 interface UIState {
   // Active views
   activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
-  
+
   // Modals
   openModal: string | null; // modal ID
   modalData: any; // data for current modal
-  
+
   // Notifications
   notifications: Notification[];
-  
+
   // Settings
   settings: {
     soundEnabled: boolean;
@@ -488,7 +501,7 @@ interface UIState {
     showAnimations: boolean;
     compactMode: boolean;
   };
-  
+
   // Tooltips
   activeTooltip: string | null;
 }
@@ -503,6 +516,7 @@ interface Notification {
 ```
 
 ## Milestones
+
 ```typescript
 interface Milestones {
   // Progression milestones
@@ -515,23 +529,23 @@ interface Milestones {
   reachedJovian: boolean;
   reachedKuiper: boolean;
   reachedDeepSpace: boolean;
-  
+
   // Derelict milestones
   firstDerelictDiscovered: boolean;
   firstDerelictSalvaged: boolean;
   firstRareDerelict: boolean;
   firstEpicDerelict: boolean;
   firstLegendaryDerelict: boolean;
-  
+
   // Ark milestones
   firstArkComponent: boolean;
   halfArkComplete: boolean; // 4/8 components
   arkAssemblyStarted: boolean;
-  
+
   // Prestige milestones
   firstPrestige: boolean;
   fifthPrestige: boolean;
-  
+
   // Special milestones
   firstColony: boolean;
   unlockedContracts: boolean;
@@ -540,27 +554,28 @@ interface Milestones {
 ```
 
 ## Config Types (read-only data)
+
 ```typescript
 interface ShipConfig {
   id: ShipType;
   name: string;
   description: string;
   category: 'production' | 'active';
-  
+
   // Costs
   baseCost: Partial<Resources>;
   costGrowth: number;
-  
+
   // Production (for production ships)
   baseProduction?: number; // per second
   producesResource?: ResourceType;
   consumesResource?: ResourceType;
   conversionRatio?: number; // input:output
-  
+
   // Mission (for active ships)
   baseMissionDuration?: number; // ms
   baseSuccessRate?: number; // 0-1
-  
+
   // Unlock requirements
   unlockRequirements: {
     orbit?: OrbitType;
@@ -568,7 +583,7 @@ interface ShipConfig {
     prestige?: string[]; // DM perk IDs
     milestone?: string;
   };
-  
+
   // Upgrades available
   availableUpgrades: string[]; // upgrade IDs
 }
@@ -577,6 +592,7 @@ interface ShipConfig {
 ---
 
 This state schema serves as the single source of truth. Use it to:
+
 1. Generate TypeScript interfaces
 2. Initialize default state
 3. Validate saved games
