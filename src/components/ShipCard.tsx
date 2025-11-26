@@ -33,14 +33,14 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
     buy1: getShipCost(shipType, 1),
     buy10: getShipCost(shipType, 10),
     buy100: getShipCost(shipType, 100),
-  }), [shipType, shipCount, getShipCost]);
+  }), [shipType, getShipCost]);
 
   // Calculate affordability for each quantity
   const canAfford = useMemo(() => ({
     buy1: canAffordShip(shipType, 1),
     buy10: canAffordShip(shipType, 10),
     buy100: canAffordShip(shipType, 100),
-  }), [shipType, resources, canAffordShip]);
+  }), [shipType, canAffordShip]);
 
   // Calculate max affordable
   const maxAffordable = useMemo(() => {
@@ -62,7 +62,7 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
       }
     }
     return max;
-  }, [shipType, resources, canAffordShip]);
+  }, [shipType, canAffordShip]);
 
   const computedRates = useGameStore(state => state.computedRates);
 
