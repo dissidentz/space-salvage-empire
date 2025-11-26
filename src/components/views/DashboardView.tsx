@@ -24,37 +24,36 @@ export function DashboardView() {
 
   // Check unlock status for each ship
   const shipUnlockStatus = useMemo(() => {
-    const status: Record<ShipType, { unlocked: boolean; reason?: string }> = {} as any;
-    
+    const status: Record<ShipType, { unlocked: boolean; reason?: string }> =
+      {} as Record<ShipType, { unlocked: boolean; reason?: string }>;
+
     tier1Ships.forEach(shipType => {
       const config = SHIP_CONFIGS[shipType];
       const req = config.unlockRequirements;
-      
+
       // Check ship requirements
       if (req.ships) {
         for (const [requiredShip, count] of Object.entries(req.ships)) {
           if (ships[requiredShip as ShipType] < count) {
             status[shipType] = {
               unlocked: false,
-              reason: `Requires ${count} ${SHIP_CONFIGS[requiredShip as ShipType].name}${count > 1 ? 's' : ''}`
+              reason: `Requires ${count} ${SHIP_CONFIGS[requiredShip as ShipType].name}${count > 1 ? 's' : ''}`,
             };
             return;
           }
         }
       }
-      
+
       status[shipType] = { unlocked: true };
     });
-    
+
     return status;
   }, [tier1Ships, ships]);
 
   return (
     <div className="space-y-6">
-
-
       {/* Click Button */}
-      <Card className="border-primary/30 bg-gradient-to-br from-blue-950/50 to-cyan-950/50 backdrop-blur">
+      <Card className="border-primary/30 bg-linear-to-br from-blue-950/50 to-cyan-950/50 backdrop-blur">
         <CardContent className="pt-6">
           <Button
             onClick={clickDebris}
@@ -79,17 +78,24 @@ export function DashboardView() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {tier1Ships.map(shipType => {
             const status = shipUnlockStatus[shipType];
-            
+
             if (!status.unlocked) {
               // Show locked ship card
               return (
-                <Card key={shipType} className="border-border bg-card/50 opacity-60">
+                <Card
+                  key={shipType}
+                  className="border-border bg-card/50 opacity-60"
+                >
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-3 mb-2">
                       <Zap className="w-5 h-5 text-muted-foreground" />
                       <div>
-                        <h3 className="font-semibold text-lg">{SHIP_CONFIGS[shipType].name}</h3>
-                        <Badge variant="outline" className="mt-1">Locked</Badge>
+                        <h3 className="font-semibold text-lg">
+                          {SHIP_CONFIGS[shipType].name}
+                        </h3>
+                        <Badge variant="outline" className="mt-1">
+                          Locked
+                        </Badge>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">
@@ -102,7 +108,7 @@ export function DashboardView() {
                 </Card>
               );
             }
-            
+
             return <ShipCard key={shipType} shipType={shipType} />;
           })}
         </div>
@@ -123,4 +129,3 @@ export function DashboardView() {
     </div>
   );
 }
-

@@ -12,7 +12,9 @@ import {
 } from '@/components/ui/sidebar';
 import { useSidebar } from '@/hooks/useSidebar';
 import { useGameStore } from '@/stores/gameStore';
-import { Rocket } from 'lucide-react';
+import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
+import type { OrbitType } from '@/types';
+import { MapPin, Rocket } from 'lucide-react';
 
 const data = {
   navMain: [
@@ -39,6 +41,10 @@ export function SidebarLeft({
 }: React.ComponentProps<typeof Sidebar>) {
   const { toggleSidebar: toggleRightSidebar, open: rightOpen } =
     useSidebar('right');
+  const currentOrbit = useGameStore(state => state.currentOrbit);
+  const canTravelToOrbit = useGameStore(state => state.canTravelToOrbit);
+  const travelToOrbit = useGameStore(state => state.travelToOrbit);
+  const getOrbitTravelCost = useGameStore(state => state.getOrbitTravelCost);
   const setActiveView = useGameStore(state => state.setActiveView);
   const activeView = useGameStore(state => state.ui.activeView);
 
@@ -56,6 +62,17 @@ export function SidebarLeft({
     }
   };
 
+  const handleTravelToOrbit = (orbit: OrbitType) => {
+    if (canTravelToOrbit(orbit)) {
+      travelToOrbit(orbit);
+    }
+  };
+
+  // Get available orbits for travel
+  const availableOrbits = Object.values(ORBIT_CONFIGS).filter(orbit => 
+    orbit.id !== currentOrbit && canTravelToOrbit(orbit.id)
+  );
+
   return (
     <Sidebar className="border-r-0 min-h-screen" collapsible="none" {...props}>
       <SidebarHeader>
@@ -67,6 +84,40 @@ export function SidebarLeft({
         </div>
       </SidebarHeader>
       <SidebarContent>
+        {/* Current Location */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            Current Location
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <div className="px-2 py-1">
+              <div className={`text-sm font-medium ${getOrbitColor(currentOrbit)}`}>
+                {ORBIT_CONFIGS[currentOrbit].name}
+              </div>
+              {availableOrbits.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  <div className="text-xs text-muted-foreground">Available Destinations:</div>
+                  {availableOrbits.map(orbit => (
+                    <button
+                      key={orbit.id}
+                      onClick={() => handleTravelToOrbit(orbit.id)}
+                      className="w-full text-left px-2 py-1 text-xs rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                    >
+                      <div className={`font-medium ${getOrbitColor(orbit.id)}`}>
+                        {orbit.name}
+                      </div>
+                      <div className="text-muted-foreground">
+                        {getOrbitTravelCost(orbit.id)} fuel
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         {/* Navigation groups */}
         {data.navMain.map(item => (
           <SidebarGroup key={item.title}>

@@ -5,9 +5,11 @@ Based on the comprehensive documentation review, here's the prioritized developm
 ## Next Development Phases
 
 ### Phase 1: Orbit Progression System (Foundation)
+
 **Priority: High** - This unlocks the entire game world and is required for all other systems.
 
 **Features to Implement:**
+
 - Orbit travel mechanics (LEO → GEO → Lunar → Mars → Asteroid Belt → Jovian → Kuiper → Deep Space)
 - Fuel costs and travel times for each orbit
 - Orbit-specific resource multipliers and discovery rates
@@ -17,9 +19,11 @@ Based on the comprehensive documentation review, here's the prioritized developm
 **Why Start Here:** Every other mechanic depends on orbit progression - derelicts spawn in orbits, ship production scales with orbit multipliers, and the entire game world opens up through orbit travel.
 
 ### Phase 2: Complete Ship Production & Purchasing
+
 **Priority: High** - Core resource generation loop.
 
 **Features to Implement:**
+
 - All 11 ship types with proper production formulas
 - Exponential cost scaling (baseCost × growthRate^n)
 - Bulk purchase buttons (Buy 1/10/100/1000)
@@ -27,9 +31,11 @@ Based on the comprehensive documentation review, here's the prioritized developm
 - Ship upgrade system (efficiency, capacity, etc.)
 
 ### Phase 3: Mission System
+
 **Priority: High** - Active gameplay content.
 
 **Features to Implement:**
+
 - Scout probe missions (discover derelicts)
 - Salvage frigate missions (loot derelicts)
 - Mission queues, durations, fuel costs
@@ -37,9 +43,11 @@ Based on the comprehensive documentation review, here's the prioritized developm
 - Real-time mission progress and completion handling
 
 ### Phase 4: Derelict System
+
 **Priority: High** - Primary content driver.
 
 **Features to Implement:**
+
 - Passive derelict spawning based on orbit rates
 - 5 rarity tiers (Common → Legendary) with different loot tables
 - Salvage choices: SALVAGE/HACK/DISMANTLE/ABANDON
@@ -48,18 +56,22 @@ Based on the comprehensive documentation review, here's the prioritized developm
 - Derelict expiration (24 hours) and despawn mechanics
 
 ### Phase 5: Tech Tree
+
 **Priority: Medium** - Long-term progression.
 
 **Features to Implement:**
+
 - 45-node tech tree across 3 branches (Efficiency/Exploration/Economy)
 - Prerequisites and unlock requirements
 - Data Fragment costs and purchasing
 - Multiplier effects on production, costs, discovery rates
 
 ### Phase 6: Prestige & Dark Matter System
+
 **Priority: Medium** - Endgame content.
 
 **Features to Implement:**
+
 - Quantum Reset calculations (sqrt(dataFragments/100) × bonuses)
 - 35 DM perks across 5 tiers
 - Ark component assembly (8 components, massive costs, real-time construction)
@@ -76,6 +88,7 @@ Based on the comprehensive documentation review, here's the prioritized developm
 **UI Components:** Leverage the current sidebar layout for orbit selection, mission queues, and derelict salvage interfaces.
 
 ## Current Prototype Status
+
 - ✅ Functional left/right sidebar layout
 - ✅ Resource display with rates
 - ✅ Basic ship counts and buying (incomplete)
@@ -84,4 +97,5 @@ Based on the comprehensive documentation review, here's the prioritized developm
 - ✅ Error-free build and clean code
 
 ## Next Action
+
 Begin implementing the orbit progression system as the foundation for all other mechanics.

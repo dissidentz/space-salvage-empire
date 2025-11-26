@@ -44,7 +44,7 @@ export function SidebarRight({
     <Sidebar
       side="left"
       collapsible="none"
-      className="sticky top-0 h-svh border-r w-[22rem]"
+      className="sticky top-0 h-svh border-r w-88"
       {...props}
     >
       <SidebarHeader className="border-sidebar-border h-16 border-b">

@@ -1,5 +1,6 @@
 // src/stores/gameStore.ts
 import { calculateProductionRates } from '@/engine/production';
+import { ORBIT_CONFIGS, isOrbitUnlocked } from '@/config/orbits';
 import type { GameState, OrbitType, ResourceType, ShipType } from '@/types';
 import {
     calculateBulkShipCost,
@@ -33,8 +34,11 @@ interface GameStore extends GameState {
   importSave: (saveData: string) => boolean;
   hardReset: () => void;
   
-  // UI actions
-  setActiveView: (view: 'dashboard' | 'settings') => void;
+  // Orbit travel actions
+  canTravelToOrbit: (targetOrbit: OrbitType) => boolean;
+  travelToOrbit: (targetOrbit: OrbitType) => boolean;
+  getOrbitTravelCost: (targetOrbit: OrbitType) => number;
+  getOrbitTravelTime: (targetOrbit: OrbitType) => number;
   
   // Milestone helpers
   evaluateMilestone: (milestoneId: string) => boolean;
@@ -50,6 +54,9 @@ interface GameStore extends GameState {
     derelictId: string,
     rewards?: Partial<Record<ResourceType, number>>
   ) => void;
+  
+  // UI actions
+  setActiveView: (view: 'dashboard' | 'settings') => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -637,6 +644,63 @@ export const useGameStore = create<GameStore>()(
             activeView: view,
           },
         }));
+      },
+
+      // Orbit travel actions
+      canTravelToOrbit: (targetOrbit: OrbitType) => {
+        const state = get();
+        if (targetOrbit === state.currentOrbit) return false; // Already there
+        
+        return isOrbitUnlocked(targetOrbit, {
+          resources: state.resources,
+          techTree: state.techTree,
+          colonies: state.colonies,
+          prestige: state.prestige,
+        });
+      },
+
+      travelToOrbit: (targetOrbit: OrbitType) => {
+        const state = get();
+        if (!get().canTravelToOrbit(targetOrbit)) return false;
+
+        const config = ORBIT_CONFIGS[targetOrbit];
+        const fuelCost = config.fuelCost;
+
+        // Check fuel
+        if (state.resources.fuel < fuelCost) return false;
+
+        // Deduct fuel
+        set(s => ({
+          resources: {
+            ...s.resources,
+            fuel: s.resources.fuel - fuelCost,
+          },
+          currentOrbit: targetOrbit,
+        }));
+
+        // Update stats
+        const isNewOrbit = !state.stats.orbitsUnlocked.includes(targetOrbit);
+        if (isNewOrbit) {
+          set(s => ({
+            stats: {
+              ...s.stats,
+              orbitsUnlocked: [...s.stats.orbitsUnlocked, targetOrbit],
+            },
+          }));
+        }
+
+        // Check milestones
+        get().checkAndClaimMilestones();
+
+        return true;
+      },
+
+      getOrbitTravelCost: (targetOrbit: OrbitType) => {
+        return ORBIT_CONFIGS[targetOrbit].fuelCost;
+      },
+
+      getOrbitTravelTime: (targetOrbit: OrbitType) => {
+        return ORBIT_CONFIGS[targetOrbit].travelTime;
       },
     }),
     {
