@@ -1,5 +1,6 @@
 import { DerelictCard } from '@/components/DerelictCard';
 import { MissionCard } from '@/components/MissionCard';
+import { MissionHistory } from '@/components/MissionHistory';
 import { OrbitSelector } from '@/components/OrbitSelector';
 import { ShipCard } from '@/components/ShipCard';
 import { TravelProgress } from '@/components/TravelProgress';
@@ -416,6 +417,9 @@ export function DashboardView() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Mission History */}
+      <MissionHistory />
 
       {/* Orbit Selector Dialog */}
       <OrbitSelector

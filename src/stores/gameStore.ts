@@ -287,6 +287,7 @@ export const useGameStore = create<GameStore>()(
         totalTravelTime: 0,
         farthestOrbit: 'leo',
         travelHistory: [],
+        missionHistory: [],
       },
 
       ui: {
@@ -935,11 +936,13 @@ export const useGameStore = create<GameStore>()(
         }
 
         let rewards: Partial<Record<ResourceType, number>> | undefined;
+        let discoveredDerelict: Derelict | undefined;
 
         if (success) {
           if (mission.type === 'scout') {
              // Generate derelict
              const derelict = state.generateDerelict(mission.targetOrbit, rollDerelictRarity({ common: 60, uncommon: 25, rare: 10, epic: 4, legendary: 1 }));
+             discoveredDerelict = derelict;
              set(s => ({ derelicts: [...s.derelicts, derelict] }));
              state.addNotification('success', `Scout mission successful! Discovered: ${DERELICT_CONFIGS[derelict.type].name}`);
           } else if (mission.type === 'salvage' && mission.targetDerelict) {
@@ -964,6 +967,21 @@ export const useGameStore = create<GameStore>()(
             ...s.stats,
             totalMissionsSucceeded: s.stats.totalMissionsSucceeded + (success ? 1 : 0),
             totalMissionsFailed: s.stats.totalMissionsFailed + (success ? 0 : 1),
+            missionHistory: [
+                {
+                    id: mission.id,
+                    type: mission.type,
+                    shipType: mission.shipType,
+                    targetOrbit: mission.targetOrbit,
+                    startTime: mission.startTime,
+                    endTime: now,
+                    success,
+                    rewards,
+                    discoveredDerelict: discoveredDerelict?.id,
+                    derelictType: discoveredDerelict?.type
+                },
+                ...(s.stats.missionHistory || []).slice(0, 49)
+            ]
           },
         }));
 

@@ -217,6 +217,20 @@ export interface TravelRecord {
   fuelRefunded?: number;
 }
 
+// Mission History
+export interface MissionLog {
+  id: string;
+  type: MissionType;
+  shipType: ShipType;
+  targetOrbit: OrbitType;
+  startTime: number;
+  endTime: number;
+  success: boolean;
+  rewards?: Partial<Resources>;
+  discoveredDerelict?: string;
+  derelictType?: DerelictType;
+}
+
 // Stats
 export interface Statistics {
   totalDebrisCollected: number;
@@ -249,6 +263,7 @@ export interface Statistics {
   totalTravelTime: number;
   farthestOrbit: OrbitType;
   travelHistory: TravelRecord[];
+  missionHistory: MissionLog[];
 }
 
 // Colonies & formations
