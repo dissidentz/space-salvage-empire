@@ -203,6 +203,20 @@ export interface PrestigeData {
   highestOrbit: OrbitType;
 }
 
+// Travel History
+export interface TravelRecord {
+  id: string;
+  origin: OrbitType;
+  destination: OrbitType;
+  startTime: number;
+  endTime: number;
+  fuelCost: number;
+  actualTravelTime: number; // in case of early cancellation
+  completed: boolean;
+  cancelled: boolean;
+  fuelRefunded?: number;
+}
+
 // Stats
 export interface Statistics {
   totalDebrisCollected: number;
@@ -228,6 +242,13 @@ export interface Statistics {
   totalPlayTime: number;
   totalIdleTime: number;
   currentRunTime: number;
+
+  // Travel stats
+  totalTravels: number;
+  totalFuelSpent: number;
+  totalTravelTime: number;
+  farthestOrbit: OrbitType;
+  travelHistory: TravelRecord[];
 }
 
 // Colonies & formations
@@ -284,7 +305,7 @@ export interface Notification {
 
 export interface UIState {
   activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
-  activeView: 'dashboard' | 'settings';
+  activeView: 'dashboard' | 'galaxyMap' | 'settings';
   openModal: string | null;
   modalData?: unknown;
   notifications: Notification[];
@@ -371,7 +392,9 @@ export interface MilestoneCondition {
     | 'collect_resource'
     | 'purchase_ships'
     | 'time_played'
-    | 'derelicts_salvaged';
+    | 'derelicts_salvaged'
+    | 'travels_completed'
+    | 'unique_orbits_visited';
   key?: string; // e.g., resource key or ship type
   value: number;
 }
@@ -414,4 +437,12 @@ export interface GameState {
   activeFormation: FormationType | null;
   formationCooldownEnd: number;
   computedRates: Partial<Record<ResourceType, number>>;
+  // Travel state for orbit progression
+  travelState: {
+    traveling: boolean;
+    destination: OrbitType | null;
+    startTime: number;
+    endTime: number;
+    progress: number; // 0-1 for UI display
+  } | null;
 }

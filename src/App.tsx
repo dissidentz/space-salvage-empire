@@ -1,20 +1,23 @@
 import { AdminPanel } from '@/components/AdminPanel';
+import { GalaxyMap } from '@/components/GalaxyMap';
 import { SidebarLeft } from '@/components/sidebar-left';
 import { SidebarRight } from '@/components/sidebar-right';
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
 } from '@/components/ui/sidebar';
+import { Toaster } from '@/components/ui/sonner';
 import type { ErrorInfo } from 'react';
 import { Component } from 'react';
+import { NotificationManager } from './components/NotificationManager';
 import { DashboardView } from './components/views/DashboardView';
 import { SettingsView } from './components/views/SettingsView';
 import { useGameLoop } from './hooks/useGameLoop';
@@ -30,6 +33,8 @@ function App() {
   // Render the appropriate view
   const renderView = () => {
     switch (activeView) {
+      case 'galaxyMap':
+        return <GalaxyMap />;
       case 'settings':
         return <SettingsView />;
       case 'dashboard':
@@ -61,10 +66,10 @@ function App() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          {renderView()}
-        </div>
+        <div className="flex flex-1 flex-col gap-4 p-4">{renderView()}</div>
       </SidebarInset>
+      <NotificationManager />
+      <Toaster />
       <AdminPanel />
     </SidebarProvider>
   );

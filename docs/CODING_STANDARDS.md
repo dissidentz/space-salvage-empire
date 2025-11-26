@@ -3,6 +3,7 @@
 ## File Organization
 
 ### Directory Structure
+
 ```
 src/
 ├── components/        # React components
@@ -20,6 +21,7 @@ src/
 ```
 
 ### File Naming
+
 - Components: `PascalCase.tsx` (e.g., `ResourceBar.tsx`)
 - Hooks: `camelCase.ts` with 'use' prefix (e.g., `useGameLoop.ts`)
 - Utils: `camelCase.ts` (e.g., `formatNumber.ts`)
@@ -29,7 +31,9 @@ src/
 ## TypeScript Standards
 
 ### Strict Mode
+
 Always use TypeScript strict mode:
+
 ```json
 {
   "compilerOptions": {
@@ -42,6 +46,7 @@ Always use TypeScript strict mode:
 ```
 
 ### Type Definitions
+
 ```typescript
 // ✅ Good: Explicit types
 function calculateCost(shipType: ShipType, count: number): number {
@@ -74,6 +79,7 @@ const resource: 'debris' | 'metal' = 'debris';
 ```
 
 ### Type Imports
+
 ```typescript
 // ✅ Good: Type-only imports
 import type { GameState, Mission } from '@/types';
@@ -86,6 +92,7 @@ import { GameState, Mission } from '@/types';
 ## React Standards
 
 ### Component Structure
+
 ```typescript
 // ✅ Good: Clear, organized structure
 import React, { useState, useEffect, useCallback } from 'react';
@@ -99,35 +106,35 @@ interface FleetPanelProps {
   onPurchase?: (amount: number) => void;
 }
 
-export const FleetPanel: React.FC<FleetPanelProps> = ({ 
-  shipType, 
-  onPurchase 
+export const FleetPanel: React.FC<FleetPanelProps> = ({
+  shipType,
+  onPurchase
 }) => {
   // 1. Zustand selectors
   const shipCount = useGameStore(state => state.ships[shipType]);
   const resources = useGameStore(state => state.resources);
   const buyShip = useGameStore(state => state.buyShip);
-  
+
   // 2. Local state
   const [buyAmount, setBuyAmount] = useState(1);
-  
+
   // 3. Derived state / memoized values
   const cost = useMemo(
     () => calculateCost(shipType, shipCount),
     [shipType, shipCount]
   );
-  
+
   // 4. Callbacks
   const handlePurchase = useCallback(() => {
     buyShip(shipType, buyAmount);
     onPurchase?.(buyAmount);
   }, [shipType, buyAmount, buyShip, onPurchase]);
-  
+
   // 5. Effects
   useEffect(() => {
     // Component mount/unmount logic
   }, []);
-  
+
   // 6. Render
   return (
     <div className="fleet-panel">
@@ -141,12 +148,13 @@ FleetPanel.displayName = 'FleetPanel';
 ```
 
 ### Hooks Rules
+
 ```typescript
 // ✅ Good: Custom hooks for reusable logic
 function useProduction(shipType: ShipType) {
   const shipCount = useGameStore(state => state.ships[shipType]);
   const multipliers = useGameStore(state => state.multipliers);
-  
+
   return useMemo(() => {
     return calculateProduction(shipType, shipCount, multipliers);
   }, [shipType, shipCount, multipliers]);
@@ -161,6 +169,7 @@ const debris = state.resources.debris; // Re-renders on ANY state change
 ```
 
 ### Performance Optimization
+
 ```typescript
 // ✅ Good: React.memo for expensive components
 export const SolarSystemView = React.memo(() => {
@@ -186,17 +195,18 @@ const handleClick = useCallback(() => {
 ## Zustand Store Patterns
 
 ### Store Structure
+
 ```typescript
 // ✅ Good: Sliced store with actions
 interface GameStore {
   // State
   resources: Resources;
   ships: Ships;
-  
+
   // Actions
   addResource: (type: ResourceType, amount: number) => void;
   buyShip: (type: ShipType, amount?: number) => void;
-  
+
   // Computed
   canAfford: (cost: Partial<Resources>) => boolean;
 }
@@ -205,40 +215,40 @@ export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
       // Initial state
-      resources: { debris: 0, metal: 0, /* ... */ },
-      ships: { salvageDrone: 0, /* ... */ },
-      
+      resources: { debris: 0, metal: 0 /* ... */ },
+      ships: { salvageDrone: 0 /* ... */ },
+
       // Actions
       addResource: (type, amount) =>
         set(state => ({
           resources: {
             ...state.resources,
-            [type]: state.resources[type] + amount
-          }
+            [type]: state.resources[type] + amount,
+          },
         })),
-      
+
       buyShip: (type, amount = 1) => {
         const state = get();
         for (let i = 0; i < amount; i++) {
           const cost = calculateCost(type, state.ships[type]);
           if (!state.canAfford(cost)) break;
-          
+
           // Deduct cost
           Object.entries(cost).forEach(([resource, value]) => {
             state.addResource(resource as ResourceType, -value);
           });
-          
+
           // Add ship
           set(state => ({
             ships: {
               ...state.ships,
-              [type]: state.ships[type] + 1
-            }
+              [type]: state.ships[type] + 1,
+            },
           }));
         }
       },
-      
-      canAfford: (cost) => {
+
+      canAfford: cost => {
         const { resources } = get();
         return Object.entries(cost).every(
           ([resource, value]) => resources[resource] >= value
@@ -256,6 +266,7 @@ export const useGameStore = create<GameStore>()(
 ## Naming Conventions
 
 ### Variables & Functions
+
 ```typescript
 // ✅ Good: Descriptive camelCase
 const totalProduction = calculateTotalProduction();
@@ -269,6 +280,7 @@ const hpt = tt.p.includes(id);
 ```
 
 ### Constants
+
 ```typescript
 // ✅ Good: SCREAMING_SNAKE_CASE for true constants
 const MAX_OFFLINE_TIME = 14_400_000; // 4 hours in ms
@@ -277,11 +289,14 @@ const DEFAULT_SAVE_INTERVAL = 20_000; // 20 seconds
 
 // ✅ Good: Config objects in camelCase
 const shipConfigs: Record<ShipType, ShipConfig> = {
-  salvageDrone: { /* ... */ },
+  salvageDrone: {
+    /* ... */
+  },
 };
 ```
 
 ### Booleans
+
 ```typescript
 // ✅ Good: is/has/can prefix
 const isUnlocked = checkUnlock(shipType);
@@ -296,15 +311,16 @@ const completedMission = mission.status === 'completed';
 ## Comment Standards
 
 ### JSDoc for Functions
+
 ```typescript
 /**
  * Calculates the cost of purchasing a ship based on current count
  * Uses exponential scaling: cost(n) = baseCost * (growth^n)
- * 
+ *
  * @param shipType - Type of ship to calculate cost for
  * @param currentCount - Number of ships already owned
  * @returns Cost as a Resources object
- * 
+ *
  * @example
  * const cost = calculateShipCost('salvageDrone', 10);
  * // Returns { debris: 40 }
@@ -318,6 +334,7 @@ export function calculateShipCost(
 ```
 
 ### Inline Comments
+
 ```typescript
 // ✅ Good: Explain "why", not "what"
 // Cap offline time to prevent exploit where players can leave game running for weeks
@@ -334,6 +351,7 @@ const timeBonus = 1 + Math.min(hoursPlayed / 10, 3.0);
 ```
 
 ### TODO Comments
+
 ```typescript
 // TODO(username): Add animation when ship is purchased
 // TODO: Implement contract system (see docs/GAME_DESIGN.md section 8)
@@ -344,6 +362,7 @@ const timeBonus = 1 + Math.min(hoursPlayed / 10, 3.0);
 ## Error Handling
 
 ### Validation
+
 ```typescript
 // ✅ Good: Validate inputs
 function buyShip(shipType: ShipType, amount: number = 1) {
@@ -351,12 +370,12 @@ function buyShip(shipType: ShipType, amount: number = 1) {
     console.warn('Cannot buy 0 or negative ships');
     return;
   }
-  
+
   if (!shipConfigs[shipType]) {
     console.error(`Invalid ship type: ${shipType}`);
     return;
   }
-  
+
   // Continue with purchase
 }
 
@@ -367,12 +386,13 @@ function calculateProduction(shipCount: number, multiplier: number): number {
     console.error('Invalid multiplier:', multiplier);
     return 0;
   }
-  
+
   return shipCount * BASE_PRODUCTION * multiplier;
 }
 ```
 
 ### Try-Catch for Risky Operations
+
 ```typescript
 // ✅ Good: Wrap save/load in try-catch
 function saveGame() {
@@ -390,6 +410,7 @@ function saveGame() {
 ## Formatting
 
 ### Prettier Configuration
+
 ```json
 {
   "semi": true,
@@ -402,6 +423,7 @@ function saveGame() {
 ```
 
 ### Import Order
+
 ```typescript
 // 1. External libraries
 import React, { useState, useEffect } from 'react';
@@ -425,12 +447,14 @@ import styles from './FleetPanel.module.css';
 ## Testing
 
 ### Test File Naming
+
 ```
 Component.tsx → Component.test.tsx
 utils.ts → utils.test.ts
 ```
 
 ### Test Structure
+
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
 import { calculateCost } from './formulas';
@@ -440,13 +464,13 @@ describe('calculateCost', () => {
     const cost = calculateCost('salvageDrone', 0);
     expect(cost.debris).toBe(10);
   });
-  
+
   it('should scale exponentially', () => {
     const cost1 = calculateCost('salvageDrone', 1);
     const cost10 = calculateCost('salvageDrone', 10);
     expect(cost10.debris).toBeGreaterThan(cost1.debris * 10);
   });
-  
+
   it('should handle edge case of 0 ships', () => {
     const cost = calculateCost('salvageDrone', 0);
     expect(cost).toBeDefined();
@@ -455,6 +479,7 @@ describe('calculateCost', () => {
 ```
 
 ## Git Commit Messages
+
 feat: Add Heavy Salvage Frigate ship type
 fix: Correct offline production calculation
 refactor: Extract mission logic into separate module
@@ -466,16 +491,17 @@ chore: Update dependencies
 ## Code Review Checklist
 
 Before submitting code, verify:
+
 - [ ] TypeScript has no errors (`npm run type-check`)
 - [ ] ESLint passes (`npm run lint`)
-All tests pass (npm run test)
- Code follows naming conventions
- Complex logic has comments
- No console.logs left in production code
- Performance considered (memo, callbacks, selectors)
- Accessibility considered (ARIA labels, keyboard nav)
- Mobile/touch interactions work
- Save/load tested
+      All tests pass (npm run test)
+      Code follows naming conventions
+      Complex logic has comments
+      No console.logs left in production code
+      Performance considered (memo, callbacks, selectors)
+      Accessibility considered (ARIA labels, keyboard nav)
+      Mobile/touch interactions work
+      Save/load tested
 
 Performance Budgets
 
@@ -486,12 +512,12 @@ Offline calculation: < 2 seconds for 4 hours
 Initial bundle size: < 500KB gzipped
 Time to interactive: < 3 seconds
 
-
 Follow these standards to maintain consistency and quality across the codebase.
 
 ---
 
 ## 6. `.vscode/settings.json`
+
 ```json
 {
   "editor.formatOnSave": true,
@@ -533,32 +559,38 @@ Follow these standards to maintain consistency and quality across the codebase.
 
 ## How These Files Help Copilot
 
-### 1. **copilot-instructions.md** 
+### 1. **copilot-instructions.md**
+
 - Copilot reads this first for context
 - Understands tech stack and patterns
 - Knows formulas and game mechanics
 - Follows your coding standards
 
 ### 2. **GAME_DESIGN.md**
+
 - Gives Copilot full game context
 - Understands progression and balance
 - Knows what features exist and when they unlock
 
 ### 3. **FORMULAS.md**
+
 - Copilot can generate accurate cost/production calculations
 - Understands balance and scaling
 
 ### 4. **STATE_SCHEMA.md**
+
 - Copilot knows exact data structures
 - Generates type-safe code
 - Understands relationships between entities
 
 ### 5. **CODING_STANDARDS.md**
+
 - Copilot follows your conventions
 - Generates consistent code style
 - Uses proper naming and patterns
 
 ### 6. **.vscode/settings.json**
+
 - Auto-formats code as you write
 - ESLint catches issues immediately
 - Copilot suggestions align with formatter
@@ -568,6 +600,7 @@ Follow these standards to maintain consistency and quality across the codebase.
 ## Usage Tips
 
 ### When Starting a New Feature:
+
 ```typescript
 // In your file, add a comment like:
 // TODO: Implement scout mission system
@@ -581,6 +614,7 @@ Follow these standards to maintain consistency and quality across the codebase.
 ```
 
 ### When Implementing Formulas:
+
 ```typescript
 // Calculate ship cost using exponential scaling
 // Formula: cost(n) = baseCost * (growthRate^n)
@@ -590,6 +624,7 @@ Follow these standards to maintain consistency and quality across the codebase.
 ```
 
 ### When Creating Components:
+
 ```typescript
 // Create ResourceBar component showing all 9 resources
 // Follow component structure from CODING_STANDARDS.md
@@ -601,6 +636,7 @@ Follow these standards to maintain consistency and quality across the codebase.
 ---
 
 ## Quick Start After Setup
+
 ```bash
 # 1. Create project structure
 mkdir -p space-salvage-empire/{.github,docs,.vscode}

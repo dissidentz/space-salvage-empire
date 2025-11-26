@@ -1,0 +1,168 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useGameStore } from './gameStore';
+
+// Mock zustand persist
+vi.mock('zustand/middleware', () => ({
+  persist: vi.fn(config => config),
+}));
+
+describe('Mission System', () => {
+  beforeEach(() => {
+    useGameStore.setState({
+      resources: {
+        debris: 0,
+        metal: 1000,
+        electronics: 1000,
+        fuel: 1000,
+        rareMaterials: 0,
+        exoticAlloys: 0,
+        aiCores: 0,
+        dataFragments: 0,
+        darkMatter: 0,
+      },
+      ships: {
+        salvageDrone: 0,
+        refineryBarge: 0,
+        electronicsExtractor: 0,
+        fuelSynthesizer: 0,
+        matterExtractor: 0,
+        quantumMiner: 0,
+        scoutProbe: 1,
+        salvageFrigate: 1,
+        heavySalvageFrigate: 0,
+        deepSpaceScanner: 0,
+        colonyShip: 0,
+      },
+      missions: [],
+      derelicts: [],
+      stats: {
+        totalDebrisCollected: 0,
+        totalMetalProduced: 0,
+        totalElectronicsGained: 0,
+        totalFuelSynthesized: 0,
+        totalClicks: 0,
+        totalShipsPurchased: 0,
+        totalMissionsLaunched: 0,
+        totalMissionsSucceeded: 0,
+        totalMissionsFailed: 0,
+        totalDerelictsDiscovered: 0,
+        totalDerelictsSalvaged: 0,
+        derelictsByRarity: {},
+        orbitsUnlocked: ['leo'],
+        coloniesEstablished: 0,
+        techsPurchased: 0,
+        prestigeCount: 0,
+        totalPlayTime: 0,
+        totalIdleTime: 0,
+        currentRunTime: 0,
+        totalTravels: 0,
+        totalFuelSpent: 0,
+        totalTravelTime: 0,
+        farthestOrbit: 'leo',
+        travelHistory: [],
+      },
+      ui: {
+        activeTab: 'fleet',
+        activeView: 'dashboard',
+        openModal: null,
+        notifications: [],
+        settings: {
+            soundEnabled: true,
+            musicEnabled: true,
+            soundVolume: 0.7,
+            musicVolume: 0.4,
+            autoSave: true,
+            autoSaveInterval: 20000,
+            showAnimations: true,
+            compactMode: false,
+        },
+        activeTooltip: null,
+      }
+    });
+  });
+
+  it('should start a scout mission', () => {
+    const store = useGameStore.getState();
+    const success = store.startScoutMission('scoutProbe', 'leo');
+
+    const updatedStore = useGameStore.getState();
+    expect(success).toBe(true);
+    expect(updatedStore.missions.length).toBe(1);
+    expect(updatedStore.missions[0].type).toBe('scout');
+    expect(updatedStore.resources.fuel).toBe(950); // 1000 - 50
+  });
+
+  it('should fail to start scout mission without fuel', () => {
+    useGameStore.setState({ resources: { ...useGameStore.getState().resources, fuel: 0 } });
+    const store = useGameStore.getState();
+    const success = store.startScoutMission('scoutProbe', 'leo');
+
+    const updatedStore = useGameStore.getState();
+    expect(success).toBe(false);
+    expect(updatedStore.missions.length).toBe(0);
+  });
+
+  it('should complete a scout mission and discover a derelict', () => {
+    const store = useGameStore.getState();
+    store.startScoutMission('scoutProbe', 'leo');
+    
+    const midStore = useGameStore.getState();
+    const mission = midStore.missions[0];
+
+    // Fast forward time
+    vi.setSystemTime(mission.endTime + 1000);
+    
+    // Force success for testing
+    vi.spyOn(Math, 'random').mockReturnValue(0.1); // Low value < successRate (0.15)
+
+    store.completeMissionIfReady(mission.id);
+
+    const finalStore = useGameStore.getState();
+    expect(finalStore.missions.length).toBe(0);
+    expect(finalStore.derelicts.length).toBe(1);
+    expect(finalStore.stats.totalMissionsSucceeded).toBe(1);
+  });
+
+  it('should start a salvage mission', () => {
+    const store = useGameStore.getState();
+    // Add a dummy derelict
+    const derelict = {
+        id: 'test-derelict',
+        type: 'weatherSatellite',
+        rarity: 'common',
+        orbit: 'leo',
+        discoveredAt: Date.now(),
+        expiresAt: Date.now() + 100000,
+        requiredShip: 'salvageFrigate',
+        fuelCost: 100,
+        baseMissionTime: 1000,
+        isHazardous: false,
+        riskLevel: 0,
+        rewards: [],
+    };
+    useGameStore.setState({ derelicts: [derelict as any] });
+
+    const success = store.startSalvageMission('test-derelict', 'salvageFrigate', 'salvage');
+
+    const updatedStore = useGameStore.getState();
+    expect(success).toBe(true);
+    expect(updatedStore.missions.length).toBe(1);
+    expect(updatedStore.missions[0].type).toBe('salvage');
+    expect(updatedStore.resources.fuel).toBe(900); // 1000 - 100
+  });
+
+  it('should cancel a mission and refund fuel', () => {
+    const store = useGameStore.getState();
+    store.startScoutMission('scoutProbe', 'leo');
+    
+    const midStore = useGameStore.getState();
+    const missionId = midStore.missions[0].id;
+
+    const success = store.cancelMission(missionId);
+
+    const finalStore = useGameStore.getState();
+    expect(success).toBe(true);
+    expect(finalStore.missions.length).toBe(0);
+    expect(finalStore.resources.fuel).toBe(975); // 950 + 25 (50% refund)
+  });
+});

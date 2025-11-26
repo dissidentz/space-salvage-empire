@@ -1,19 +1,19 @@
 import * as React from 'react';
 
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarHeader,
-    SidebarRail,
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarRail,
 } from '@/components/ui/sidebar';
 import { useSidebar } from '@/hooks/useSidebar';
 import { useGameStore } from '@/stores/gameStore';
 import type { ResourceType } from '@/types';
 import {
-    formatNumber,
-    formatRate,
-    getResourceColor,
-    getResourceName,
+  formatNumber,
+  formatRate,
+  getResourceColor,
+  getResourceName,
 } from '@/utils/format';
 
 export function SidebarRight({
@@ -78,19 +78,28 @@ export function SidebarRight({
             };
 
             return (
-              <div key={key} className="flex items-center justify-between py-1 px-2 hover:bg-sidebar-accent/50 rounded-md transition-colors">
+              <div
+                key={key}
+                className="flex items-center justify-between py-1 px-2 hover:bg-sidebar-accent/50 rounded-md transition-colors"
+              >
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <div className="w-5 text-center shrink-0">{icons[key] ?? '▪️'}</div>
+                  <div className="w-5 text-center shrink-0">
+                    {icons[key] ?? '▪️'}
+                  </div>
                   <div className="text-sm font-medium text-sidebar-foreground truncate">
                     {getResourceName(key)}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-4 shrink-0">
-                  <div className={`text-xs font-mono w-16 text-right ${rateClass}`}>
+                  <div
+                    className={`text-xs font-mono w-16 text-right ${rateClass}`}
+                  >
                     {rate !== 0 ? (rate > 0 ? '+' : '') + formatRate(rate) : ''}
                   </div>
-                  <div className={`text-sm font-mono font-semibold w-20 text-right ${getResourceColor(key)}`}>
+                  <div
+                    className={`text-sm font-mono font-semibold w-20 text-right ${getResourceColor(key)}`}
+                  >
                     {formatNumber(value)}
                   </div>
                 </div>

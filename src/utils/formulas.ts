@@ -8,11 +8,11 @@ import type { ResourceType, Resources, ShipType } from '@/types';
 /**
  * Calculate the cost of purchasing a ship based on current count
  * Uses exponential scaling: cost(n) = baseCost * (growthRate^n)
- * 
+ *
  * @param shipType - Type of ship to calculate cost for
  * @param currentCount - Number of ships already owned
  * @returns Cost as a Resources object
- * 
+ *
  * @example
  * const cost = calculateShipCost('salvageDrone', 10);
  * // Returns { debris: 40 }
@@ -33,7 +33,9 @@ export function calculateShipCost(
   // Apply multiplier to each resource in base cost
   const cost: Partial<Resources> = {};
   for (const [resource, amount] of Object.entries(baseCost)) {
-    cost[resource as ResourceType] = Math.floor((amount as number) * multiplier);
+    cost[resource as ResourceType] = Math.floor(
+      (amount as number) * multiplier
+    );
   }
 
   return cost;
@@ -43,7 +45,7 @@ export function calculateShipCost(
  * Calculate the total cost of purchasing multiple ships
  * Uses geometric series: sum(i=n to n+amount-1) of baseCost * (growthRate^i)
  * Simplified: baseCost * (growthRate^n) * ((growthRate^amount - 1) / (growthRate - 1))
- * 
+ *
  * @param shipType - Type of ship to calculate cost for
  * @param currentCount - Number of ships already owned
  * @param amount - Number of ships to purchase
@@ -61,7 +63,7 @@ export function calculateBulkShipCost(
   if (!config) return {};
 
   const { baseCost, costGrowth } = config;
-  
+
   // Geometric series formula
   const firstCost = Math.pow(costGrowth, currentCount);
   const seriesSum = (Math.pow(costGrowth, amount) - 1) / (costGrowth - 1);
@@ -69,7 +71,9 @@ export function calculateBulkShipCost(
 
   const cost: Partial<Resources> = {};
   for (const [resource, amount] of Object.entries(baseCost)) {
-    cost[resource as ResourceType] = Math.floor((amount as number) * totalMultiplier);
+    cost[resource as ResourceType] = Math.floor(
+      (amount as number) * totalMultiplier
+    );
   }
 
   return cost;
@@ -77,31 +81,43 @@ export function calculateBulkShipCost(
 
 /**
  * Calculate production per second for a ship type
- * 
+ *
  * @param shipType - Type of ship
  * @param shipCount - Number of ships owned
  * @param multipliers - Global multipliers object
+ * @param resourceType - The resource being produced (for orbit-specific multipliers)
  * @returns Production per second
  */
 export function calculateProduction(
   shipType: ShipType,
   shipCount: number,
   multipliers: {
-    orbit?: number;
+    orbit?: number | Record<ResourceType, number>;
     tech?: number;
     prestige?: number;
     formation?: number;
     colony?: number;
-  } = {}
+  } = {},
+  resourceType?: ResourceType
 ): number {
   if (shipCount === 0) return 0;
 
   const config = SHIP_CONFIGS[shipType];
   if (!config || !config.baseProduction) return 0;
 
+  // Calculate orbit multiplier (can be resource-specific)
+  let orbitMultiplier = 1.0;
+  if (multipliers.orbit) {
+    if (typeof multipliers.orbit === 'number') {
+      orbitMultiplier = multipliers.orbit;
+    } else if (resourceType && multipliers.orbit[resourceType]) {
+      orbitMultiplier = multipliers.orbit[resourceType];
+    }
+  }
+
   // Calculate global multiplier
   const globalMultiplier =
-    (multipliers.orbit ?? 1) *
+    orbitMultiplier *
     (multipliers.tech ?? 1) *
     (multipliers.prestige ?? 1) *
     (multipliers.formation ?? 1) *
@@ -112,17 +128,19 @@ export function calculateProduction(
 
 /**
  * Calculate production per tick (called by game loop)
- * 
+ *
  * @param productionPerSecond - Production rate per second
  * @returns Production per tick
  */
-export function calculatePerTickProduction(productionPerSecond: number): number {
+export function calculatePerTickProduction(
+  productionPerSecond: number
+): number {
   return productionPerSecond / TICKS_PER_SECOND;
 }
 
 /**
  * Calculate resource consumption for converter ships (Refinery, Fuel Synthesizer)
- * 
+ *
  * @param shipType - Type of converter ship
  * @param shipCount - Number of ships owned
  * @param availableInput - Amount of input resource available
@@ -153,7 +171,7 @@ export function calculateConversion(
 
 /**
  * Calculate how many ships can be afforded with current resources
- * 
+ *
  * @param shipType - Type of ship
  * @param currentCount - Current ship count
  * @param availableResources - Resources available
@@ -165,15 +183,15 @@ export function calculateMaxAffordable(
   availableResources: Resources
 ): number {
   let count = 0;
-  
+
   // Binary search for efficiency (max 1000 ships at once)
   let low = 0;
   let high = 1000;
-  
+
   while (low <= high) {
     const mid = Math.floor((low + high) / 2);
     const cost = calculateBulkShipCost(shipType, currentCount, mid);
-    
+
     if (canAffordCost(cost, availableResources)) {
       count = mid;
       low = mid + 1;
@@ -181,13 +199,13 @@ export function calculateMaxAffordable(
       high = mid - 1;
     }
   }
-  
+
   return count;
 }
 
 /**
  * Check if player can afford a cost
- * 
+ *
  * @param cost - Cost to check
  * @param availableResources - Resources available
  * @returns True if can afford
@@ -207,7 +225,7 @@ export function canAffordCost(
 /**
  * Calculate Dark Matter gain on prestige
  * Formula from docs/FORMULAS.md
- * 
+ *
  * @param stats - Player statistics
  * @returns Dark Matter to award
  */

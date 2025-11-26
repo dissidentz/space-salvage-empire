@@ -2,13 +2,24 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { useGameStore } from '@/stores/gameStore';
 import type { ShipType } from '@/types';
-import { formatNumber, getResourceColor, getResourceName } from '@/utils/format';
+import {
+    formatNumber,
+    getResourceColor,
+    getResourceName,
+} from '@/utils/format';
 import { ArrowRight, Rocket, Zap } from 'lucide-react';
 import { memo, useMemo } from 'react';
 
@@ -18,7 +29,7 @@ interface ShipCardProps {
 
 export const ShipCard = memo(({ shipType }: ShipCardProps) => {
   const config = SHIP_CONFIGS[shipType];
-  
+
   // Use stable selectors
   const shipCount = useGameStore(state => state.ships[shipType]);
   const shipEnabled = useGameStore(state => state.shipEnabled[shipType]);
@@ -29,18 +40,26 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
   const toggleShip = useGameStore(state => state.toggleShip);
 
   // Calculate costs for different quantities
-  const costs = useMemo(() => ({
-    buy1: getShipCost(shipType, 1),
-    buy10: getShipCost(shipType, 10),
-    buy100: getShipCost(shipType, 100),
-  }), [shipType, getShipCost]);
+  const costs = useMemo(
+    () => ({
+      buy1: getShipCost(shipType, 1),
+      buy10: getShipCost(shipType, 10),
+      buy100: getShipCost(shipType, 100),
+      buy1000: getShipCost(shipType, 1000),
+    }),
+    [shipType, getShipCost]
+  );
 
   // Calculate affordability for each quantity
-  const canAfford = useMemo(() => ({
-    buy1: canAffordShip(shipType, 1),
-    buy10: canAffordShip(shipType, 10),
-    buy100: canAffordShip(shipType, 100),
-  }), [shipType, canAffordShip]);
+  const canAfford = useMemo(
+    () => ({
+      buy1: canAffordShip(shipType, 1),
+      buy10: canAffordShip(shipType, 10),
+      buy100: canAffordShip(shipType, 100),
+      buy1000: canAffordShip(shipType, 1000),
+    }),
+    [shipType, canAffordShip]
+  );
 
   // Calculate max affordable
   const maxAffordable = useMemo(() => {
@@ -68,21 +87,23 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
 
   // Check sustainability (prevent death spirals)
   const sustainability = useMemo(() => {
-    if (!config.consumesResource || !config.baseProduction) return { safe: true, message: null };
-    
+    if (!config.consumesResource || !config.baseProduction)
+      return { safe: true, message: null };
+
     const resource = config.consumesResource;
     const currentRate = computedRates[resource] ?? 0;
     const consumption = config.baseProduction;
-    
+
     // Allow if we have a massive stockpile (e.g. > 1 hour of consumption)
     // But for now, strict check as requested
-    if (currentRate - consumption < -0.1) { // Use -0.1 to avoid floating point issues
+    if (currentRate - consumption < -0.1) {
+      // Use -0.1 to avoid floating point issues
       return {
         safe: false,
-        message: `Requires +${formatNumber(consumption)}/s ${getResourceName(resource)} production (Current: ${formatNumber(currentRate)}/s)`
+        message: `Requires +${formatNumber(consumption)}/s ${getResourceName(resource)} production (Current: ${formatNumber(currentRate)}/s)`,
       };
     }
-    
+
     return { safe: true, message: null };
   }, [config, computedRates]);
 
@@ -91,7 +112,9 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
   };
 
   return (
-    <Card className={`border-border bg-card hover:border-primary/50 transition-all duration-300 ${!shipEnabled ? 'opacity-60' : ''}`}>
+    <Card
+      className={`border-border bg-card hover:border-primary/50 transition-all duration-300 ${!shipEnabled ? 'opacity-60' : ''}`}
+    >
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
@@ -103,7 +126,11 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
               )}
               <CardTitle className="text-xl">{config.name}</CardTitle>
               <Badge variant="secondary">Tier {config.tier}</Badge>
-              {!shipEnabled && <Badge variant="outline" className="text-orange-400">Disabled</Badge>}
+              {!shipEnabled && (
+                <Badge variant="outline" className="text-orange-400">
+                  Disabled
+                </Badge>
+              )}
             </div>
             <CardDescription>{config.description}</CardDescription>
           </div>
@@ -113,7 +140,10 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
             </Badge>
             {shipCount > 0 && (
               <div className="flex items-center gap-2">
-                <Label htmlFor={`toggle-${shipType}`} className="text-xs cursor-pointer">
+                <Label
+                  htmlFor={`toggle-${shipType}`}
+                  className="text-xs cursor-pointer"
+                >
                   {shipEnabled ? 'On' : 'Off'}
                 </Label>
                 <Switch
@@ -147,14 +177,21 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Conversion Rate</span>
+                  <span className="text-sm text-muted-foreground">
+                    Conversion Rate
+                  </span>
                   <span className="text-lg font-semibold text-primary">
-                    {config.baseProduction} : {config.baseProduction! * config.conversionRatio}
+                    {config.baseProduction} :{' '}
+                    {config.baseProduction! * config.conversionRatio}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Per Ship</span>
-                  <span className={`text-sm font-mono ${getResourceColor(config.producesResource!)}`}>
+                  <span className="text-sm text-muted-foreground">
+                    Per Ship
+                  </span>
+                  <span
+                    className={`text-sm font-mono ${getResourceColor(config.producesResource!)}`}
+                  >
                     +{config.baseProduction! * config.conversionRatio}/s
                   </span>
                 </div>
@@ -165,7 +202,8 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
                 <div className="flex items-center gap-2">
                   <Zap className="w-5 h-5 text-green-400" />
                   <span className="text-lg font-semibold text-green-300">
-                    +{config.baseProduction} {getResourceName(config.producesResource!)}/s
+                    +{config.baseProduction}{' '}
+                    {getResourceName(config.producesResource!)}/s
                   </span>
                 </div>
               </div>
@@ -180,11 +218,19 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
           </div>
           <div className="space-y-1">
             {Object.entries(costs.buy1).map(([resource, amount]) => {
-              const hasEnough = resources[resource as keyof typeof resources] >= amount;
+              const hasEnough =
+                resources[resource as keyof typeof resources] >= amount;
               return (
-                <div key={resource} className="flex items-center justify-between text-sm">
-                  <span className="capitalize">{getResourceName(resource)}</span>
-                  <span className={`font-mono ${hasEnough ? getResourceColor(resource) : 'text-red-400'}`}>
+                <div
+                  key={resource}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <span className="capitalize">
+                    {getResourceName(resource)}
+                  </span>
+                  <span
+                    className={`font-mono ${hasEnough ? getResourceColor(resource) : 'text-red-400'}`}
+                  >
                     {formatNumber(amount)}
                   </span>
                 </div>
@@ -196,11 +242,11 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
         {/* Sustainability Warning */}
         {!sustainability.safe && (
           <div className="bg-destructive/10 border border-destructive/50 rounded p-3 text-xs text-destructive flex items-start gap-2">
-             <div className="mt-0.5">⚠️</div>
-             <div>
-               <div className="font-bold">Production Deficit Warning</div>
-               <div>{sustainability.message}</div>
-             </div>
+            <div className="mt-0.5">⚠️</div>
+            <div>
+              <div className="font-bold">Production Deficit Warning</div>
+              <div>{sustainability.message}</div>
+            </div>
           </div>
         )}
       </CardContent>
@@ -226,7 +272,7 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
             Buy 10
           </Button>
         </div>
-        
+
         {/* Secondary buy buttons */}
         <div className="flex gap-2 w-full">
           <Button
@@ -239,10 +285,23 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
             Buy 100
           </Button>
           <Button
+            onClick={() => handleBuy(1000)}
+            disabled={!canAfford.buy1000 || !sustainability.safe}
+            variant="outline"
+            className="flex-1"
+            size="sm"
+          >
+            Buy 1K
+          </Button>
+        </div>
+
+        {/* Tertiary buy button */}
+        <div className="flex gap-2 w-full">
+          <Button
             onClick={() => handleBuy(maxAffordable)}
             disabled={maxAffordable === 0 || !sustainability.safe}
             variant="outline"
-            className="flex-1"
+            className="w-full"
             size="sm"
           >
             Max ({formatNumber(maxAffordable)})

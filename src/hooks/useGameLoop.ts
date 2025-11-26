@@ -15,49 +15,80 @@ export function useGameLoop() {
 
     const interval = setInterval(() => {
       const state = useGameStore.getState();
-      
+
       // Calculate production for this tick
       const deltas = calculateTickProduction(state);
-      
+
       // Apply resource changes
       for (const [resource, delta] of Object.entries(deltas)) {
         if (delta !== 0) {
           const resourceType = resource as ResourceType;
           const currentAmount = state.resources[resourceType];
-          
+
           // Prevent resources from going negative
           const newAmount = Math.max(0, currentAmount + delta);
           const actualDelta = newAmount - currentAmount;
-          
+
           // Only apply if there's an actual change
           if (actualDelta !== 0) {
             state.addResource(resourceType, actualDelta);
           }
-          
+
           // Track stats for positive production
           if (delta > 0) {
             // Update stats based on resource type
             if (resourceType === 'debris') {
               useGameStore.setState(s => ({
-                stats: { ...s.stats, totalDebrisCollected: s.stats.totalDebrisCollected + delta }
+                stats: {
+                  ...s.stats,
+                  totalDebrisCollected: s.stats.totalDebrisCollected + delta,
+                },
               }));
             } else if (resourceType === 'metal') {
               useGameStore.setState(s => ({
-                stats: { ...s.stats, totalMetalProduced: s.stats.totalMetalProduced + delta }
+                stats: {
+                  ...s.stats,
+                  totalMetalProduced: s.stats.totalMetalProduced + delta,
+                },
               }));
             } else if (resourceType === 'electronics') {
               useGameStore.setState(s => ({
-                stats: { ...s.stats, totalElectronicsGained: s.stats.totalElectronicsGained + delta }
+                stats: {
+                  ...s.stats,
+                  totalElectronicsGained:
+                    s.stats.totalElectronicsGained + delta,
+                },
               }));
             } else if (resourceType === 'fuel') {
               useGameStore.setState(s => ({
-                stats: { ...s.stats, totalFuelSynthesized: s.stats.totalFuelSynthesized + delta }
+                stats: {
+                  ...s.stats,
+                  totalFuelSynthesized: s.stats.totalFuelSynthesized + delta,
+                },
               }));
             }
           }
         }
       }
-      
+
+      // Check for completed travel
+      state.completeTravelIfReady();
+
+      // Check for completed missions
+      state.missions.forEach(mission => {
+        if (mission.status === 'inProgress' && Date.now() >= mission.endTime) {
+          state.completeMissionIfReady(mission.id);
+        }
+      });
+
+      // Check for expired derelicts
+      const now = Date.now();
+      state.derelicts.forEach(derelict => {
+        if (now >= derelict.expiresAt) {
+          state.removeDerelict(derelict.id);
+        }
+      });
+
       // Check milestones after production
       state.checkAndClaimMilestones();
     }, 100); // 10 ticks per second
@@ -80,4 +111,3 @@ export function useGameLoop() {
     };
   }, []); // Empty deps - only run once
 }
-
