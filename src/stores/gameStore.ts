@@ -816,7 +816,7 @@ export const useGameStore = create<GameStore>()(
               totalTravels: s.stats.totalTravels + 1,
               farthestOrbit: destination, // Simplified, needs logic to compare orbits
               travelHistory: [
-                ...s.stats.travelHistory,
+                ...(s.stats.travelHistory || []),
                 {
                   id: Math.random().toString(36).substr(2, 9),
                   origin: origin,
