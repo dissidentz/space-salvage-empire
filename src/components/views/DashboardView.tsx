@@ -25,6 +25,7 @@ export function DashboardView() {
   const derelicts = useMemo(() => allDerelicts.filter(d => d.orbit === currentOrbit), [allDerelicts, currentOrbit]);
   const startScoutMission = useGameStore(state => state.startScoutMission);
   const resources = useGameStore(state => state.resources);
+  const computedRates = useGameStore(state => state.computedRates);
 
   // Orbit selector state
   const [orbitSelectorOpen, setOrbitSelectorOpen] = useState(false);
@@ -189,11 +190,28 @@ export function DashboardView() {
                     ) : (
                       config.icon
                     )}
-                    <div>
+                    <div className="flex-1">
                       <div className="text-xs text-gray-400">{config.label}</div>
                       <div className={`text-xl font-bold ${config.color}`}>
                         {Math.floor(value).toLocaleString()}
                       </div>
+                      {computedRates[resourceType as keyof typeof computedRates] !== undefined && (
+                        <div className="text-xs text-green-400 flex items-center gap-1">
+                          {computedRates[resourceType as keyof typeof computedRates]! > 0 ? (
+                            <>
+                              <span>↑</span>
+                              <span>+{computedRates[resourceType as keyof typeof computedRates]!.toFixed(1)}/s</span>
+                            </>
+                          ) : computedRates[resourceType as keyof typeof computedRates]! < 0 ? (
+                            <>
+                              <span className="text-red-400">↓</span>
+                              <span className="text-red-400">{computedRates[resourceType as keyof typeof computedRates]!.toFixed(1)}/s</span>
+                            </>
+                          ) : (
+                            <span className="text-gray-500">0.0/s</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
