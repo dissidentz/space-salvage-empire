@@ -720,11 +720,11 @@ export const useGameStore = create<GameStore>()(
       },
 
       hardReset: () => {
-        // Clear localStorage first
-        localStorage.removeItem('space-salvage-save');
-
-        // Reload the page to get a fresh state
-        window.location.reload();
+        // Clear all localStorage to prevent persist middleware from saving
+        localStorage.clear();
+        
+        // Force a hard reload to bypass cache
+        window.location.href = window.location.href;
       },
 
       setActiveView: (view) => {
