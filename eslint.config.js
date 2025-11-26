@@ -19,5 +19,16 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Disable fast refresh warnings for shadcn/ui components
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+  {
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: {
+      // Allow shadcn/ui components to export utilities (required for their design)
+      'react-refresh/only-export-components': 'off',
+    },
   },
 ])
