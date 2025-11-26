@@ -114,6 +114,50 @@ export function DashboardView() {
         </CardContent>
       </Card>
 
+      {/* Resources Display */}
+      <Card className="border-cyan-500/30 bg-gradient-to-r from-cyan-950/30 to-blue-950/30">
+        <CardContent className="pt-4 pb-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-yellow-400" />
+              <div>
+                <div className="text-xs text-gray-400">Debris</div>
+                <div className="text-lg font-bold text-yellow-300">
+                  {Math.floor(resources.debris).toLocaleString()}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-5 w-5 text-gray-400">🔩</div>
+              <div>
+                <div className="text-xs text-gray-400">Metal</div>
+                <div className="text-lg font-bold text-gray-300">
+                  {Math.floor(resources.metal).toLocaleString()}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-5 w-5 text-blue-400">⚡</div>
+              <div>
+                <div className="text-xs text-gray-400">Electronics</div>
+                <div className="text-lg font-bold text-blue-300">
+                  {Math.floor(resources.electronics).toLocaleString()}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-5 w-5 text-orange-400">⛽</div>
+              <div>
+                <div className="text-xs text-gray-400">Fuel</div>
+                <div className="text-lg font-bold text-orange-300">
+                  {Math.floor(resources.fuel).toLocaleString()}
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Current Orbit Display */}
       <Card className="border-blue-500/30 bg-blue-950/20">
         <CardContent className="pt-4 pb-4">
