@@ -22,6 +22,9 @@ export function calculateTickProduction(state: GameState): Partial<Record<Resour
   for (const [shipType, count] of Object.entries(state.ships)) {
     if (count === 0) continue;
     
+    // Skip disabled ships
+    if (!state.shipEnabled[shipType as ShipType]) continue;
+    
     const config = SHIP_CONFIGS[shipType as ShipType];
     if (!config || config.category !== 'production') continue;
     

@@ -1,41 +1,6 @@
 // TypeScript interfaces and types for Space Salvage Empire
 
-export interface GameState {
-  // Meta
-  version: string;
-  lastSaveTime: number;
-  totalPlayTime: number;
-  currentRun: number;
-  currentOrbit: OrbitType;
-  // Resources
-  resources: Resources;
-  // Ships & Buildings
-  ships: Ships;
-  shipUpgrades: ShipUpgrades;
-  // Progression
-  techTree: TechTree;
-  upgrades: Upgrades;
-  milestones: Milestones;
-  // Active Systems
-  derelicts: Derelict[];
-  missions: Mission[];
-  colonies: Colony[];
-  contracts: Contract[];
-  // Prestige
-  prestige: PrestigeData;
-  // Statistics
-  stats: Statistics;
-  // UI State
-  ui: UIState;
-  // Additional fields for game logic
-  activeFormation: FormationType | null;
-  formationCooldownEnd: number;
-}
-
-export type ResourceType = keyof Resources;
-export type ShipType = keyof Ships;
-
-// Basic enums
+// Orbit and formation as string unions to keep runtime assignments simple
 export type OrbitType =
   | 'leo'
   | 'geo'
@@ -45,6 +10,7 @@ export type OrbitType =
   | 'jovian'
   | 'kuiper'
   | 'deepSpace';
+
 export type FormationType =
   | 'miningFleet'
   | 'scoutFleet'
@@ -52,7 +18,7 @@ export type FormationType =
   | 'expeditionFleet'
   | 'productionFleet';
 
-// Resources interface
+// Resources
 export interface Resources {
   debris: number;
   metal: number;
@@ -62,10 +28,12 @@ export interface Resources {
   exoticAlloys: number;
   aiCores: number;
   dataFragments: number;
-  darkMatter: number;
+  darkMatter: number; // current spendable DM
 }
 
-// Ships interface
+export type ResourceType = keyof Resources;
+
+// Ships
 export interface Ships {
   salvageDrone: number;
   refineryBarge: number;
@@ -80,34 +48,370 @@ export interface Ships {
   colonyShip: number;
 }
 
-// Ship upgrades
-export interface ShipUpgrades {
-  [shipType: string]: {
-    [upgradeId: string]: number;
-  };
+export type ShipType = keyof Ships;
+
+// Ship enabled/disabled state
+export type ShipEnabled = Record<ShipType, boolean>;
+
+// Upgrade identifiers
+export type UpgradeId = string;
+
+// Ship upgrades map: optional per-ship upgrade levels keyed by `UpgradeId`
+export type ShipUpgrades = Partial<Record<ShipType, Record<UpgradeId, number>>>;
+
+// Enums / string unions for other schema items
+export type DerelictRarity =
+  | 'common'
+  | 'uncommon'
+  | 'rare'
+  | 'epic'
+  | 'legendary';
+export type DerelictType =
+  | 'weatherSatellite'
+  | 'cargoContainer'
+  | 'communicationRelay'
+  | 'miningHauler'
+  | 'researchProbe'
+  | 'militaryFrigate'
+  | 'colonyShipFragment'
+  | 'refineryStation'
+  | 'ancientProbe'
+  | 'exodusDestroyer'
+  | 'researchMegastation'
+  | 'alienRelay'
+  | 'arkComponent';
+
+export type DerelictAction = 'salvage' | 'hack' | 'dismantle' | 'abandon';
+
+export type MissionType = 'scout' | 'salvage' | 'travel' | 'colony';
+export type MissionStatus = 'inProgress' | 'completed' | 'failed';
+
+export type TechBranch = 'efficiency' | 'exploration' | 'economy';
+
+export type ArkComponentType =
+  | 'propulsionCore'
+  | 'lifeSupportGrid'
+  | 'powerDistribution'
+  | 'hullPlating'
+  | 'weaponsArray'
+  | 'computingCore'
+  | 'cryoBay'
+  | 'navigationArray';
+
+export type ContractType =
+  | 'salvageQuota'
+  | 'resourceRush'
+  | 'discoveryMission'
+  | 'speedRun'
+  | 'riskyBusiness';
+
+// Derelict structures
+export interface DerelictReward {
+  resource: ResourceType;
+  min: number;
+  max: number;
+  dropChance: number; // 0-1
 }
 
-// Tech tree
+export interface Derelict {
+  id: string;
+  type: DerelictType;
+  rarity: DerelictRarity;
+  orbit: OrbitType;
+  discoveredAt: number;
+  expiresAt: number;
+
+  requiredShip: ShipType;
+  fuelCost: number;
+  baseMissionTime: number;
+
+  isHazardous: boolean;
+  riskLevel: number; // 0-1
+
+  rewards: DerelictReward[];
+
+  isArkComponent?: boolean;
+  arkComponentType?: ArkComponentType;
+}
+
+// Missions
+export interface Mission {
+  id: string;
+  type: MissionType;
+  status: MissionStatus;
+
+  shipType: ShipType;
+  shipId?: string;
+
+  startTime: number;
+  endTime: number;
+
+  targetOrbit: OrbitType;
+  targetDerelict?: string;
+
+  fuelCost: number;
+  action?: DerelictAction;
+
+  success?: boolean;
+  rewards?: Partial<Resources>;
+  discoveredDerelict?: string;
+}
+
+// Tech tree types
+export interface TechEffect {
+  type: 'multiplier' | 'unlock' | 'flat_bonus';
+  target: string;
+  value: number;
+}
+
+export interface TechNode {
+  id: string;
+  name: string;
+  description: string;
+  branch: TechBranch;
+  tier: number;
+  dataFragmentCost: number;
+  prerequisites: string[];
+  effects: TechEffect[];
+}
+
 export interface TechTree {
   purchased: string[];
   available: string[];
 }
 
-// Placeholder types (to be expanded from STATE_SCHEMA.md)
-export type Upgrades = Record<string, unknown>; // TODO: define upgrade system
+// Ark / prestige
+export interface ArkComponent {
+  type: ArkComponentType;
+  discovered: boolean;
+  assembled: boolean;
+  assemblyStartTime?: number;
+  assemblyEndTime?: number;
+  assemblyCost: Partial<Resources>;
+  assemblyDuration: number;
+}
 
-export type Milestones = Record<string, unknown>; // TODO: define milestone system
+export interface PrestigeData {
+  darkMatter: number;
+  totalDarkMatter: number;
+  purchasedPerks: string[];
+  arkComponents: Partial<Record<ArkComponentType, ArkComponent>>;
+  arkUnlocked: boolean;
+  arkComplete: boolean;
+  totalRuns: number;
+  fastestRun: number;
+  highestOrbit: OrbitType;
+}
 
-export type Derelict = Record<string, unknown>; // TODO: define derelict system
+// Stats
+export interface Statistics {
+  totalDebrisCollected: number;
+  totalMetalProduced: number;
+  totalElectronicsGained: number;
+  totalFuelSynthesized: number;
 
-export type Mission = Record<string, unknown>; // TODO: define mission system
+  totalClicks: number;
+  totalShipsPurchased: number;
+  totalMissionsLaunched: number;
+  totalMissionsSucceeded: number;
+  totalMissionsFailed: number;
 
-export type Colony = Record<string, unknown>; // TODO: define colony system
+  totalDerelictsDiscovered: number;
+  totalDerelictsSalvaged: number;
+  derelictsByRarity: Partial<Record<DerelictRarity, number>>;
 
-export type Contract = Record<string, unknown>; // TODO: define contract system
+  orbitsUnlocked: OrbitType[];
+  coloniesEstablished: number;
+  techsPurchased: number;
+  prestigeCount: number;
 
-export type PrestigeData = Record<string, unknown>; // TODO: define prestige system
+  totalPlayTime: number;
+  totalIdleTime: number;
+  currentRunTime: number;
+}
 
-export type Statistics = Record<string, unknown>; // TODO: define statistics system
+// Colonies & formations
+export interface Colony {
+  id: string;
+  orbit: OrbitType;
+  establishedAt: number;
+  level: number;
+  productionBonus: number;
+  autoSalvage: boolean;
+}
 
-export type UIState = Record<string, unknown>; // TODO: define UI state system
+export type FormationEffectType =
+  | 'production_multiplier'
+  | 'cost_reduction'
+  | 'speed_bonus';
+
+export interface FormationEffect {
+  type: FormationEffectType;
+  target: string;
+  value: number;
+}
+
+export interface Formation {
+  type: FormationType;
+  active: boolean;
+  lastSwitchTime: number;
+  requiredShips: Partial<Ships>;
+  effects: FormationEffect[];
+}
+
+// Contracts
+export interface Contract {
+  id: string;
+  type: ContractType;
+  targetOrbit?: OrbitType;
+  targetAmount: number;
+  startTime: number;
+  expiresAt: number;
+  duration: number;
+  progress: number;
+  completed: boolean;
+  rewards: Partial<Resources>;
+}
+
+// UI
+export interface Notification {
+  id: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  message: string;
+  timestamp: number;
+  duration: number;
+}
+
+export interface UIState {
+  activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
+  activeView: 'dashboard' | 'settings';
+  openModal: string | null;
+  modalData?: unknown;
+  notifications: Notification[];
+  settings: {
+    soundEnabled: boolean;
+    musicEnabled: boolean;
+    soundVolume: number;
+    musicVolume: number;
+    autoSave: boolean;
+    autoSaveInterval: number;
+    showAnimations: boolean;
+    compactMode: boolean;
+  };
+  activeTooltip: string | null;
+}
+
+// Config types
+export interface ShipConfig {
+  id: ShipType;
+  name: string;
+  description: string;
+  category: 'production' | 'active';
+  baseCost: Partial<Resources>;
+  costGrowth: number;
+  baseProduction?: number;
+  producesResource?: ResourceType;
+  consumesResource?: ResourceType;
+  conversionRatio?: number;
+  baseMissionDuration?: number;
+  baseSuccessRate?: number;
+  unlockRequirements?: {
+    orbit?: OrbitType;
+    tech?: string[];
+    prestige?: string[];
+    milestone?: string;
+  };
+  availableUpgrades?: UpgradeId[];
+}
+
+export interface OrbitConfig {
+  id: OrbitType;
+  name: string;
+  index: number;
+  metalMultiplier: number;
+  electronicsMultiplier: number;
+  rareMultiplier: number;
+  fuelCost: number;
+  travelTime: number;
+  unlockRequirements?: {
+    resources?: Partial<Resources>;
+    tech?: string[];
+    colonies?: OrbitType[];
+  };
+  spawnRates?: {
+    common: number;
+    uncommon: number;
+    rare: number;
+    epic: number;
+    legendary: number;
+  };
+  spawnMultiplier?: number;
+  discoveryMultiplier?: number;
+}
+
+// Upgrades (general-purpose, non-tech permanent upgrades)
+export interface Upgrade {
+  id: string;
+  name: string;
+  description?: string;
+  cost?: Partial<Resources>;
+  currentLevel: number;
+  maxLevel?: number;
+  effects?: TechEffect[] | FormationEffect[];
+  unlocked?: boolean;
+  prerequisites?: string[];
+}
+
+export type Upgrades = Record<string, Upgrade>;
+
+// Milestones (one-time progression achievements with rewards)
+export interface MilestoneCondition {
+  type:
+    | 'reach_orbit'
+    | 'collect_resource'
+    | 'purchase_ships'
+    | 'time_played'
+    | 'derelicts_salvaged';
+  key?: string; // e.g., resource key or ship type
+  value: number;
+}
+
+export interface Milestone {
+  id: string;
+  name: string;
+  description?: string;
+  condition: MilestoneCondition;
+  achieved: boolean;
+  rewards?:
+    | Partial<Resources>
+    | { unlockTech?: string }
+    | { addUpgrade?: string };
+}
+
+export type Milestones = Record<string, Milestone>;
+
+// Main GameState
+export interface GameState {
+  version: string;
+  lastSaveTime: number;
+  totalPlayTime: number;
+  currentRun: number;
+  currentOrbit: OrbitType;
+  resources: Resources;
+  ships: Ships;
+  shipEnabled: ShipEnabled; // Track which ships are enabled/disabled
+  shipUpgrades: ShipUpgrades;
+  techTree: TechTree;
+  upgrades: Upgrades;
+  milestones: Milestones;
+  derelicts: Derelict[];
+  missions: Mission[];
+  colonies: Colony[];
+  contracts: Contract[];
+  prestige: PrestigeData;
+  stats: Statistics;
+  ui: UIState;
+  activeFormation: FormationType | null;
+  formationCooldownEnd: number;
+  computedRates: Partial<Record<ResourceType, number>>;
+}

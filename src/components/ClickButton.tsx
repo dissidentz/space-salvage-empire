@@ -11,7 +11,7 @@ export const ClickButton = () => {
         onClick={clickDebris}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white text-xl font-bold shadow-lg hover:shadow-xl"
+        className="w-32 h-32 rounded-full bg-linear-to-br from-blue-600 to-purple-600 text-white text-xl font-bold shadow-lg hover:shadow-xl"
       >
         Click for
         <br />

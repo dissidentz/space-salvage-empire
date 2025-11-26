@@ -62,17 +62,18 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
     description: 'Processes raw debris into refined metal',
     category: 'production',
     tier: 1,
-    baseCost: { metal: 100 },
+    baseCost: { debris: 100 }, // Changed from metal to debris for initial progression
     costGrowth: GROWTH_RATES.UNCOMMON,
     baseProduction: 10, // consumes 10 debris/sec
     producesResource: 'metal',
     consumesResource: 'debris',
     conversionRatio: 0.2, // 10 debris → 2 metal (base)
     unlockRequirements: {
-      ships: { salvageDrone: 5 },
+      ships: { salvageDrone: 10 },
     },
     availableUpgrades: ['smelting1', 'smelting2', 'smelting3', 'throughputBoost'],
   },
+
 
   electronicsExtractor: {
     id: 'electronicsExtractor',
@@ -237,6 +238,12 @@ export function getAvailableShips(state: {
   const available: ShipType[] = [];
 
   for (const [shipType, config] of Object.entries(SHIP_CONFIGS)) {
+    // Always show if we already own at least one
+    if (state.ships[shipType as ShipType] > 0) {
+      available.push(shipType as ShipType);
+      continue;
+    }
+
     const req = config.unlockRequirements;
 
     // Check orbit requirement

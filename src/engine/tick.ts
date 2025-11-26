@@ -12,18 +12,26 @@ export class TickEngine {
   private tickCount = 0;
   private isRunning = false;
 
+  private readonly onTick: (deltas: Partial<Record<string, number>>) => void;
+  private readonly onSave: () => void;
+  private readonly getState: () => GameState;
+
   constructor(
-    private readonly onTick: (deltas: Partial<Record<string, number>>) => void,
-    private readonly onSave: () => void,
-    private readonly getState: () => GameState
-  ) {}
+    onTick: (deltas: Partial<Record<string, number>>) => void,
+    onSave: () => void,
+    getState: () => GameState
+  ) {
+    this.onTick = onTick;
+    this.onSave = onSave;
+    this.getState = getState;
+  }
 
   /**
    * Start the game loop
    */
   start(): void {
     if (this.isRunning) return;
-    
+
     this.isRunning = true;
     this.lastTickTime = performance.now();
     this.lastSaveTime = Date.now();
@@ -35,7 +43,7 @@ export class TickEngine {
    */
   stop(): void {
     if (!this.isRunning) return;
-    
+
     this.isRunning = false;
     if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);

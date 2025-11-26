@@ -1,30 +1,83 @@
-// Simplified game loop hook - only updates debris for now
+// Game loop hook - handles production calculations and resource updates
 
+import { calculateTickProduction } from '@/engine/production';
 import { useGameStore } from '@/stores/gameStore';
+import type { ResourceType } from '@/types';
 import { useEffect } from 'react';
 
 /**
- * Simple game loop that runs every 100ms (10 ticks/sec)
- * Only handles debris production from salvage drones
+ * Game loop that runs every 100ms (10 ticks/sec)
+ * Handles all production, conversion, and resource updates
  */
 export function useGameLoop() {
   useEffect(() => {
     console.log('Game loop starting...');
-    
+
     const interval = setInterval(() => {
       const state = useGameStore.getState();
-      const droneCount = state.ships.salvageDrone;
       
-      if (droneCount > 0) {
-        // Each drone produces 1 debris/sec = 0.1 debris per tick
-        const debrisPerTick = droneCount * 0.1;
-        state.addResource('debris', debrisPerTick);
+      // Calculate production for this tick
+      const deltas = calculateTickProduction(state);
+      
+      // Apply resource changes
+      for (const [resource, delta] of Object.entries(deltas)) {
+        if (delta !== 0) {
+          const resourceType = resource as ResourceType;
+          const currentAmount = state.resources[resourceType];
+          
+          // Prevent resources from going negative
+          const newAmount = Math.max(0, currentAmount + delta);
+          const actualDelta = newAmount - currentAmount;
+          
+          // Only apply if there's an actual change
+          if (actualDelta !== 0) {
+            state.addResource(resourceType, actualDelta);
+          }
+          
+          // Track stats for positive production
+          if (delta > 0) {
+            // Update stats based on resource type
+            if (resourceType === 'debris') {
+              useGameStore.setState(s => ({
+                stats: { ...s.stats, totalDebrisCollected: s.stats.totalDebrisCollected + delta }
+              }));
+            } else if (resourceType === 'metal') {
+              useGameStore.setState(s => ({
+                stats: { ...s.stats, totalMetalProduced: s.stats.totalMetalProduced + delta }
+              }));
+            } else if (resourceType === 'electronics') {
+              useGameStore.setState(s => ({
+                stats: { ...s.stats, totalElectronicsGained: s.stats.totalElectronicsGained + delta }
+              }));
+            } else if (resourceType === 'fuel') {
+              useGameStore.setState(s => ({
+                stats: { ...s.stats, totalFuelSynthesized: s.stats.totalFuelSynthesized + delta }
+              }));
+            }
+          }
+        }
       }
+      
+      // Check milestones after production
+      state.checkAndClaimMilestones();
     }, 100); // 10 ticks per second
+
+    // Update production rates every second for display
+    let rateUpdateCounter = 0;
+    const rateUpdateInterval = setInterval(() => {
+      rateUpdateCounter++;
+      if (rateUpdateCounter >= 10) {
+        const rates = useGameStore.getState().getProductionRates();
+        useGameStore.getState().updateComputedRates(rates);
+        rateUpdateCounter = 0;
+      }
+    }, 100);
 
     return () => {
       console.log('Game loop stopping...');
       clearInterval(interval);
+      clearInterval(rateUpdateInterval);
     };
   }, []); // Empty deps - only run once
 }
+
