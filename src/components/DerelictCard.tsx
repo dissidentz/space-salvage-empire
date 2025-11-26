@@ -20,11 +20,11 @@ interface DerelictCardProps {
 
 function getRarityColor(rarity: DerelictRarity): string {
   switch (rarity) {
-    case 'common': return 'border-slate-500';
-    case 'uncommon': return 'border-green-500';
-    case 'rare': return 'border-blue-500';
-    case 'epic': return 'border-purple-500';
-    case 'legendary': return 'border-orange-500';
+    case 'common': return 'border-slate-500 shadow-slate-500/10';
+    case 'uncommon': return 'border-green-500 shadow-green-500/20';
+    case 'rare': return 'border-blue-500 shadow-blue-500/30';
+    case 'epic': return 'border-purple-500 shadow-purple-500/40 ring-1 ring-purple-500/20';
+    case 'legendary': return 'border-orange-500 shadow-orange-500/50 ring-1 ring-orange-500/30';
     default: return 'border-slate-500';
   }
 }
@@ -58,7 +58,7 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
   if (isExpired) return null;
 
   return (
-    <Card className={`w-full border-l-4 ${getRarityColor(derelict.rarity)}`}>
+    <Card className={`w-full border-l-4 ${getRarityColor(derelict.rarity)} animate-in fade-in slide-in-from-bottom-4 duration-500 shadow-lg hover:shadow-xl transition-all`}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-base">{config.name}</CardTitle>
