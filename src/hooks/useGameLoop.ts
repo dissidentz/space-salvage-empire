@@ -85,7 +85,12 @@ export function useGameLoop() {
       // Check for expired derelicts
       const now = Date.now();
       state.derelicts.forEach(derelict => {
-        if (now >= derelict.expiresAt) {
+        // Only expire if no mission is currently targeting this derelict
+        const isTargeted = state.missions.some(
+          m => m.targetDerelict === derelict.id && m.status === 'inProgress'
+        );
+        
+        if (!isTargeted && now >= derelict.expiresAt) {
           state.removeDerelict(derelict.id);
         }
       });

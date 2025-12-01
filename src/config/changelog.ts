@@ -47,6 +47,10 @@ export const CHANGELOG: ChangelogEntry[] = [
         description: 'Prevented launching multiple missions for the same derelict',
       },
       {
+        category: 'improvement',
+        description: 'Derelicts no longer expire if a mission is currently in progress targeting them',
+      },
+      {
         category: 'feature',
         description: 'Added Changelog view to track game updates',
       },
