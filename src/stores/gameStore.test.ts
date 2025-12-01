@@ -48,6 +48,7 @@ describe('Travel State Persistence', () => {
         totalTravelTime: 0,
         farthestOrbit: 'leo',
         travelHistory: [],
+        missionHistory: [],
       },
     });
   });

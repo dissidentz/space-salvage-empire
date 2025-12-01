@@ -32,6 +32,7 @@ describe('Mission System', () => {
         heavySalvageFrigate: 0,
         deepSpaceScanner: 0,
         colonyShip: 0,
+        aiCoreFabricator: 0,
       },
       missions: [],
       derelicts: [],
@@ -60,6 +61,7 @@ describe('Mission System', () => {
         totalTravelTime: 0,
         farthestOrbit: 'leo',
         travelHistory: [],
+        missionHistory: [],
       },
       ui: {
         activeTab: 'fleet',
