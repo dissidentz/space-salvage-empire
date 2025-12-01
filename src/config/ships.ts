@@ -48,9 +48,9 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
     description: 'Basic autonomous salvage unit that collects debris from orbit',
     category: 'production',
     tier: 1,
-    baseCost: { debris: 10 },
+    baseCost: { debris: 5 },
     costGrowth: GROWTH_RATES.COMMON,
-    baseProduction: 1, // 1 debris/sec
+    baseProduction: 1.5, // 1.5 debris/sec
     producesResource: 'debris',
     unlockRequirements: {},
     availableUpgrades: ['efficiency1', 'efficiency2', 'efficiency3', 'efficiency4', 'efficiency5', 'swarmProtocol'],
@@ -62,12 +62,12 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
     description: 'Processes raw debris into refined metal',
     category: 'production',
     tier: 1,
-    baseCost: { debris: 100 }, // Changed from metal to debris for initial progression
+    baseCost: { debris: 75 }, // Changed from metal to debris for initial progression
     costGrowth: GROWTH_RATES.UNCOMMON,
     baseProduction: 10, // consumes 10 debris/sec
     producesResource: 'metal',
     consumesResource: 'debris',
-    conversionRatio: 0.2, // 10 debris → 2 metal (base)
+    conversionRatio: 0.25, // 10 debris → 2.5 metal (base)
     unlockRequirements: {
       ships: { salvageDrone: 10 },
     },
@@ -81,7 +81,7 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
     description: 'Salvages functional circuits from wreckage',
     category: 'production',
     tier: 2,
-    baseCost: { metal: 500, electronics: 50 },
+    baseCost: { metal: 500 },
     costGrowth: GROWTH_RATES.UNCOMMON,
     baseProduction: 0.5, // 0.5 electronics/sec
     producesResource: 'electronics',
@@ -102,7 +102,7 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
     baseProduction: 20, // consumes 20 metal/sec
     producesResource: 'fuel',
     consumesResource: 'metal',
-    conversionRatio: 0.05, // 20 metal → 1 fuel (base)
+    conversionRatio: 0.075, // 20 metal → 1.5 fuel (base)
     unlockRequirements: {
       orbit: 'mars',
     },
@@ -149,9 +149,9 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
     description: 'Discovers derelicts in orbit',
     category: 'active',
     tier: 1,
-    baseCost: { metal: 500, electronics: 100 },
+    baseCost: { metal: 500 },
     costGrowth: GROWTH_RATES.UNCOMMON,
-    baseMissionDuration: 10 * 60 * 1000, // 10 minutes
+    baseMissionDuration: 5 * 60 * 1000, // 5 minutes
     baseSuccessRate: 0.15, // 15% discovery chance per mission
     unlockRequirements: {
       orbit: 'geo',
@@ -165,7 +165,7 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
     description: 'Salvages discovered derelicts',
     category: 'active',
     tier: 2,
-    baseCost: { metal: 5000, electronics: 1000, fuel: 200 },
+    baseCost: { metal: 5000, electronics: 1000 },
     costGrowth: GROWTH_RATES.RARE,
     baseMissionDuration: 20 * 60 * 1000, // 20 minutes
     baseSuccessRate: 0.9, // 90% success rate
@@ -221,6 +221,27 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
       tech: ['colonyTechnology'],
     },
     availableUpgrades: ['colonyEfficiency', 'autoSalvageBay'],
+  },
+
+  aiCoreFabricator: {
+    id: 'aiCoreFabricator',
+    name: 'AI Core Fabricator',
+    description: 'Manufactures advanced AI cores from exotic materials',
+    category: 'production',
+    tier: 4,
+    baseCost: { 
+      metal: 5000000, 
+      electronics: 1000000, 
+      exoticAlloys: 50000 
+    },
+    costGrowth: GROWTH_RATES.LEGENDARY,
+    baseProduction: 0.05, // 0.05 AI Cores/sec (very slow)
+    producesResource: 'aiCores',
+    unlockRequirements: {
+      orbit: 'kuiper',
+      tech: ['advancedAI'],
+    },
+    availableUpgrades: ['neuralNetworkOptimization'],
   },
 };
 

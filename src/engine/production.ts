@@ -4,10 +4,12 @@ import { ORBIT_CONFIGS } from '@/config/orbits';
 import { SHIP_CONFIGS } from '@/config/ships';
 import type { GameState, ResourceType, ShipType } from '@/types';
 import {
-  calculateConversion,
-  calculatePerTickProduction,
-  calculateProduction,
+    calculateConversion,
+    calculatePerTickProduction,
+    calculateProduction,
 } from '@/utils/formulas';
+import { getTechMultipliers } from './getTechMultipliers';
+import { getUpgradeMultipliers, type UpgradeMultipliers } from './getUpgradeMultipliers';
 
 /**
  * Calculate all production for the current tick
@@ -43,7 +45,8 @@ export function calculateTickProduction(
       const { consumed, produced } = calculateConversion(
         shipType as ShipType,
         count,
-        availableInput
+        availableInput,
+        multipliers
       );
 
       // Apply resource-specific orbit multiplier to production
@@ -70,6 +73,22 @@ export function calculateTickProduction(
     }
   }
 
+  // === PASSIVE DATA FRAGMENT GENERATION ===
+  // Data Fragments: passive generation based on total ships owned
+  const totalShips = Object.values(state.ships).reduce((sum, count) => sum + count, 0);
+  
+  // Only generate if player has ships (0.01 DF/sec per 10 ships)
+  if (totalShips > 0) {
+    const shipBonus = Math.floor(totalShips / 10) * 0.01;
+    
+    // Apply tech multipliers if any
+    const dataFragmentMultiplier = multipliers.tech['dataFragment_production'] || 1.0;
+    const finalDataFragmentRate = shipBonus * dataFragmentMultiplier;
+    
+    const dataFragmentPerTick = calculatePerTickProduction(finalDataFragmentRate);
+    deltas['dataFragments'] = (deltas['dataFragments'] || 0) + dataFragmentPerTick;
+  }
+
   return deltas;
 }
 
@@ -78,10 +97,11 @@ export function calculateTickProduction(
  */
 function calculateMultipliers(state: GameState): {
   orbit: Record<ResourceType, number>;
-  tech: number;
+  tech: Record<string, number>;
   prestige: number;
   formation: number;
   colony: number;
+  upgrade: UpgradeMultipliers;
 } {
   const orbitConfig = ORBIT_CONFIGS[state.currentOrbit];
 
@@ -98,18 +118,21 @@ function calculateMultipliers(state: GameState): {
     darkMatter: 1.0, // Dark matter not affected by orbit
   };
 
-  // Tech and prestige multipliers will be 1.0 for now (no bonuses yet)
-  const techMultiplier = 1.0; // TODO: Calculate from tech tree
+  // Calculate tech multipliers from purchased technologies
+  const techMultipliers = getTechMultipliers(state.techTree.purchased);
+  const upgradeMultipliers = getUpgradeMultipliers(state);
+  
   const prestigeMultiplier = 1.0; // TODO: Calculate from prestige perks
   const formationMultiplier = 1.0; // TODO: Calculate from active formation
   const colonyMultiplier = hasColonyInOrbit(state) ? 1.25 : 1.0;
 
   return {
     orbit: orbitMultipliers,
-    tech: techMultiplier,
+    tech: techMultipliers,
     prestige: prestigeMultiplier,
     formation: formationMultiplier,
     colony: colonyMultiplier,
+    upgrade: upgradeMultipliers,
   };
 }
 
@@ -138,7 +161,39 @@ export function calculateProductionRates(
     const config = SHIP_CONFIGS[shipType as ShipType];
     if (!config || config.category !== 'production') continue;
 
-    if (config.producesResource) {
+    // Handle converters
+    if (config.consumesResource && config.conversionRatio) {
+      const consumptionPerSecond = config.baseProduction! * count;
+      
+      // Calculate production based on consumption * ratio * efficiency
+      // Assuming full input availability for rate display
+      let efficiencyMultiplier = 1.0;
+      if (multipliers.tech && typeof multipliers.tech !== 'number') {
+           efficiencyMultiplier *= (multipliers.tech[`${shipType}_efficiency`] || 1.0);
+      }
+      // Also apply orbit multiplier to output
+      const outputResource = config.producesResource!;
+      const orbitMultiplier = multipliers.orbit[outputResource] || 1.0;
+
+      // Apply upgrade multipliers
+      let upgradeEfficiency = 1.0;
+      let conversionRatio = config.conversionRatio;
+      
+      if (multipliers.upgrade) {
+         upgradeEfficiency = multipliers.upgrade.production[`${shipType}_production`] || 1.0;
+         const ratioKey = `${shipType}_ratio`;
+         if (multipliers.upgrade.conversion[ratioKey]) {
+            conversionRatio = multipliers.upgrade.conversion[ratioKey];
+         }
+      }
+
+      const productionPerSecond = consumptionPerSecond * conversionRatio * efficiencyMultiplier * upgradeEfficiency * orbitMultiplier;
+
+      rates[outputResource] = (rates[outputResource] || 0) + productionPerSecond;
+      rates[config.consumesResource] = (rates[config.consumesResource] || 0) - consumptionPerSecond;
+    }
+    // Handle simple production ships
+    else if (config.producesResource) {
       const productionPerSecond = calculateProduction(
         shipType as ShipType,
         count,
@@ -148,13 +203,6 @@ export function calculateProductionRates(
 
       const resource = config.producesResource;
       rates[resource] = (rates[resource] || 0) + productionPerSecond;
-    }
-
-    // For converters, show consumption as negative
-    if (config.consumesResource) {
-      const consumptionPerSecond = config.baseProduction! * count;
-      const resource = config.consumesResource;
-      rates[resource] = (rates[resource] || 0) - consumptionPerSecond;
     }
   }
 

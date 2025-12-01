@@ -46,6 +46,7 @@ export interface Ships {
   heavySalvageFrigate: number;
   deepSpaceScanner: number;
   colonyShip: number;
+  aiCoreFabricator: number;
 }
 
 export type ShipType = keyof Ships;
@@ -56,8 +57,11 @@ export type ShipEnabled = Record<ShipType, boolean>;
 // Upgrade identifiers
 export type UpgradeId = string;
 
-// Ship upgrades map: optional per-ship upgrade levels keyed by `UpgradeId`
-export type ShipUpgrades = Partial<Record<ShipType, Record<UpgradeId, number>>>;
+// Ship upgrades map: upgrade ID to upgrade state
+export type ShipUpgrades = Record<string, {
+  currentLevel: number;
+  unlocked: boolean;
+}>;
 
 // Enums / string unions for other schema items
 export type DerelictRarity =
@@ -191,10 +195,21 @@ export interface ArkComponent {
   assemblyDuration: number;
 }
 
+export interface PrestigePerk {
+  id: string;
+  name: string;
+  description: string;
+  tier: number;
+  cost: number; // Dark Matter cost
+  maxLevel: number;
+  effects: TechEffect[];
+  prerequisites: string[];
+}
+
 export interface PrestigeData {
   darkMatter: number;
   totalDarkMatter: number;
-  purchasedPerks: string[];
+  purchasedPerks: Record<string, number>; // id -> level
   arkComponents: Partial<Record<ArkComponentType, ArkComponent>>;
   arkUnlocked: boolean;
   arkComplete: boolean;
@@ -320,7 +335,7 @@ export interface Notification {
 
 export interface UIState {
   activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
-  activeView: 'dashboard' | 'galaxyMap' | 'settings';
+  activeView: 'dashboard' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog';
   openModal: string | null;
   modalData?: unknown;
   notifications: Notification[];

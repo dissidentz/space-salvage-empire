@@ -1,5 +1,6 @@
 // Game loop hook - handles production calculations and resource updates
 
+import { checkPassiveSpawning } from '@/engine/derelictSpawning';
 import { calculateTickProduction } from '@/engine/production';
 import { useGameStore } from '@/stores/gameStore';
 import type { ResourceType } from '@/types';
@@ -91,6 +92,9 @@ export function useGameLoop() {
 
       // Check milestones after production
       state.checkAndClaimMilestones();
+
+      // Check passive spawning
+      checkPassiveSpawning();
     }, 100); // 10 ticks per second
 
     // Update production rates every second for display

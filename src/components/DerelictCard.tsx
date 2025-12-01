@@ -1,113 +1,281 @@
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { DERELICT_CONFIGS } from '@/config/derelicts';
-import { SHIP_CONFIGS } from '@/config/ships';
 import { useGameStore } from '@/stores/gameStore';
-import type { Derelict, DerelictRarity } from '@/types';
-import { formatTime } from '@/utils/format';
-import { AlertTriangle, Clock, Fuel } from 'lucide-react';
+import type { Derelict, DerelictAction } from '@/types';
+import {
+    formatMissionDuration,
+    formatNumber,
+    formatRewards,
+    getRarityBgColor,
+    getRarityColor,
+    getShipDisplayName,
+} from '@/utils/missionHelpers';
+import {
+    AlertTriangle,
+    Clock,
+    Fuel,
+    Package,
+    Rocket,
+    Sparkles,
+    Target,
+    Trash2,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface DerelictCardProps {
   derelict: Derelict;
 }
 
-function getRarityColor(rarity: DerelictRarity): string {
-  switch (rarity) {
-    case 'common': return 'border-slate-500 shadow-slate-500/10';
-    case 'uncommon': return 'border-green-500 shadow-green-500/20';
-    case 'rare': return 'border-blue-500 shadow-blue-500/30';
-    case 'epic': return 'border-purple-500 shadow-purple-500/40 ring-1 ring-purple-500/20';
-    case 'legendary': return 'border-orange-500 shadow-orange-500/50 ring-1 ring-orange-500/30';
-    default: return 'border-slate-500';
-  }
-}
-
-function getRarityBadgeVariant(rarity: DerelictRarity): "default" | "secondary" | "destructive" | "outline" {
-  switch (rarity) {
-    case 'common': return 'secondary';
-    case 'uncommon': return 'outline'; // Green-ish usually
-    case 'rare': return 'default'; // Blue-ish
-    case 'epic': return 'default'; // Purple-ish
-    case 'legendary': return 'destructive'; // Orange/Red
-    default: return 'secondary';
-  }
-}
-
 export function DerelictCard({ derelict }: DerelictCardProps) {
   const startSalvageMission = useGameStore(state => state.startSalvageMission);
+  const removeDerelict = useGameStore(state => state.removeDerelict);
   const ships = useGameStore(state => state.ships);
+  const missions = useGameStore(state => state.missions);
   const resources = useGameStore(state => state.resources);
-  
-  const config = DERELICT_CONFIGS[derelict.type];
-  const requiredShipConfig = SHIP_CONFIGS[config.requiredShip];
-  
-  const hasShip = ships[config.requiredShip] > 0 || ships['heavySalvageFrigate'] > 0;
-  const hasFuel = resources.fuel >= config.fuelCost;
-  const canSalvage = hasShip && hasFuel;
-  
-  const timeRemaining = derelict.expiresAt - Date.now();
-  const isExpired = timeRemaining <= 0;
 
-  if (isExpired) return null;
+  const [timeUntilExpiry, setTimeUntilExpiry] = useState(0);
+
+  const config = DERELICT_CONFIGS[derelict.type];
+
+  // Update expiry countdown
+  // Update expiry countdown
+  useEffect(() => {
+    const updateExpiry = () => {
+      setTimeUntilExpiry(Math.max(0, derelict.expiresAt - Date.now()));
+    };
+
+    updateExpiry();
+    const interval = setInterval(updateExpiry, 1000);
+    return () => clearInterval(interval);
+  }, [derelict.expiresAt]);
+
+  // Check if ship is available
+  const busyShips = missions.filter(m => m.shipType === derelict.requiredShip).length;
+  const availableShips = ships[derelict.requiredShip] - busyShips;
+  
+  // Calculate actual fuel cost - LEO and GEO missions are free
+  const currentOrbit = useGameStore(state => state.currentOrbit);
+  const actualFuelCost = (derelict.orbit !== currentOrbit && derelict.orbit !== 'leo' && derelict.orbit !== 'geo') ? derelict.fuelCost : 0;
+  
+  const canAfford = resources.fuel >= actualFuelCost;
+  // Check if mission already in progress for this derelict
+  const isMissionActive = missions.some(m => m.targetDerelict === derelict.id);
+  
+  const canLaunch = availableShips > 0 && canAfford && !isMissionActive;
+
+  const handleLaunchSalvage = (action: DerelictAction) => {
+    const success = startSalvageMission(derelict.id, derelict.requiredShip, action);
+    if (!success) {
+      if (availableShips <= 0) {
+        alert(`No ${getShipDisplayName(derelict.requiredShip)} available. All ships are on missions.`);
+      } else if (!canAfford) {
+        alert(`Insufficient fuel. Need ${actualFuelCost} fuel.`);
+      }
+    }
+  };
 
   return (
-    <Card className={`w-full border-l-4 ${getRarityColor(derelict.rarity)} animate-in fade-in slide-in-from-bottom-4 duration-500 shadow-lg hover:shadow-xl transition-all`}>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-base">{config.name}</CardTitle>
-          <Badge variant={getRarityBadgeVariant(derelict.rarity)} className="capitalize">
-            {derelict.rarity}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="pb-2 text-sm">
-        <p className="text-muted-foreground mb-3">{config.description}</p>
-        
-        <div className="grid grid-cols-2 gap-2 mb-2">
-          <div className="flex items-center gap-1 text-xs">
-            <Fuel className="h-3 w-3" />
-            <span className={hasFuel ? '' : 'text-destructive'}>
-              {config.fuelCost} Fuel
+    <Card className="bg-slate-800/50 border-slate-700/50 hover:border-slate-600/50 transition-colors">
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <Target className={`w-4 h-4 ${getRarityColor(derelict.rarity)}`} />
+                <span className="font-medium">{config.name}</span>
+                <Badge className={getRarityBgColor(derelict.rarity)}>
+                  <span className={getRarityColor(derelict.rarity)}>{derelict.rarity}</span>
+                </Badge>
+                {derelict.isArkComponent && (
+                  <Badge className="bg-orange-500/20 border-orange-500/50">
+                    <Sparkles className="w-3 h-3 text-orange-400 mr-1" />
+                    <span className="text-orange-400">Ark Component</span>
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">{config.description}</p>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Clock className="w-3 h-3 text-blue-400" />
+              <span>{formatMissionDuration(derelict.baseMissionTime)}</span>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Fuel className="w-3 h-3 text-orange-400" />
+              <span>{actualFuelCost} fuel</span>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Rocket className="w-3 h-3 text-purple-400" />
+              <span>{getShipDisplayName(derelict.requiredShip)}</span>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Package className="w-3 h-3 text-green-400" />
+              <span>{availableShips} available</span>
+            </div>
+          </div>
+
+          {/* Hazard Warning */}
+          {derelict.isHazardous && (
+            <div className="flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-xs text-red-400">
+              <AlertTriangle className="w-4 h-4" />
+              <span>Hazardous - {(derelict.riskLevel * 100).toFixed(0)}% risk</span>
+            </div>
+          )}
+
+          {/* Rewards Preview */}
+          <div className="p-2 bg-slate-700/30 rounded text-xs">
+            <div className="text-muted-foreground mb-1">Potential Rewards:</div>
+            <div className="text-green-400">{formatRewards(derelict.rewards)}</div>
+          </div>
+
+          {/* Expiry Timer */}
+          <div className="flex items-center gap-2 text-xs">
+            <Clock className="w-3 h-3 text-yellow-400" />
+            <span className="text-yellow-400">
+              Expires in {formatMissionDuration(timeUntilExpiry)}
             </span>
           </div>
-          <div className="flex items-center gap-1 text-xs">
-            <Clock className="h-3 w-3" />
-            <span>{formatTime(config.baseMissionTime)}</span>
-          </div>
-        </div>
 
-        {config.isHazardous && (
-          <div className="flex items-center gap-1 text-xs text-orange-500 mt-1">
-            <AlertTriangle className="h-3 w-3" />
-            <span>Hazardous - High Risk</span>
+          {/* Active Mission Indicator */}
+          {isMissionActive && (
+            <div className="flex items-center gap-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-400">
+              <Rocket className="w-4 h-4 animate-pulse" />
+              <span>Mission in Progress...</span>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50"
+                    onClick={() => handleLaunchSalvage('salvage')}
+                    disabled={!canLaunch}
+                  >
+                    <Target className="w-4 h-4 mr-1" />
+                    Salvage
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Standard salvage operation - collect all resources</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => handleLaunchSalvage('hack')}
+                    disabled={!canLaunch}
+                  >
+                    Hack
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Hack systems - higher data fragment yield</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => handleLaunchSalvage('dismantle')}
+                    disabled={!canLaunch}
+                  >
+                    Dismantle
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Dismantle for parts - higher metal/electronics yield</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+
+
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="px-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Abandon Derelict?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to abandon this derelict? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => removeDerelict(derelict.id)}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Abandon
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
-        )}
-        
-        <div className="text-xs text-muted-foreground mt-2">
-          Expires in: {formatTime(timeRemaining)}
+
+          {/* Error Messages */}
+          {!canLaunch && (
+            <div className="text-xs text-red-400">
+              {availableShips <= 0 && (
+                <div>No {getShipDisplayName(derelict.requiredShip)} available</div>
+              )}
+              {!canAfford && (
+                <div>
+                  Insufficient fuel (need {formatNumber(actualFuelCost)}, have{' '}
+                  {formatNumber(resources.fuel)})
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
-      <CardFooter className="pt-0">
-        <Button
-          className="w-full"
-          size="sm"
-          onClick={() => startSalvageMission(derelict.id, config.requiredShip, 'salvage')}
-          disabled={!canSalvage}
-        >
-          {!hasShip 
-            ? `Need ${requiredShipConfig.name}` 
-            : !hasFuel 
-              ? 'Not Enough Fuel' 
-              : 'Start Salvage'}
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

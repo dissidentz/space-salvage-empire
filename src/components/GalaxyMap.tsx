@@ -1,17 +1,20 @@
+import { MissionLauncher } from '@/components/MissionLauncher';
+import { MissionQueue } from '@/components/MissionQueue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { OrbitType } from '@/types';
 import { Clock, Fuel, MapPin, Star, Target, Zap } from 'lucide-react';
 import { useMemo } from 'react';
+import { DerelictListView } from './DerelictListView';
 
 interface OrbitNode {
   orbit: OrbitType;
@@ -162,20 +165,25 @@ export function GalaxyMap() {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto bg-linear-to-br from-slate-950 via-blue-950/20 to-purple-950/20 border-slate-700/50 shadow-2xl">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3 text-2xl">
-          <div className="relative">
-            <Star className="w-8 h-8 text-yellow-400" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse" />
-          </div>
-          <span className="bg-linear-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-            Galaxy Map
-          </span>
-        </CardTitle>
-      </CardHeader>
+    <div className="space-y-4">
+      {/* Mission Queue - Shows active missions */}
+      <MissionQueue />
 
-      <CardContent className="space-y-6">
+      {/* Main Galaxy Map Card */}
+      <Card className="w-full max-w-4xl mx-auto bg-linear-to-br from-slate-950 via-blue-950/20 to-purple-950/20 border-slate-700/50 shadow-2xl">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3 text-2xl">
+            <div className="relative">
+              <Star className="w-8 h-8 text-yellow-400" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse" />
+            </div>
+            <span className="bg-linear-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              Galaxy Map
+            </span>
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
         {/* Map Container */}
         <div className="relative w-full h-96 bg-linear-to-br from-slate-900/50 to-slate-800/30 rounded-xl border border-slate-600/30 overflow-hidden">
           {/* Background stars */}
@@ -426,5 +434,12 @@ export function GalaxyMap() {
         </div>
       </CardContent>
     </Card>
+
+      {/* Mission Control Panels */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <MissionLauncher />
+        <DerelictListView />
+      </div>
+    </div>
   );
 }

@@ -5,64 +5,26 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
+  SidebarRail
 } from '@/components/ui/sidebar';
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
-import { useSidebar } from '@/hooks/useSidebar';
+import { RESOURCE_DEFINITIONS } from '@/config/resources';
 import { useGameStore } from '@/stores/gameStore';
-import { MapPin, Rocket } from 'lucide-react';
-
-const data = {
-  navMain: [
-    {
-      title: 'Operations',
-      url: '#',
-      items: [
-        { title: 'Dashboard', url: '#', action: 'navigateDashboard' },
-        { title: 'Galaxy Map', url: '#', action: 'navigateGalaxyMap' },
-        { title: 'Resources', url: '#', action: 'toggleResources' },
-      ],
-    },
-    {
-      title: 'System',
-      url: '#',
-      items: [{ title: 'Settings', url: '#', action: 'navigateSettings' }],
-    },
-  ],
-};
+import { formatNumber } from '@/utils/format';
+import { Database, MapPin, Rocket } from 'lucide-react';
 
 export function SidebarLeft({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const { toggleSidebar: toggleRightSidebar, open: rightOpen } =
-    useSidebar('right');
   const currentOrbit = useGameStore(state => state.currentOrbit);
   const canTravelToOrbit = useGameStore(state => state.canTravelToOrbit);
   const travelToOrbit = useGameStore(state => state.travelToOrbit);
-  const setActiveView = useGameStore(state => state.setActiveView);
-  const activeView = useGameStore(state => state.ui.activeView);
   const travelState = useGameStore(state => state.travelState);
   const getTravelProgress = useGameStore(state => state.getTravelProgress);
+  const resources = useGameStore(state => state.resources);
+  const productionRates = useGameStore(state => state.computedRates);
 
-  const handleAction = (action: string) => {
-    switch (action) {
-      case 'toggleResources':
-        toggleRightSidebar();
-        break;
-      case 'navigateDashboard':
-        setActiveView('dashboard');
-        break;
-      case 'navigateGalaxyMap':
-        setActiveView('galaxyMap');
-        break;
-      case 'navigateSettings':
-        setActiveView('settings');
-        break;
-    }
-  };
+
 
   const handleTravelToOrbit = (orbit: string) => {
     if (canTravelToOrbit(orbit as keyof typeof ORBIT_CONFIGS)) {
@@ -235,52 +197,52 @@ export function SidebarLeft({
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Navigation groups */}
-        {data.navMain.map(item => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map(sub => (
-                  <SidebarMenuItem key={sub.title}>
-                    <SidebarMenuButton
-                      asChild={sub.action ? false : true}
-                      isActive={
-                        sub.action === 'toggleResources'
-                          ? rightOpen
-                          : sub.action === 'navigateDashboard'
-                            ? activeView === 'dashboard'
-                            : sub.action === 'navigateGalaxyMap'
-                              ? activeView === 'galaxyMap'
-                              : sub.action === 'navigateSettings'
-                                ? activeView === 'settings'
-                                : false
-                      }
-                      onClick={
-                        sub.action ? () => handleAction(sub.action!) : undefined
-                      }
-                      style={
-                        sub.action === 'toggleResources' && rightOpen
-                          ? {
-                              backgroundColor: '#16a34a',
-                              color: 'white',
-                              fontWeight: 'bold',
-                            }
-                          : undefined
-                      }
-                    >
-                      {sub.action ? (
-                        sub.title
-                      ) : (
-                        <a href={sub.url}>{sub.title}</a>
+        {/* Resources */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="flex items-center gap-2">
+            <Database className="w-4 h-4" />
+            Resources
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <div className="space-y-1 px-2">
+              {Object.entries(RESOURCE_DEFINITIONS).map(([id, def]) => {
+                const value = resources[id as keyof typeof resources];
+                const rate = productionRates[id as keyof typeof resources] || 0;
+                
+                // Only show discovered resources (value > 0 or rate > 0)
+                // Exception: always show debris, metal, electronics, fuel
+                const isBasic = ['debris', 'metal', 'electronics', 'fuel'].includes(id);
+                if (!isBasic && value <= 0 && rate === 0) return null;
+
+                return (
+                  <div
+                    key={id}
+                    className="flex items-center justify-between py-1 text-sm border-b border-border/50 last:border-0"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">{def.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-mono font-medium">
+                        {formatNumber(value)}
+                      </div>
+                      {rate !== 0 && (
+                        <div
+                          className={`text-xs ${
+                            rate > 0 ? 'text-green-400' : 'text-red-400'
+                          }`}
+                        >
+                          {rate > 0 ? '+' : ''}
+                          {formatNumber(rate)}/s
+                        </div>
                       )}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

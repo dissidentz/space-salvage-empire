@@ -17,9 +17,33 @@ import type { ResourceType, Resources, ShipType } from '@/types';
  * const cost = calculateShipCost('salvageDrone', 10);
  * // Returns { debris: 40 }
  */
+export interface Multipliers {
+  orbit?: number | Record<ResourceType, number>;
+  tech?: number | Record<string, number>;
+  prestige?: number;
+  formation?: number;
+  colony?: number;
+  upgrade?: {
+    production: Record<string, number>;
+    flatBonus: Record<string, number>;
+    conversion: Record<string, number>;
+    unlocks: Record<string, number>;
+  };
+}
+
+/**
+ * Calculate the cost of purchasing a ship based on current count
+ * Uses exponential scaling: cost(n) = baseCost * (growthRate^n)
+ *
+ * @param shipType - Type of ship to calculate cost for
+ * @param currentCount - Number of ships already owned
+ * @param multipliers - Global multipliers object
+ * @returns Cost as a Resources object
+ */
 export function calculateShipCost(
   shipType: ShipType,
-  currentCount: number
+  currentCount: number,
+  multipliers: Multipliers = {}
 ): Partial<Resources> {
   const config = SHIP_CONFIGS[shipType];
   if (!config) {
@@ -29,12 +53,21 @@ export function calculateShipCost(
 
   const { baseCost, costGrowth } = config;
   const multiplier = Math.pow(costGrowth, currentCount);
+  
+  // Apply tech cost reduction
+  let costMultiplier = 1.0;
+  if (multipliers.tech && typeof multipliers.tech !== 'number') {
+    // Global ship cost reduction
+    costMultiplier *= (multipliers.tech['shipCost'] || 1.0);
+    // Specific ship cost reduction
+    costMultiplier *= (multipliers.tech[`${shipType}_cost`] || 1.0);
+  }
 
   // Apply multiplier to each resource in base cost
   const cost: Partial<Resources> = {};
   for (const [resource, amount] of Object.entries(baseCost)) {
     cost[resource as ResourceType] = Math.floor(
-      (amount as number) * multiplier
+      (amount as number) * multiplier * costMultiplier
     );
   }
 
@@ -49,15 +82,17 @@ export function calculateShipCost(
  * @param shipType - Type of ship to calculate cost for
  * @param currentCount - Number of ships already owned
  * @param amount - Number of ships to purchase
+ * @param multipliers - Global multipliers object
  * @returns Total cost as a Resources object
  */
 export function calculateBulkShipCost(
   shipType: ShipType,
   currentCount: number,
-  amount: number
+  amount: number,
+  multipliers: Multipliers = {}
 ): Partial<Resources> {
   if (amount <= 0) return {};
-  if (amount === 1) return calculateShipCost(shipType, currentCount);
+  if (amount === 1) return calculateShipCost(shipType, currentCount, multipliers);
 
   const config = SHIP_CONFIGS[shipType];
   if (!config) return {};
@@ -67,7 +102,15 @@ export function calculateBulkShipCost(
   // Geometric series formula
   const firstCost = Math.pow(costGrowth, currentCount);
   const seriesSum = (Math.pow(costGrowth, amount) - 1) / (costGrowth - 1);
-  const totalMultiplier = firstCost * seriesSum;
+  
+  // Apply tech cost reduction
+  let costMultiplier = 1.0;
+  if (multipliers.tech && typeof multipliers.tech !== 'number') {
+    costMultiplier *= (multipliers.tech['shipCost'] || 1.0);
+    costMultiplier *= (multipliers.tech[`${shipType}_cost`] || 1.0);
+  }
+
+  const totalMultiplier = firstCost * seriesSum * costMultiplier;
 
   const cost: Partial<Resources> = {};
   for (const [resource, amount] of Object.entries(baseCost)) {
@@ -91,13 +134,7 @@ export function calculateBulkShipCost(
 export function calculateProduction(
   shipType: ShipType,
   shipCount: number,
-  multipliers: {
-    orbit?: number | Record<ResourceType, number>;
-    tech?: number;
-    prestige?: number;
-    formation?: number;
-    colony?: number;
-  } = {},
+  multipliers: Multipliers = {},
   resourceType?: ResourceType
 ): number {
   if (shipCount === 0) return 0;
@@ -115,15 +152,41 @@ export function calculateProduction(
     }
   }
 
+  // Calculate tech multiplier
+  let techMultiplier = 1.0;
+  if (multipliers.tech) {
+    if (typeof multipliers.tech === 'number') {
+      techMultiplier = multipliers.tech;
+    } else {
+      // Apply global production bonus
+      techMultiplier *= (multipliers.tech['all_production'] || 1.0);
+      
+      // Apply ship-specific production bonus (e.g. 'salvageDrone_production')
+      const shipSpecificKey = `${shipType}_production`;
+      if (multipliers.tech[shipSpecificKey]) {
+        techMultiplier *= multipliers.tech[shipSpecificKey];
+      }
+    }
+  }
+
   // Calculate global multiplier
   const globalMultiplier =
     orbitMultiplier *
-    (multipliers.tech ?? 1) *
+    techMultiplier *
     (multipliers.prestige ?? 1) *
     (multipliers.formation ?? 1) *
     (multipliers.colony ?? 1);
 
-  return config.baseProduction * shipCount * globalMultiplier;
+  // Calculate upgrade multiplier and flat bonus
+  let upgradeMultiplier = 1.0;
+  let flatBonus = 0;
+  if (multipliers.upgrade) {
+    const shipSpecificKey = `${shipType}_production`;
+    upgradeMultiplier *= (multipliers.upgrade.production[shipSpecificKey] || 1.0);
+    flatBonus += (multipliers.upgrade.flatBonus[shipSpecificKey] || 0);
+  }
+
+  return (config.baseProduction * globalMultiplier * upgradeMultiplier + flatBonus) * shipCount;
 }
 
 /**
@@ -144,12 +207,14 @@ export function calculatePerTickProduction(
  * @param shipType - Type of converter ship
  * @param shipCount - Number of ships owned
  * @param availableInput - Amount of input resource available
+ * @param multipliers - Global multipliers object
  * @returns Object with input consumed and output produced
  */
 export function calculateConversion(
   shipType: ShipType,
   shipCount: number,
-  availableInput: number
+  availableInput: number,
+  multipliers: Multipliers = {}
 ): { consumed: number; produced: number } {
   if (shipCount === 0) return { consumed: 0, produced: 0 };
 
@@ -164,7 +229,28 @@ export function calculateConversion(
 
   // Cap at available input
   const consumed = Math.min(availableInput, maxConsumptionPerTick);
-  const produced = consumed * config.conversionRatio;
+  
+  // Apply efficiency multiplier
+  let efficiencyMultiplier = 1.0;
+  if (multipliers.tech && typeof multipliers.tech !== 'number') {
+    efficiencyMultiplier *= (multipliers.tech[`${shipType}_efficiency`] || 1.0);
+  }
+
+  // Apply upgrade conversion ratio override if present
+  let conversionRatio = config.conversionRatio;
+  let upgradeEfficiency = 1.0;
+  
+  if (multipliers.upgrade) {
+    const ratioKey = `${shipType}_ratio`;
+    if (multipliers.upgrade.conversion[ratioKey]) {
+      conversionRatio = multipliers.upgrade.conversion[ratioKey];
+    }
+    
+    const efficiencyKey = `${shipType}_production`;
+    upgradeEfficiency = (multipliers.upgrade.production[efficiencyKey] || 1.0);
+  }
+
+  const produced = consumed * conversionRatio * efficiencyMultiplier * upgradeEfficiency;
 
   return { consumed, produced };
 }
@@ -175,12 +261,14 @@ export function calculateConversion(
  * @param shipType - Type of ship
  * @param currentCount - Current ship count
  * @param availableResources - Resources available
+ * @param multipliers - Global multipliers object
  * @returns Maximum number of ships that can be purchased
  */
 export function calculateMaxAffordable(
   shipType: ShipType,
   currentCount: number,
-  availableResources: Resources
+  availableResources: Resources,
+  multipliers: Multipliers = {}
 ): number {
   let count = 0;
 
@@ -190,7 +278,7 @@ export function calculateMaxAffordable(
 
   while (low <= high) {
     const mid = Math.floor((low + high) / 2);
-    const cost = calculateBulkShipCost(shipType, currentCount, mid);
+    const cost = calculateBulkShipCost(shipType, currentCount, mid, multipliers);
 
     if (canAffordCost(cost, availableResources)) {
       count = mid;

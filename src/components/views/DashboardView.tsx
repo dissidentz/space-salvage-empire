@@ -44,10 +44,8 @@ export function DashboardView() {
 
     allShips.forEach(shipType => {
       const config = SHIP_CONFIGS[shipType];
-      // Only show production ships for now (active ships will be in missions tab)
-      if (config.category === 'production') {
-        grouped[config.tier].push(shipType);
-      }
+      // Show all ships (production and active)
+      grouped[config.tier].push(shipType);
     });
 
     return grouped;

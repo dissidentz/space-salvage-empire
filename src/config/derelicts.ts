@@ -43,7 +43,8 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
     rewards: [
       { resource: 'metal', min: 100, max: 300, dropChance: 1.0 },
       { resource: 'electronics', min: 10, max: 30, dropChance: 0.3 },
-      { resource: 'dataFragments', min: 1, max: 1, dropChance: 0.05 },
+      { resource: 'fuel', min: 50, max: 100, dropChance: 1.0 },
+      { resource: 'dataFragments', min: 1, max: 3, dropChance: 0.2 },
     ],
   },
 
@@ -61,7 +62,8 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
     rewards: [
       { resource: 'metal', min: 500, max: 1500, dropChance: 1.0 },
       { resource: 'electronics', min: 50, max: 150, dropChance: 0.2 },
-      { resource: 'fuel', min: 10, max: 50, dropChance: 0.1 },
+      { resource: 'fuel', min: 100, max: 200, dropChance: 1.0 },
+      { resource: 'dataFragments', min: 1, max: 5, dropChance: 0.3 },
     ],
   },
 
@@ -78,7 +80,8 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
     riskLevel: 0.1,
     rewards: [
       { resource: 'electronics', min: 100, max: 400, dropChance: 1.0 },
-      { resource: 'dataFragments', min: 1, max: 3, dropChance: 0.4 },
+      { resource: 'fuel', min: 75, max: 150, dropChance: 1.0 },
+      { resource: 'dataFragments', min: 2, max: 5, dropChance: 0.6 },
       { resource: 'metal', min: 200, max: 500, dropChance: 0.5 },
     ],
   },
@@ -98,6 +101,7 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
     riskLevel: 0.2,
     rewards: [
       { resource: 'metal', min: 2000, max: 8000, dropChance: 1.0 },
+      { resource: 'fuel', min: 50, max: 150, dropChance: 0.7 },
       { resource: 'rareMaterials', min: 5, max: 20, dropChance: 0.6 },
       { resource: 'electronics', min: 100, max: 500, dropChance: 0.4 },
     ],
@@ -135,7 +139,9 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
     rewards: [
       { resource: 'metal', min: 5000, max: 15000, dropChance: 1.0 },
       { resource: 'electronics', min: 1000, max: 5000, dropChance: 0.8 },
+      { resource: 'fuel', min: 200, max: 400, dropChance: 1.0 },
       { resource: 'rareMaterials', min: 20, max: 100, dropChance: 0.4 },
+      { resource: 'dataFragments', min: 5, max: 15, dropChance: 0.5 },
       { resource: 'aiCores', min: 1, max: 1, dropChance: 0.1 },
     ],
   },
@@ -157,7 +163,7 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
       { resource: 'metal', min: 20000, max: 50000, dropChance: 1.0 },
       { resource: 'electronics', min: 5000, max: 15000, dropChance: 1.0 },
       { resource: 'rareMaterials', min: 100, max: 500, dropChance: 0.8 },
-      { resource: 'aiCores', min: 1, max: 2, dropChance: 0.3 },
+      { resource: 'aiCores', min: 1, max: 3, dropChance: 0.3 },
     ],
   },
 
@@ -176,7 +182,7 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
       { resource: 'metal', min: 100000, max: 300000, dropChance: 1.0 },
       { resource: 'rareMaterials', min: 500, max: 2000, dropChance: 1.0 },
       { resource: 'exoticAlloys', min: 10, max: 50, dropChance: 0.5 },
-      { resource: 'aiCores', min: 1, max: 3, dropChance: 0.6 },
+      { resource: 'aiCores', min: 2, max: 5, dropChance: 0.5 },
     ],
   },
 
@@ -194,7 +200,7 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
     rewards: [
       { resource: 'dataFragments', min: 100, max: 500, dropChance: 1.0 },
       { resource: 'exoticAlloys', min: 50, max: 200, dropChance: 0.8 },
-      { resource: 'aiCores', min: 3, max: 10, dropChance: 0.7 },
+      { resource: 'aiCores', min: 5, max: 15, dropChance: 0.8 },
     ],
   },
 
@@ -216,7 +222,7 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
       { resource: 'electronics', min: 100000, max: 500000, dropChance: 1.0 },
       { resource: 'rareMaterials', min: 5000, max: 20000, dropChance: 1.0 },
       { resource: 'exoticAlloys', min: 100, max: 500, dropChance: 0.8 },
-      { resource: 'aiCores', min: 10, max: 50, dropChance: 0.8 },
+      { resource: 'aiCores', min: 10, max: 30, dropChance: 0.9 },
     ],
   },
 
@@ -234,7 +240,7 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
     rewards: [
       { resource: 'dataFragments', min: 1000, max: 5000, dropChance: 1.0 },
       { resource: 'electronics', min: 200000, max: 1000000, dropChance: 1.0 },
-      { resource: 'aiCores', min: 20, max: 100, dropChance: 0.9 },
+      { resource: 'aiCores', min: 30, max: 80, dropChance: 1.0 },
       { resource: 'exoticAlloys', min: 200, max: 1000, dropChance: 0.7 },
     ],
   },

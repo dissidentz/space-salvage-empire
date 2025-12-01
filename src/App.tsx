@@ -1,13 +1,7 @@
 import { AdminPanel } from '@/components/AdminPanel';
 import { GalaxyMap } from '@/components/GalaxyMap';
 import { SidebarLeft } from '@/components/sidebar-left';
-import { SidebarRight } from '@/components/sidebar-right';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbList,
-    BreadcrumbPage,
-} from '@/components/ui/breadcrumb';
+import { TopNav } from '@/components/TopNav';
 import { Separator } from '@/components/ui/separator';
 import {
     SidebarInset,
@@ -18,12 +12,18 @@ import { Toaster } from '@/components/ui/sonner';
 import type { ErrorInfo } from 'react';
 import { Component } from 'react';
 import { NotificationManager } from './components/NotificationManager';
+import { ChangelogView } from './components/views/ChangelogView';
 import { DashboardView } from './components/views/DashboardView';
+import { PrestigeView } from './components/views/PrestigeView';
 import { SettingsView } from './components/views/SettingsView';
+import { TechTreeView } from './components/views/TechTreeView';
 import { useGameLoop } from './hooks/useGameLoop';
 import { useGameStore } from './stores/gameStore';
 
 function App() {
+  // Expose store for debugging
+  (window as any).useGameStore = useGameStore;
+
   // Start the game loop
   useGameLoop();
 
@@ -37,6 +37,12 @@ function App() {
         return <GalaxyMap />;
       case 'settings':
         return <SettingsView />;
+      case 'techTree':
+        return <TechTreeView />;
+      case 'prestige':
+        return <PrestigeView />;
+      case 'changelog':
+        return <ChangelogView />;
       case 'dashboard':
       default:
         return <DashboardView />;
@@ -46,25 +52,14 @@ function App() {
   return (
     <SidebarProvider>
       <SidebarLeft />
-      <SidebarRight />
       <SidebarInset className="relative pb-16">
-        <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2">
-          <div className="flex flex-1 items-center gap-2 px-3">
-            <SidebarTrigger />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="line-clamp-1">
-                    Space Salvage Empire
-                  </BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
+        <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2 border-b px-3">
+          <SidebarTrigger />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <TopNav />
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">{renderView()}</div>
       </SidebarInset>

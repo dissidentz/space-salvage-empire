@@ -1,16 +1,39 @@
 // FleetPanel component - displays all available ships for purchase
 
-import { SHIP_CONFIGS } from '@/config/ships';
-import type { ShipType } from '@/types';
+import { getAvailableShips, SHIP_CONFIGS } from '@/config/ships';
+import { useGameStore } from '@/stores/gameStore';
 import { memo, useState } from 'react';
 import { ShipCard } from './ShipCard';
 
 export const FleetPanel = memo(() => {
   const [filter, setFilter] = useState<'all' | 'production' | 'active'>('all');
+  
+  // Get current game state for ship availability check
+  const currentOrbit = useGameStore(state => state.currentOrbit);
+  const ships = useGameStore(state => state.ships);
+  const resources = useGameStore(state => state.resources);
+  const techTree = useGameStore(state => state.techTree);
+  const prestige = useGameStore(state => state.prestige);
+  const milestones = useGameStore(state => state.milestones);
 
-  // For now, just show salvageDrone and refineryBarge (basic ships)
-  // TODO: Use getAvailableShips() when prestige/milestones types are defined
-  const availableShips: ShipType[] = ['salvageDrone', 'refineryBarge'];
+  // Get all available ships based on unlock requirements
+  const availableShips = getAvailableShips({
+    currentOrbit,
+    ships,
+    resources,
+    techTree,
+    prestige: {
+      purchasedPerks: Object.keys(prestige.purchasedPerks),
+    },
+    milestones: Object.fromEntries(
+      Object.entries(milestones).map(([id, milestone]) => [id, milestone.achieved])
+    ),
+  });
+
+  // Debug logging
+  console.log('Current Orbit:', currentOrbit);
+  console.log('Available Ships:', availableShips);
+  console.log('Scout Probe in list?', availableShips.includes('scoutProbe'));
 
   // Filter ships by category
   const filteredShips = availableShips.filter(shipType => {

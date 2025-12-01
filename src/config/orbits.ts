@@ -67,8 +67,8 @@ export const ORBIT_CONFIGS: Record<OrbitType, OrbitConfig> = {
     metalMultiplier: 2,
     electronicsMultiplier: 1.5,
     rareMultiplier: 1,
-    fuelCost: 100,
-    travelTime: 2 * 60 * 1000, // 2 minutes
+    fuelCost: 0,
+    travelTime: 1 * 60 * 1000, // 1 minute
     unlockRequirements: {
       resources: { debris: 100 }, // Simplified: just need some drones
     },
@@ -90,8 +90,8 @@ export const ORBIT_CONFIGS: Record<OrbitType, OrbitConfig> = {
     metalMultiplier: 5,
     electronicsMultiplier: 2,
     rareMultiplier: 1,
-    fuelCost: 500,
-    travelTime: 5 * 60 * 1000, // 5 minutes
+    fuelCost: 300,
+    travelTime: 3 * 60 * 1000, // 3 minutes
     unlockRequirements: {
       resources: { metal: 1000 },
     },
