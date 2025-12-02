@@ -68,6 +68,7 @@ describe('Mission System', () => {
         activeView: 'dashboard',
         openModal: null,
         notifications: [],
+        eventLog: [],
         settings: {
             soundEnabled: true,
             musicEnabled: true,

@@ -16,7 +16,23 @@ export const CHANGELOG: ChangelogEntry[] = [
     changes: [
       {
         category: 'feature',
+        description: 'Added persistent Event Log to Mission Log page showing all game events and notifications',
+      },
+      {
+        category: 'feature',
         description: 'Moved Mission Log to a dedicated page accessible via the top navigation',
+      },
+      {
+        category: 'improvement',
+        description: 'Added ship availability counter badges to derelict cards (e.g., "5/6 Salvage Frigate")',
+      },
+      {
+        category: 'improvement',
+        description: 'Ship counters are color-coded: green when available, red when no ships available',
+      },
+      {
+        category: 'improvement',
+        description: 'Removed redundant error messages from derelict cards - ship availability now clearly shown in badge',
       },
       {
         category: 'improvement',
@@ -81,6 +97,10 @@ export const CHANGELOG: ChangelogEntry[] = [
       {
         category: 'bugfix',
         description: 'Fixed duplicate close button in Orbit Selector modal',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed infinite loop issue in Mission Log page event display',
       },
     ],
   },

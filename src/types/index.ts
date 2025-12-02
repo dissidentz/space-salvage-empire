@@ -333,12 +333,20 @@ export interface Notification {
   duration: number;
 }
 
+export interface EventLog {
+  id: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  message: string;
+  timestamp: number;
+}
+
 export interface UIState {
   activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
   activeView: 'dashboard' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog';
   openModal: string | null;
   modalData?: unknown;
   notifications: Notification[];
+  eventLog: EventLog[];
   settings: {
     soundEnabled: boolean;
     musicEnabled: boolean;

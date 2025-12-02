@@ -23,11 +23,10 @@ import { useGameStore } from '@/stores/gameStore';
 import type { Derelict, DerelictAction } from '@/types';
 import {
     formatMissionDuration,
-    formatNumber,
     formatRewards,
     getRarityBgColor,
     getRarityColor,
-    getShipDisplayName,
+    getShipDisplayName
 } from '@/utils/missionHelpers';
 import {
     AlertTriangle,
@@ -118,7 +117,7 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
           {/* Header */}
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Target className={`w-4 h-4 ${getRarityColor(derelict.rarity)}`} />
                 <span className="font-medium">{config.name}</span>
                 <Badge className={getRarityBgColor(derelict.rarity)}>
@@ -130,6 +129,14 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                     <span className="text-orange-400">Ark Component</span>
                   </Badge>
                 )}
+                {/* Ship Availability Badge */}
+                <Badge 
+                  variant="outline" 
+                  className={availableShips > 0 ? 'bg-green-500/10 text-green-400 border-green-500/50' : 'bg-red-500/10 text-red-400 border-red-500/50'}
+                >
+                  <Package className="w-3 h-3 mr-1" />
+                  {availableShips}/{ships[derelict.requiredShip]} {getShipDisplayName(derelict.requiredShip)}
+                </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-1">{config.description}</p>
             </div>
@@ -144,14 +151,6 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
             <div className="flex items-center gap-1 text-muted-foreground">
               <Fuel className="w-3 h-3 text-orange-400" />
               <span>{actualFuelCost} fuel</span>
-            </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Rocket className="w-3 h-3 text-purple-400" />
-              <span>{getShipDisplayName(derelict.requiredShip)}</span>
-            </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Package className="w-3 h-3 text-green-400" />
-              <span>{availableShips} available</span>
             </div>
           </div>
 
@@ -311,21 +310,6 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
               </AlertDialogContent>
             </AlertDialog>
           </div>
-
-          {/* Error Messages */}
-          {!canLaunch && (
-            <div className="text-xs text-red-400">
-              {availableShips <= 0 && (
-                <div>No {getShipDisplayName(derelict.requiredShip)} available</div>
-              )}
-              {!canAfford && (
-                <div>
-                  Insufficient fuel (need {formatNumber(actualFuelCost)}, have{' '}
-                  {formatNumber(resources.fuel)})
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

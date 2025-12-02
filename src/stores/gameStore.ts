@@ -334,6 +334,7 @@ const INITIAL_STATE = {
     openModal: null,
     modalData: undefined,
     notifications: [],
+    eventLog: [],
     settings: {
       soundEnabled: true,
       musicEnabled: true,
@@ -799,15 +800,18 @@ export const useGameStore = create<GameStore>()(
       addNotification: (type, message, duration = 3000) => {
         const id = Math.random().toString(36).substring(7);
         const notification = { id, type, message, timestamp: Date.now(), duration };
+        const eventLog = { id, type, message, timestamp: Date.now() };
         
         set(state => ({
           ui: {
             ...state.ui,
             notifications: [...state.ui.notifications, notification],
+            // Keep last 100 events in log
+            eventLog: [eventLog, ...state.ui.eventLog].slice(0, 100),
           },
         }));
 
-        // Auto remove
+        // Auto remove notification (but keep in eventLog)
         setTimeout(() => {
           get().clearNotification(id);
         }, duration);
