@@ -1,9 +1,7 @@
 import { DerelictCard } from '@/components/DerelictCard';
 import { MissionCard } from '@/components/MissionCard';
-import { MissionHistory } from '@/components/MissionHistory';
 import { OrbitSelector } from '@/components/OrbitSelector';
 import { ShipCard } from '@/components/ShipCard';
-import { TravelProgress } from '@/components/TravelProgress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -95,9 +93,6 @@ export function DashboardView() {
 
   return (
     <div className="space-y-6">
-      {/* Travel Progress */}
-      <TravelProgress />
-
       {/* Missions Section */}
       {(ships.scoutProbe > 0 || ships.salvageFrigate > 0 || missions.length > 0 || derelicts.length > 0) && (
         <div className="space-y-6">
@@ -105,18 +100,6 @@ export function DashboardView() {
             <span className="text-primary">🛰️</span>
             Missions & Salvage
           </h2>
-
-          {/* Active Missions */}
-          {missions.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-muted-foreground">Active Missions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {missions.map(mission => (
-                  <MissionCard key={mission.id} mission={mission} />
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Available Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -128,7 +111,7 @@ export function DashboardView() {
                     <div>
                       <h3 className="font-semibold text-lg flex items-center gap-2">
                         <Radar className="h-5 w-5 text-blue-400" />
-                        Launch Scout Probe
+                        Scout Probe Missions
                       </h3>
                       <p className="text-sm text-muted-foreground">
                         Send a probe to scan {ORBIT_CONFIGS[currentOrbit].name} for derelicts.
@@ -138,6 +121,20 @@ export function DashboardView() {
                       {ships.scoutProbe - missions.filter(m => m.shipType === 'scoutProbe').length} / {ships.scoutProbe} Available
                     </Badge>
                   </div>
+
+                  {/* Show active scout missions */}
+                  {missions.filter(m => m.shipType === 'scoutProbe').length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                        Missions in Progress ({missions.filter(m => m.shipType === 'scoutProbe').length}):
+                      </h4>
+                      <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+                        {missions.filter(m => m.shipType === 'scoutProbe').map(mission => (
+                          <MissionCard key={mission.id} mission={mission} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="space-y-2 text-sm mb-4">
                     <div className="flex justify-between">
@@ -252,22 +249,6 @@ export function DashboardView() {
           );
         })}
       </div>
-
-      {/* Status Message */}
-      <Card className="border-border bg-card/50">
-        <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground">
-            {ships.salvageDrone === 0
-              ? '🚀 Click to collect debris, then buy your first drone!'
-              : ships.refineryBarge === 0
-                ? `✨ Your ${ships.salvageDrone} drone${ships.salvageDrone > 1 ? 's are' : ' is'} collecting debris! Buy a Refinery Barge to convert debris into metal.`
-                : `🏭 Production online! Your fleet is generating resources automatically.`}
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Mission History */}
-      <MissionHistory />
 
       {/* Orbit Selector Dialog */}
       <OrbitSelector

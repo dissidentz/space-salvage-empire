@@ -53,6 +53,8 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
   const resources = useGameStore(state => state.resources);
 
   const [timeUntilExpiry, setTimeUntilExpiry] = useState(0);
+  const [missionProgress, setMissionProgress] = useState(0);
+  const [missionTimeRemaining, setMissionTimeRemaining] = useState(0);
 
   const config = DERELICT_CONFIGS[derelict.type];
 
@@ -67,6 +69,22 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
     const interval = setInterval(updateExpiry, 1000);
     return () => clearInterval(interval);
   }, [derelict.expiresAt]);
+
+  // Update mission progress
+  useEffect(() => {
+    const activeMission = missions.find(m => m.targetDerelict === derelict.id);
+    if (!activeMission) return;
+
+    const updateProgress = () => {
+      const getMissionProgress = useGameStore.getState().getMissionProgress;
+      setMissionProgress(getMissionProgress(activeMission.id));
+      setMissionTimeRemaining(Math.max(0, activeMission.endTime - Date.now()));
+    };
+
+    updateProgress();
+    const interval = setInterval(updateProgress, 100);
+    return () => clearInterval(interval);
+  }, [missions, derelict.id]);
 
   // Check if ship is available
   const busyShips = missions.filter(m => m.shipType === derelict.requiredShip).length;
@@ -160,12 +178,46 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
           </div>
 
           {/* Active Mission Indicator */}
-          {isMissionActive && (
-            <div className="flex items-center gap-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-400">
-              <Rocket className="w-4 h-4 animate-pulse" />
-              <span>Mission in Progress...</span>
-            </div>
-          )}
+          {isMissionActive && (() => {
+            const activeMission = missions.find(m => m.targetDerelict === derelict.id);
+            if (!activeMission) return null;
+
+            return (
+              <div className="p-2 bg-blue-500/10 border border-blue-500/30 rounded space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 text-blue-400">
+                    <Rocket className="w-4 h-4 animate-pulse" />
+                    <span>Mission in Progress...</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-blue-300 font-mono">
+                      {Math.floor(missionTimeRemaining / 60000)}m {Math.floor((missionTimeRemaining % 60000) / 1000)}s
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => {
+                        const cancelMission = useGameStore.getState().cancelMission;
+                        cancelMission(activeMission.id);
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="w-full bg-blue-950/50 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300"
+                    style={{ width: `${missionProgress * 100}%` }}
+                  />
+                </div>
+                <div className="text-xs text-blue-300 text-right">
+                  {Math.floor(missionProgress * 100)}% complete
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Action Buttons */}
           <div className="flex gap-2">
@@ -174,11 +226,11 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                 <TooltipTrigger asChild>
                   <Button
                     size="sm"
-                    className="flex-1 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50"
+                    className="flex-1 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-purple-200 hover:text-purple-100"
                     onClick={() => handleLaunchSalvage('salvage')}
                     disabled={!canLaunch}
                   >
-                    <Target className="w-4 h-4 mr-1" />
+                    <Target className="w-4 h-4 mr-1 text-purple-300" />
                     Salvage
                   </Button>
                 </TooltipTrigger>

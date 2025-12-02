@@ -47,6 +47,38 @@ export const CHANGELOG: ChangelogEntry[] = [
         description: 'Resource production rates now always visible and update immediately when toggling ships',
       },
       {
+        category: 'improvement',
+        description: 'Removed Mission History from Dashboard (now on dedicated Mission Log page)',
+      },
+      {
+        category: 'improvement',
+        description: 'Removed status message section from Dashboard for cleaner layout',
+      },
+      {
+        category: 'improvement',
+        description: 'Integrated scout mission progress directly into Scout Probe card instead of separate section',
+      },
+      {
+        category: 'improvement',
+        description: 'Added scrollable container to mission list with max height to prevent page overflow',
+      },
+      {
+        category: 'improvement',
+        description: 'Added progress bars and time remaining to derelict salvage missions',
+      },
+      {
+        category: 'improvement',
+        description: 'Added cancel button to active missions for easy mission management',
+      },
+      {
+        category: 'improvement',
+        description: 'Improved Salvage button text contrast for better readability',
+      },
+      {
+        category: 'improvement',
+        description: 'Added custom thin scrollbar styling across the entire app for consistent appearance',
+      },
+      {
         category: 'bugfix',
         description: 'Fixed duplicate close button in Orbit Selector modal',
       },
