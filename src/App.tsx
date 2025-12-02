@@ -1,5 +1,6 @@
 import { AdminPanel } from '@/components/AdminPanel';
 import { GalaxyMap } from '@/components/GalaxyMap';
+import { OrbitSelector } from '@/components/OrbitSelector';
 import { SidebarLeft } from '@/components/sidebar-left';
 import { TopNav } from '@/components/TopNav';
 import { Separator } from '@/components/ui/separator';
@@ -14,6 +15,7 @@ import { Component } from 'react';
 import { NotificationManager } from './components/NotificationManager';
 import { ChangelogView } from './components/views/ChangelogView';
 import { DashboardView } from './components/views/DashboardView';
+import { MissionLogView } from './components/views/MissionLogView';
 import { PrestigeView } from './components/views/PrestigeView';
 import { SettingsView } from './components/views/SettingsView';
 import { TechTreeView } from './components/views/TechTreeView';
@@ -29,6 +31,10 @@ function App() {
 
   // Get active view from UI state
   const activeView = useGameStore(state => state.ui.activeView);
+  
+  // Modal state
+  const openModal = useGameStore(state => state.ui.openModal);
+  const closeModal = useGameStore(state => state.closeModal);
 
   // Render the appropriate view
   const renderView = () => {
@@ -43,6 +49,8 @@ function App() {
         return <PrestigeView />;
       case 'changelog':
         return <ChangelogView />;
+      case 'missionLog':
+        return <MissionLogView />;
       case 'dashboard':
       default:
         return <DashboardView />;
@@ -66,6 +74,10 @@ function App() {
       <NotificationManager />
       <Toaster />
       <AdminPanel />
+      <OrbitSelector 
+        open={openModal === 'orbitSelector'} 
+        onClose={closeModal} 
+      />
     </SidebarProvider>
   );
 }

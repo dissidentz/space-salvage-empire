@@ -7,6 +7,7 @@ import {
     FlaskConical,
     LayoutDashboard,
     Map,
+    ScrollText,
     Settings
 } from 'lucide-react';
 
@@ -44,6 +45,12 @@ export function TopNav() {
       label: 'Changelog', 
       icon: BookOpen,
       view: 'changelog' as const
+    },
+    { 
+      id: 'missionLog', 
+      label: 'Log', 
+      icon: ScrollText,
+      view: 'missionLog' as const
     },
     { 
       id: 'settings', 

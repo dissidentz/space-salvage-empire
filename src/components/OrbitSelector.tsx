@@ -1,15 +1,13 @@
 import { ORBIT_CONFIGS } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { OrbitType } from '@/types';
-import { X } from 'lucide-react';
 import { OrbitCard } from './OrbitCard';
-import { Button } from './ui/button';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from './ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
 
@@ -62,12 +60,7 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>Orbit Selection</span>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
+          <DialogTitle>Orbit Selection</DialogTitle>
           <DialogDescription>
             Select a destination orbit to travel to. Each orbit offers different
             production multipliers and derelict spawn rates.

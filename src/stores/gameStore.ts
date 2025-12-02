@@ -87,7 +87,9 @@ interface GameStore extends GameState {
   ) => void;
 
   // UI actions
-  setActiveView: (view: 'dashboard' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog') => void;
+  setActiveView: (view: 'dashboard' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog') => void;
+  openModal: (modal: string, data?: any) => void;
+  closeModal: () => void;
   addNotification: (
     type: 'info' | 'success' | 'warning' | 'error',
     message: string,
@@ -328,7 +330,7 @@ const INITIAL_STATE = {
 
   ui: {
     activeTab: 'fleet' as 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar',
-    activeView: 'dashboard' as 'dashboard' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige',
+    activeView: 'dashboard' as 'dashboard' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'missionLog',
     openModal: null,
     modalData: undefined,
     notifications: [],
@@ -400,6 +402,11 @@ export const useGameStore = create<GameStore>()(
           },
         }));
 
+        // Recalculate rates immediately
+        const newState = get();
+        const newRates = calculateProductionRates(newState);
+        newState.updateComputedRates(newRates);
+
         return true;
       },
 
@@ -464,6 +471,11 @@ export const useGameStore = create<GameStore>()(
             [type]: !state.shipEnabled[type],
           },
         }));
+        
+        // Recalculate rates immediately
+        const state = get();
+        const newRates = calculateProductionRates(state);
+        state.updateComputedRates(newRates);
       },
 
       setShipEnabled: (type, enabled) => {
@@ -473,6 +485,11 @@ export const useGameStore = create<GameStore>()(
             [type]: enabled,
           },
         }));
+        
+        // Recalculate rates immediately
+        const state = get();
+        const newRates = calculateProductionRates(state);
+        state.updateComputedRates(newRates);
       },
 
       // Ship Upgrade Actions
@@ -583,6 +600,18 @@ export const useGameStore = create<GameStore>()(
       setActiveView: (view) => {
         set(state => ({
           ui: { ...state.ui, activeView: view },
+        }));
+      },
+
+      openModal: (modal, data) => {
+        set(state => ({
+          ui: { ...state.ui, openModal: modal, modalData: data },
+        }));
+      },
+
+      closeModal: () => {
+        set(state => ({
+          ui: { ...state.ui, openModal: null, modalData: undefined },
         }));
       },
 

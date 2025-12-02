@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -9,6 +10,7 @@ import {
 } from '@/components/ui/sidebar';
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { RESOURCE_DEFINITIONS } from '@/config/resources';
+import { RESOURCE_THEME } from '@/config/resourceTheme';
 import { useGameStore } from '@/stores/gameStore';
 import { formatNumber } from '@/utils/format';
 import { Database, MapPin, Rocket } from 'lucide-react';
@@ -17,8 +19,7 @@ export function SidebarLeft({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const currentOrbit = useGameStore(state => state.currentOrbit);
-  const canTravelToOrbit = useGameStore(state => state.canTravelToOrbit);
-  const travelToOrbit = useGameStore(state => state.travelToOrbit);
+
   const travelState = useGameStore(state => state.travelState);
   const getTravelProgress = useGameStore(state => state.getTravelProgress);
   const resources = useGameStore(state => state.resources);
@@ -26,28 +27,10 @@ export function SidebarLeft({
 
 
 
-  const handleTravelToOrbit = (orbit: string) => {
-    if (canTravelToOrbit(orbit as keyof typeof ORBIT_CONFIGS)) {
-      travelToOrbit(orbit as keyof typeof ORBIT_CONFIGS);
-    }
-  };
 
-  // Get comparison indicators for multipliers
-  const getMultiplierComparison = (current: number, target: number) => {
-    if (target > current) return 'text-green-400 ↑';
-    if (target < current) return 'text-red-400 ↓';
-    return 'text-muted-foreground';
-  };
-
-  const currentConfig = ORBIT_CONFIGS[currentOrbit];
-
-  // Get available orbits for travel
-  const availableOrbits = Object.values(ORBIT_CONFIGS).filter(
-    orbit => orbit.id !== currentOrbit && canTravelToOrbit(orbit.id)
-  );
 
   return (
-    <Sidebar className="border-r-0 min-h-screen" collapsible="none" {...props}>
+    <Sidebar className="border-r-0 min-h-screen sticky top-0 h-svh" collapsible="none" {...props}>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2">
           <Rocket className="w-6 h-6 text-primary" />
@@ -65,134 +48,69 @@ export function SidebarLeft({
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <div className="px-2 py-1">
-              <div
-                className={`text-sm font-medium ${getOrbitColor(currentOrbit)}`}
-              >
-                {ORBIT_CONFIGS[currentOrbit].name}
-              </div>
+              <div className={`rounded-lg border p-3 bg-gradient-to-br from-background to-accent/10 ${getOrbitColor(currentOrbit).replace('text-', 'border-').replace('-300', '-500/30').replace('-400', '-500/30')}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className={`font-bold ${getOrbitColor(currentOrbit)}`}>
+                    {ORBIT_CONFIGS[currentOrbit].name}
+                  </div>
+                </div>
 
-              {/* Travel Status */}
-              {travelState?.traveling && (
-                <div className="mt-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded">
-                  <div className="flex items-center gap-2 text-xs">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                    <span className="text-blue-400 font-medium">
-                      Traveling to{' '}
-                      {ORBIT_CONFIGS[travelState.destination!]?.name}
-                    </span>
-                  </div>
-                  <div className="mt-1">
-                    <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                      <span>Progress</span>
-                      <span>{Math.round(getTravelProgress() * 100)}%</span>
+                {/* Travel Status */}
+                {travelState?.traveling ? (
+                  <div className="mt-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded">
+                    <div className="flex items-center gap-2 text-xs">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                      <span className="text-blue-400 font-medium">
+                        Traveling to{' '}
+                        {ORBIT_CONFIGS[travelState.destination!]?.name}
+                      </span>
                     </div>
-                    <div className="w-full bg-blue-950/50 rounded-full h-1">
-                      <div
-                        className="bg-blue-400 h-1 rounded-full transition-all duration-1000"
-                        style={{ width: `${getTravelProgress() * 100}%` }}
-                      ></div>
+                    <div className="mt-1">
+                      <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                        <span>Progress</span>
+                        <span>{Math.round(getTravelProgress() * 100)}%</span>
+                      </div>
+                      <div className="w-full bg-blue-950/50 rounded-full h-1">
+                        <div
+                          className="bg-blue-400 h-1 rounded-full transition-all duration-1000"
+                          style={{ width: `${getTravelProgress() * 100}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full h-8 text-xs mt-2"
+                    onClick={() => useGameStore.getState().openModal('orbitSelector')}
+                  >
+                    <Rocket className="w-3 h-3 mr-2" />
+                    Change Orbit
+                  </Button>
+                )}
 
-              {/* Production Multipliers */}
-              <div className="mt-2 space-y-1">
-                <div className="text-xs text-muted-foreground font-medium">
-                  Production Multipliers:
-                </div>
-                <div className="grid grid-cols-2 gap-1 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Metal:</span>
-                    <span className="text-orange-400 font-medium">
-                      {ORBIT_CONFIGS[currentOrbit].metalMultiplier}x
-                    </span>
+                {/* Production Multipliers */}
+                <div className="mt-3 space-y-1">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    Multipliers
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Electronics:</span>
-                    <span className="text-blue-400 font-medium">
-                      {ORBIT_CONFIGS[currentOrbit].electronicsMultiplier}x
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Rare:</span>
-                    <span className="text-purple-400 font-medium">
-                      {ORBIT_CONFIGS[currentOrbit].rareMultiplier}x
-                    </span>
+                  <div className="grid grid-cols-3 gap-1 text-xs text-center">
+                    <div className="bg-background/50 rounded p-1 border border-border/50">
+                      <div className="text-orange-400 font-medium">{ORBIT_CONFIGS[currentOrbit].metalMultiplier}x</div>
+                      <div className="text-[9px] text-muted-foreground">Metal</div>
+                    </div>
+                    <div className="bg-background/50 rounded p-1 border border-border/50">
+                      <div className="text-blue-400 font-medium">{ORBIT_CONFIGS[currentOrbit].electronicsMultiplier}x</div>
+                      <div className="text-[9px] text-muted-foreground">Elec</div>
+                    </div>
+                    <div className="bg-background/50 rounded p-1 border border-border/50">
+                      <div className="text-purple-400 font-medium">{ORBIT_CONFIGS[currentOrbit].rareMultiplier}x</div>
+                      <div className="text-[9px] text-muted-foreground">Rare</div>
+                    </div>
                   </div>
                 </div>
               </div>
-              {availableOrbits.length > 0 && (
-                <div className="mt-2 space-y-1">
-                  <div className="text-xs text-muted-foreground">
-                    Available Destinations:
-                  </div>
-                  {availableOrbits.map(orbit => (
-                    <button
-                      key={orbit.id}
-                      onClick={() => handleTravelToOrbit(orbit.id)}
-                      className="w-full text-left px-2 py-2 text-xs rounded hover:bg-accent hover:text-accent-foreground transition-colors border border-border/50 hover:border-accent"
-                    >
-                      <div
-                        className={`font-medium ${getOrbitColor(orbit.id)} mb-1`}
-                      >
-                        {orbit.name}
-                      </div>
-                      <div className="grid grid-cols-2 gap-1 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Cost:</span>
-                          <span className="text-orange-400">
-                            {orbit.fuelCost} fuel
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Time:</span>
-                          <span className="text-blue-400">
-                            {orbit.travelTime < 3600000
-                              ? `${Math.round(orbit.travelTime / 60000)}m`
-                              : `${Math.round(orbit.travelTime / 3600000)}h`}
-                          </span>
-                        </div>
-                        <div className="flex justify-between col-span-2">
-                          <span className="text-muted-foreground">
-                            Multipliers:
-                          </span>
-                          <div className="text-right">
-                            <div className="text-xs">
-                              <span
-                                className={getMultiplierComparison(
-                                  currentConfig.metalMultiplier,
-                                  orbit.metalMultiplier
-                                )}
-                              >
-                                {orbit.metalMultiplier}x metal
-                              </span>
-                              <span className="mx-1">•</span>
-                              <span
-                                className={getMultiplierComparison(
-                                  currentConfig.electronicsMultiplier,
-                                  orbit.electronicsMultiplier
-                                )}
-                              >
-                                {orbit.electronicsMultiplier}x electronics
-                              </span>
-                              <span className="mx-1">•</span>
-                              <span
-                                className={getMultiplierComparison(
-                                  currentConfig.rareMultiplier,
-                                  orbit.rareMultiplier
-                                )}
-                              >
-                                {orbit.rareMultiplier}x rare
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -204,38 +122,57 @@ export function SidebarLeft({
             Resources
           </SidebarGroupLabel>
           <SidebarGroupContent>
+            {/* Collect Debris Button */}
+            <div className="px-2 pb-2">
+              <Button
+                onClick={() => useGameStore.getState().clickDebris()}
+                variant="default"
+                size="sm"
+                className="w-full font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all"
+              >
+                <Rocket className="w-4 h-4 mr-2" />
+                Collect Debris
+              </Button>
+            </div>
             <div className="space-y-1 px-2">
               {Object.entries(RESOURCE_DEFINITIONS).map(([id, def]) => {
                 const value = resources[id as keyof typeof resources];
                 const rate = productionRates[id as keyof typeof resources] || 0;
+                const theme = RESOURCE_THEME[id as keyof typeof RESOURCE_THEME];
                 
                 // Only show discovered resources (value > 0 or rate > 0)
                 // Exception: always show debris, metal, electronics, fuel
                 const isBasic = ['debris', 'metal', 'electronics', 'fuel'].includes(id);
                 if (!isBasic && value <= 0 && rate === 0) return null;
 
+                const Icon = theme.icon;
+
                 return (
                   <div
                     key={id}
-                    className="flex items-center justify-between py-1 text-sm border-b border-border/50 last:border-0"
+                    className="group flex items-center justify-between py-2 px-2 text-sm rounded-md hover:bg-sidebar-accent/50 transition-colors"
+                    title={def.description}
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">{def.name}</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-mono font-medium">
-                        {formatNumber(value)}
+                    <div className="flex items-center gap-3">
+                      <div className={`p-1.5 rounded-md bg-sidebar-accent/50 ${theme.color.replace('text-', 'bg-').replace('-400', '-500/20')}`}>
+                        <Icon className={`w-4 h-4 ${theme.color}`} />
                       </div>
-                      {rate !== 0 && (
-                        <div
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sidebar-foreground/90">{theme.label}</span>
+                        <span
                           className={`text-xs ${
-                            rate > 0 ? 'text-green-400' : 'text-red-400'
+                            rate === 0 ? 'text-muted-foreground/50' : rate > 0 ? 'text-green-400' : 'text-red-400'
                           }`}
                         >
                           {rate > 0 ? '+' : ''}
                           {formatNumber(rate)}/s
-                        </div>
-                      )}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`font-mono font-bold ${theme.color}`}>
+                        {formatNumber(value)}
+                      </div>
                     </div>
                   </div>
                 );

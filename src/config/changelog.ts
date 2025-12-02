@@ -11,6 +11,58 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.1.3',
+    date: '2025-12-01',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Moved Mission Log to a dedicated page accessible via the top navigation',
+      },
+      {
+        category: 'improvement',
+        description: 'Redesigned Sidebar Location UI with a new "Current Location" card and "Change Orbit" button',
+      },
+      {
+        category: 'improvement',
+        description: 'Removed "Available Destinations" list from Sidebar to reduce clutter',
+      },
+      {
+        category: 'improvement',
+        description: 'Implemented global Orbit Selector modal for easier navigation',
+      },
+      {
+        category: 'improvement',
+        description: 'Removed redundant "Current Orbit" section from Dashboard',
+      },
+      {
+        category: 'improvement',
+        description: 'Moved "Collect Debris" button to Sidebar Resources section for better accessibility',
+      },
+      {
+        category: 'improvement',
+        description: 'Removed Resources Display from Dashboard (now in Sidebar)',
+      },
+      {
+        category: 'improvement',
+        description: 'Resource production rates now always visible and update immediately when toggling ships',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed duplicate close button in Orbit Selector modal',
+      },
+    ],
+  },
+  {
+    version: '0.1.2',
+    date: '2025-12-01',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed sidebar layout to ensure it stays visible while scrolling (sticky positioning)',
+      },
+    ],
+  },
+  {
     version: '0.1.1',
     date: '2025-11-30',
     changes: [
