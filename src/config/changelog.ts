@@ -11,6 +11,32 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.1',
+    date: '2025-12-03',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Auto-Scout automation - Automatically deploys scout ships to unlocked orbits when tech is unlocked (Tier 3 Economy, 200 DF)',
+      },
+      {
+        category: 'feature',
+        description: 'Auto-Salvage automation - Automatically salvages common derelicts in colonized orbits (Tier 4 Economy, 1500 DF)',
+      },
+      {
+        category: 'feature',
+        description: 'Total Automation tech - Enables dual mission support for automation (Tier 5 Economy, 5000 DF)',
+      },
+      {
+        category: 'improvement',
+        description: 'Added automation settings panel to Mission Control with toggles for each automation type',
+      },
+      {
+        category: 'improvement',
+        description: 'Automation respects dual missions tech (fleet_coordination) for increased mission capacity',
+      },
+    ],
+  },
+  {
     version: '0.2.0',
     date: '2025-12-02',
     changes: [

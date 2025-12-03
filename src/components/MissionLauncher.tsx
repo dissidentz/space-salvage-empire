@@ -20,6 +20,7 @@ import {
 } from '@/utils/missionHelpers';
 import { Clock, Fuel, MapPin, Rocket, Send } from 'lucide-react';
 import { useState } from 'react';
+import { AutomationSettings } from './AutomationSettings';
 
 export function MissionLauncher() {
   const currentOrbit = useGameStore(state => state.currentOrbit);
@@ -30,17 +31,22 @@ export function MissionLauncher() {
   const startColonyMission = useGameStore(state => state.startColonyMission);
   const canTravelToOrbit = useGameStore(state => state.canTravelToOrbit);
   const colonies = useGameStore(state => state.colonies);
+  const techTree = useGameStore(state => state.techTree);
 
   const [missionType, setMissionType] = useState<string>('scout');
   const [selectedShip, setSelectedShip] = useState<ShipType | null>(null);
   const [targetOrbit, setTargetOrbit] = useState<OrbitType | null>(null);
 
   const scoutShips = getAvailableShipsForMission('scout');
+  
+  // Check if dual missions tech is unlocked
+  const hasDualMissions = techTree.purchased.includes('fleet_coordination');
+  const maxMissionsPerShip = hasDualMissions ? 2 : 1;
 
   // Get available ships for each type
   const getAvailableCount = (shipType: ShipType) => {
     const busyShips = missions.filter(m => m.shipType === shipType).length;
-    return ships[shipType] - busyShips;
+    return ships[shipType] * maxMissionsPerShip - busyShips;
   };
 
   // Get all unlocked orbits (including current)
@@ -99,6 +105,34 @@ export function MissionLauncher() {
     }
   };
 
+  const handleQuickScout = () => {
+    // Automatically select the first available scout ship
+    const preferredShip = getAvailableCount('scoutProbe') > 0 ? 'scoutProbe' : 
+                         getAvailableCount('deepSpaceScanner') > 0 ? 'deepSpaceScanner' : null;
+    
+    if (!preferredShip) {
+      useGameStore.getState().addNotification('error', 'No scout ships available');
+      return;
+    }
+
+    const fuelCost = currentOrbit === 'leo' || currentOrbit === 'geo' ? 0 : 50;
+    if (resources.fuel < fuelCost) {
+      useGameStore.getState().addNotification('error', `Insufficient fuel. Need ${fuelCost} fuel.`);
+      return;
+    }
+
+    const success = startScoutMission(preferredShip, currentOrbit);
+    if (success) {
+      useGameStore.getState().addNotification('success', `Scout launched to ${ORBIT_CONFIGS[currentOrbit].name}!`);
+    }
+  };
+
+  const canQuickScout = () => {
+    const hasScoutAvailable = getAvailableCount('scoutProbe') > 0 || getAvailableCount('deepSpaceScanner') > 0;
+    const fuelCost = currentOrbit === 'leo' || currentOrbit === 'geo' ? 0 : 50;
+    return hasScoutAvailable && resources.fuel >= fuelCost;
+  };
+
   const canLaunch = () => {
       if (!targetOrbit) return false;
       if (missionType === 'scout') {
@@ -119,6 +153,19 @@ export function MissionLauncher() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Automation Settings */}
+        <AutomationSettings />
+        
+        {/* Quick Scout Button */}
+        <Button
+          onClick={handleQuickScout}
+          disabled={!canQuickScout()}
+          className="w-full bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-blue-100 hover:text-blue-50"
+        >
+          <Rocket className="w-4 h-4 mr-2" />
+          Quick Scout Current Orbit ({ORBIT_CONFIGS[currentOrbit].name})
+        </Button>
+
         <div className="flex gap-2 mb-4">
             <Button 
                 variant={missionType === 'scout' ? 'default' : 'outline'} 
@@ -152,6 +199,7 @@ export function MissionLauncher() {
                     {scoutShips.map(shipType => {
                         const available = getAvailableCount(shipType);
                         const total = ships[shipType];
+                        const totalCapacity = total * maxMissionsPerShip;
                         return (
                         <SelectItem
                             key={shipType}
@@ -164,7 +212,7 @@ export function MissionLauncher() {
                                 variant={available > 0 ? 'secondary' : 'outline'}
                                 className="ml-2"
                             >
-                                {available}/{total}
+                                {available}/{totalCapacity}
                             </Badge>
                             </div>
                         </SelectItem>
@@ -182,7 +230,7 @@ export function MissionLauncher() {
                     <div className="p-3 bg-slate-700/30 rounded flex items-center justify-between">
                         <span className="text-sm font-medium">Colony Ships Available:</span>
                         <Badge variant={getAvailableCount('colonyShip') > 0 ? 'default' : 'destructive'}>
-                            {getAvailableCount('colonyShip')} / {ships.colonyShip}
+                            {getAvailableCount('colonyShip')} / {ships.colonyShip * maxMissionsPerShip}
                         </Badge>
                     </div>
                 </div>

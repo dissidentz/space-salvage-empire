@@ -279,6 +279,7 @@ export interface Statistics {
   farthestOrbit: OrbitType;
   travelHistory: TravelRecord[];
   missionHistory: MissionLog[];
+  instantWarpUsed: boolean;
 }
 
 // Colonies & formations
@@ -358,6 +359,10 @@ export interface UIState {
     compactMode: boolean;
   };
   activeTooltip: string | null;
+  automationSettings: {
+    autoScoutEnabled: boolean;
+    autoSalvageEnabled: boolean;
+  };
 }
 
 // Config types

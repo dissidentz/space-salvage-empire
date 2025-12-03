@@ -11,7 +11,9 @@ interface OrbitCardProps {
   isCurrent: boolean;
   isUnlocked: boolean;
   canAfford: boolean;
+  instantWarpAvailable: boolean;
   onTravel: () => void;
+  onInstantWarp: () => void;
 }
 
 export function OrbitCard({
@@ -19,7 +21,9 @@ export function OrbitCard({
   isCurrent,
   isUnlocked,
   canAfford,
+  instantWarpAvailable,
   onTravel,
+  onInstantWarp,
 }: OrbitCardProps) {
   const config = ORBIT_CONFIGS[orbit];
   const resources = useGameStore(state => state.resources);
@@ -121,17 +125,32 @@ export function OrbitCard({
           </div>
         )}
 
-        {/* Travel Button */}
+        {/* Travel Buttons */}
         {!isCurrent && (
-          <Button
-            onClick={onTravel}
-            disabled={!isUnlocked || !canAfford}
-            className="w-full"
-            size="sm"
-          >
-            <Rocket className="mr-2 h-4 w-4" />
-            Travel
-          </Button>
+          <div className="space-y-2">
+            <Button
+              onClick={onTravel}
+              disabled={!isUnlocked || !canAfford}
+              className="w-full"
+              size="sm"
+            >
+              <Rocket className="mr-2 h-4 w-4" />
+              Travel
+            </Button>
+
+            {/* Instant Warp Button */}
+            {instantWarpAvailable && (
+              <Button
+                onClick={onInstantWarp}
+                className="w-full bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 text-purple-100"
+                size="sm"
+                variant="outline"
+              >
+                <Rocket className="mr-2 h-4 w-4 text-purple-400" />
+                Instant Warp (Free)
+              </Button>
+            )}
+          </div>
         )}
       </CardContent>
     </Card>

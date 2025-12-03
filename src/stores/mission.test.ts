@@ -62,6 +62,7 @@ describe('Mission System', () => {
         farthestOrbit: 'leo',
         travelHistory: [],
         missionHistory: [],
+        instantWarpUsed: false,
       },
       ui: {
         activeTab: 'fleet',
@@ -80,6 +81,10 @@ describe('Mission System', () => {
             compactMode: false,
         },
         activeTooltip: null,
+        automationSettings: {
+          autoScoutEnabled: true,
+          autoSalvageEnabled: true,
+        },
       }
     });
   });

@@ -27,7 +27,7 @@ describe('Game Limits', () => {
         fuelSynthesizer: 0,
         matterExtractor: 0,
         quantumMiner: 0,
-        scoutProbe: 10, // Give plenty of probes
+        scoutProbe: 3, // Limit to 3 for testing concurrent mission limit
         salvageFrigate: 0,
         heavySalvageFrigate: 0,
         deepSpaceScanner: 0,
@@ -62,6 +62,7 @@ describe('Game Limits', () => {
         farthestOrbit: 'leo',
         travelHistory: [],
         missionHistory: [],
+        instantWarpUsed: false,
       },
       ui: {
         activeTab: 'fleet',
@@ -80,6 +81,10 @@ describe('Game Limits', () => {
             compactMode: false,
         },
         activeTooltip: null,
+        automationSettings: {
+          autoScoutEnabled: true,
+          autoSalvageEnabled: true,
+        },
       }
     });
   });

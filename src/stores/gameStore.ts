@@ -1,15 +1,15 @@
 // src/stores/gameStore.ts
 import {
-    DERELICT_CONFIGS,
-    calculateDerelictRewards,
-    getRandomDerelictType,
-    rollDerelictRarity,
+  DERELICT_CONFIGS,
+  calculateDerelictRewards,
+  getRandomDerelictType,
+  rollDerelictRarity,
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, getAdjacentOrbits, isOrbitUnlocked } from '@/config/orbits';
 import {
-    ARK_COMPONENTS,
-    PRESTIGE_PERKS,
-    calculateDarkMatterGain,
+  ARK_COMPONENTS,
+  PRESTIGE_PERKS,
+  calculateDarkMatterGain,
 } from '@/config/prestige';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
@@ -17,19 +17,19 @@ import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
 import { getTechEffects, getTechMultipliers } from '@/engine/getTechMultipliers';
 import { calculateProductionRates } from '@/engine/production';
 import type {
-    ArkComponentType,
-    Derelict,
-    DerelictAction,
-    GameState,
-    Mission,
-    OrbitType,
-    ResourceType,
-    ShipType
+  ArkComponentType,
+  Derelict,
+  DerelictAction,
+  GameState,
+  Mission,
+  OrbitType,
+  ResourceType,
+  ShipType
 } from '@/types';
 import {
-    calculateBulkShipCost,
-    calculateShipCost,
-    canAffordCost,
+  calculateBulkShipCost,
+  calculateShipCost,
+  canAffordCost,
 } from '@/utils/formulas';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -66,7 +66,11 @@ interface GameStore extends GameState {
 
   // Orbit travel actions
   canTravelToOrbit: (targetOrbit: OrbitType) => boolean;
-  travelToOrbit: (targetOrbit: OrbitType) => boolean;
+  travelToOrbit: (targetOrbit: OrbitType, useInstantWarp?: boolean) => boolean;
+  
+  // Instant Warp
+  instantWarpAvailable: boolean;
+  
   cancelTravel: () => boolean;
   completeTravelIfReady: () => void;
   getTravelProgress: () => number;
@@ -129,6 +133,12 @@ interface GameStore extends GameState {
   unlockArk: () => boolean;
   buildArkComponent: (componentId: string) => boolean;
   getPrestigeMultipliers: () => Record<string, number>;
+  
+  // Automation actions
+  toggleAutoScout: () => void;
+  toggleAutoSalvage: () => void;
+  processAutomation: () => void;
+  
   isTechUnlocked: (techId: string) => boolean;
 }
 
@@ -138,6 +148,7 @@ const INITIAL_STATE = {
   totalPlayTime: 0,
   currentRun: 1,
   currentOrbit: 'leo' as OrbitType,
+  instantWarpAvailable: false,
 
   resources: {
     debris: 0,
@@ -327,6 +338,7 @@ const INITIAL_STATE = {
     farthestOrbit: 'leo' as OrbitType,
     travelHistory: [],
     missionHistory: [],
+    instantWarpUsed: false,
   },
 
   ui: {
@@ -347,6 +359,10 @@ const INITIAL_STATE = {
       compactMode: false,
     },
     activeTooltip: null,
+    automationSettings: {
+      autoScoutEnabled: true,
+      autoSalvageEnabled: true,
+    },
   },
 
   activeFormation: null,
@@ -359,6 +375,7 @@ export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
       ...INITIAL_STATE,
+      instantWarpAvailable: INITIAL_STATE.instantWarpAvailable,
 
       // Actions
       addResource: (type, amount) =>
@@ -1707,6 +1724,85 @@ export const useGameStore = create<GameStore>()(
                   .join(', ');
               state.addNotification('success', `Salvage Complete! Recovered: ${rewardText}`);
            }
+      },
+      
+      // Automation actions
+      toggleAutoScout: () => {
+        set(state => ({
+          ui: {
+            ...state.ui,
+            automationSettings: {
+              ...state.ui.automationSettings,
+              autoScoutEnabled: !state.ui.automationSettings.autoScoutEnabled,
+            },
+          },
+        }));
+      },
+      
+      toggleAutoSalvage: () => {
+        set(state => ({
+          ui: {
+            ...state.ui,
+            automationSettings: {
+              ...state.ui.automationSettings,
+              autoSalvageEnabled: !state.ui.automationSettings.autoSalvageEnabled,
+            },
+          },
+        }));
+      },
+      
+      processAutomation: () => {
+        const state = get();
+        const hasAutoScout = state.techTree.purchased.includes('auto_scout');
+        const hasAutoSalvage = state.techTree.purchased.includes('auto_salvage');
+        const hasTotalAutomation = state.techTree.purchased.includes('total_automation');
+        
+        // Auto-Scout Logic
+        if (hasAutoScout && state.ui.automationSettings.autoScoutEnabled) {
+          const hasDualMissions = state.techTree.purchased.includes('fleet_coordination') || hasTotalAutomation;
+          const maxMissionsPerShip = hasDualMissions ? 2 : 1;
+          
+          const busyScouts = state.missions.filter(m => m.shipType === 'scoutProbe').length;
+          const availableScouts = state.ships.scoutProbe * maxMissionsPerShip - busyScouts;
+          
+          if (availableScouts > 0 && state.resources.fuel >= 0) {
+            const unlockedOrbits = state.stats.orbitsUnlocked.filter(
+              orbit => orbit !== state.currentOrbit
+            );
+            
+            if (unlockedOrbits.length > 0) {
+              const targetOrbit = unlockedOrbits[
+                Math.floor(Math.random() * unlockedOrbits.length)
+              ];
+              state.startScoutMission('scoutProbe', targetOrbit);
+            }
+          }
+        }
+        
+        // Auto-Salvage Logic
+        if (hasAutoSalvage && state.ui.automationSettings.autoSalvageEnabled) {
+          const colonizedOrbits = state.colonies.map(c => c.orbit);
+          const commonDerelicts = state.derelicts.filter(
+            d => d.rarity === 'common' && colonizedOrbits.includes(d.orbit)
+          );
+          
+          for (const derelict of commonDerelicts) {
+            const hasDualMissions = state.techTree.purchased.includes('fleet_coordination') || hasTotalAutomation;
+            const maxMissionsPerShip = hasDualMissions ? 2 : 1;
+            
+            const busySalvage = state.missions.filter(
+              m => m.shipType === 'salvageFrigate'
+            ).length;
+            const availableSalvage = state.ships.salvageFrigate * maxMissionsPerShip - busySalvage;
+            
+            if (availableSalvage > 0) {
+              const success = state.startSalvageMission(derelict.id, 'salvageFrigate', 'salvage');
+              if (success) {
+                break;
+              }
+            }
+          }
+        }
       },
     }),
     {

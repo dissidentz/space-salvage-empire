@@ -49,6 +49,7 @@ describe('Travel State Persistence', () => {
         farthestOrbit: 'leo',
         travelHistory: [],
         missionHistory: [],
+        instantWarpUsed: false,
       },
     });
   });
@@ -322,6 +323,10 @@ describe('Travel State Persistence', () => {
           compactMode: false,
         },
         activeTooltip: null,
+        automationSettings: {
+          autoScoutEnabled: true,
+          autoSalvageEnabled: true,
+        },
       },
       activeFormation: null,
       formationCooldownEnd: 0,

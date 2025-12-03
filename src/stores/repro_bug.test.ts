@@ -62,6 +62,7 @@ describe('Bug Reproduction: Scout Mission Accumulation', () => {
         farthestOrbit: 'leo',
         travelHistory: [],
         missionHistory: [],
+        instantWarpUsed: false,
       },
       ui: {
         activeTab: 'fleet',
@@ -80,6 +81,10 @@ describe('Bug Reproduction: Scout Mission Accumulation', () => {
             compactMode: false,
         },
         activeTooltip: null,
+        automationSettings: {
+          autoScoutEnabled: true,
+          autoSalvageEnabled: true,
+        },
       }
     });
   });

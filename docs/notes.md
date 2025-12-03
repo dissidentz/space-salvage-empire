@@ -37,15 +37,21 @@ Tech unlocked: instant_warp (exists in tech tree)
 Status: No implementation of the free instant travel mechanic
 Mentioned in: Tech tree (Tier 4 Exploration)
 
+--Complete, needs testing
+
 8. Adjacent Orbit Scouting
 Tech unlocked: quantum_entanglement_comms
 Status: No logic to allow scouts to discover derelicts in neighboring orbits
 Mentioned in: Tech tree (Tier 3 Exploration)
 
+--Complete, needs testing
+
 9. Dual Missions
 Tech unlocked: fleet_coordination
 Status: Ships can't run 2 missions simultaneously per ship type yet
 Mentioned in: Tech tree (Tier 5 Exploration)
+
+--Complete tested and working
 
 10. Endless Mode / New Game+
 Status: Victory screen exists but no post-game modes

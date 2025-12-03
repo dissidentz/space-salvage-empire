@@ -3,11 +3,11 @@ import { useGameStore } from '@/stores/gameStore';
 import type { OrbitType } from '@/types';
 import { OrbitCard } from './OrbitCard';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from './ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
 
@@ -34,11 +34,13 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
     'deepSpace',
   ];
 
-  const handleTravel = (orbit: OrbitType) => {
+  const instantWarpAvailable = useGameStore(state => state.instantWarpAvailable);
+
+  const handleTravel = (orbit: OrbitType, useInstantWarp = false) => {
     const config = ORBIT_CONFIGS[orbit];
 
-    // Check if can afford
-    if (resources.fuel < config.fuelCost) {
+    // Check if can afford (unless using instant warp)
+    if (!useInstantWarp && resources.fuel < config.fuelCost) {
       addNotification(
         'error',
         `Not enough fuel! Need ${config.fuelCost}, have ${resources.fuel}`
@@ -47,9 +49,13 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
     }
 
     // Attempt travel
-    const success = travelToOrbit(orbit);
+    const success = travelToOrbit(orbit, useInstantWarp);
     if (success) {
-      addNotification('success', `Traveling to ${config.name}...`);
+      if (useInstantWarp) {
+        addNotification('success', `Instant Warp to ${config.name} successful!`);
+      } else {
+        addNotification('success', `Traveling to ${config.name}...`);
+      }
       onClose();
     } else {
       addNotification('error', 'Cannot travel to this orbit');
@@ -82,7 +88,9 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
                   isCurrent={isCurrent}
                   isUnlocked={isUnlocked}
                   canAfford={canAfford}
-                  onTravel={() => handleTravel(orbit)}
+                  instantWarpAvailable={instantWarpAvailable}
+                  onTravel={() => handleTravel(orbit, false)}
+                  onInstantWarp={() => handleTravel(orbit, true)}
                 />
               );
             })}

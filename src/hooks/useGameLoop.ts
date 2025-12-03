@@ -121,6 +121,10 @@ export function useGameLoop() {
       if (rateUpdateCounter >= 10) {
         const rates = useGameStore.getState().getProductionRates();
         useGameStore.getState().updateComputedRates(rates);
+        
+        // Process automation once per second
+        useGameStore.getState().processAutomation();
+        
         rateUpdateCounter = 0;
       }
     }, 100);
