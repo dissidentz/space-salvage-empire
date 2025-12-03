@@ -1,15 +1,16 @@
 // src/stores/gameStore.ts
 import {
-    DERELICT_CONFIGS,
-    calculateDerelictRewards,
-    getRandomDerelictType,
-    rollDerelictRarity,
+  DERELICT_CONFIGS,
+  calculateDerelictRewards,
+  getRandomDerelictType,
+  rollDerelictRarity,
 } from '@/config/derelicts';
+import { FORMATION_CONFIGS } from '@/config/formations';
 import { ORBIT_CONFIGS, getAdjacentOrbits, isOrbitUnlocked } from '@/config/orbits';
 import {
-    ARK_COMPONENTS,
-    PRESTIGE_PERKS,
-    calculateDarkMatterGain,
+  ARK_COMPONENTS,
+  PRESTIGE_PERKS,
+  calculateDarkMatterGain,
 } from '@/config/prestige';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
@@ -17,19 +18,20 @@ import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
 import { getTechEffects, getTechMultipliers } from '@/engine/getTechMultipliers';
 import { calculateProductionRates } from '@/engine/production';
 import type {
-    ArkComponentType,
-    Derelict,
-    DerelictAction,
-    GameState,
-    Mission,
-    OrbitType,
-    ResourceType,
-    ShipType
+  ArkComponentType,
+  Derelict,
+  DerelictAction,
+  FormationType,
+  GameState,
+  Mission,
+  OrbitType,
+  ResourceType,
+  ShipType
 } from '@/types';
 import {
-    calculateBulkShipCost,
-    calculateShipCost,
-    canAffordCost,
+  calculateBulkShipCost,
+  calculateShipCost,
+  canAffordCost,
 } from '@/utils/formulas';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -140,6 +142,9 @@ interface GameStore extends GameState {
   processAutomation: () => void;
   
   isTechUnlocked: (techId: string) => boolean;
+
+  // Fleet Formations
+  setFormation: (type: FormationType | null) => boolean;
 }
 
 const INITIAL_STATE = {
@@ -691,7 +696,8 @@ export const useGameStore = create<GameStore>()(
         const config = ORBIT_CONFIGS[targetOrbit];
         
         // Deduct fuel
-        state.subtractResource('fuel', config.fuelCost);
+        const fuelMultiplier = state.activeFormation === 'expeditionFleet' ? 0.8 : 1.0;
+        state.subtractResource('fuel', config.fuelCost * fuelMultiplier);
 
         // Start travel
         const now = Date.now();
@@ -700,7 +706,7 @@ export const useGameStore = create<GameStore>()(
             traveling: true,
             destination: targetOrbit,
             startTime: now,
-            endTime: now + config.travelTime,
+            endTime: now + config.travelTime * (state.activeFormation === 'expeditionFleet' ? 0.85 : 1.0),
             progress: 0,
           },
           stats: {
@@ -909,7 +915,7 @@ export const useGameStore = create<GameStore>()(
         }
 
         const now = Date.now();
-        const duration = config.baseMissionDuration || 600000;
+        const duration = (config.baseMissionDuration || 600000) * (state.activeFormation === 'scoutFleet' ? 0.9 : 1.0);
 
         const mission: Mission = {
           id: Math.random().toString(36).substr(2, 9),
@@ -1018,6 +1024,9 @@ export const useGameStore = create<GameStore>()(
              }
              
              // Generate derelict in the selected orbit
+             // Discovery bonus from scoutFleet is currently not used for spawn chance, 
+             // but we could use it to increase rarity chance in the future.
+             
              const derelict = state.spawnDerelict(spawnOrbit);
              if (derelict) {
                  discoveredDerelict = derelict;
@@ -1049,6 +1058,16 @@ export const useGameStore = create<GameStore>()(
                     if (rewards.electronics) rewards.electronics *= 1.2;
                     if (rewards.dataFragments) rewards.dataFragments *= 0.1;
                     if (rewards.rareMaterials) rewards.rareMaterials *= 0.5;
+                }
+                
+                // Apply Formation Bonus
+                if (state.activeFormation === 'salvageFleet') {
+                    if (rewards.metal) rewards.metal *= 1.15;
+                    if (rewards.electronics) rewards.electronics *= 1.15;
+                    if (rewards.rareMaterials) rewards.rareMaterials *= 1.15;
+                    if (rewards.exoticAlloys) rewards.exoticAlloys *= 1.15;
+                    if (rewards.aiCores) rewards.aiCores *= 1.15;
+                    if (rewards.dataFragments) rewards.dataFragments *= 1.15;
                 }
                 
                 // Round values
@@ -1847,6 +1866,56 @@ export const useGameStore = create<GameStore>()(
             }
           }
         }
+      },
+      
+      setFormation: (type) => {
+        const state = get();
+        
+        // Deactivate
+        if (type === null) {
+            set({ activeFormation: null });
+            // Recalculate rates
+            const newState = get();
+            const newRates = calculateProductionRates(newState);
+            newState.updateComputedRates(newRates);
+            return true;
+        }
+
+        // Check tech
+        if (!state.techTree.purchased.includes('fleet_management')) return false;
+
+        // Check cooldown
+        if (Date.now() < state.formationCooldownEnd) return false;
+
+        const config = FORMATION_CONFIGS[type];
+        if (!config) return false;
+
+        // Check requirements
+        for (const [ship, count] of Object.entries(config.requirements)) {
+            if (state.ships[ship as ShipType] < (count as number)) return false;
+        }
+        
+        // Special case for Production Fleet "Total Ships" requirement if we implemented it that way
+        // But for now we used specific ships in the config, so the loop above handles it.
+        // If we want "Total Ships" logic:
+        if (type === 'productionFleet') {
+             const totalShips = Object.values(state.ships).reduce((a, b) => a + b, 0);
+             if (totalShips < 50) return false;
+        }
+
+        set({ 
+            activeFormation: type,
+            formationCooldownEnd: Date.now() + config.cooldown
+        });
+        
+        state.addNotification('success', `Fleet formation set to ${config.name}`);
+
+        // Recalculate rates
+        const newState = get();
+        const newRates = calculateProductionRates(newState);
+        newState.updateComputedRates(newRates);
+
+        return true;
       },
     }),
     {

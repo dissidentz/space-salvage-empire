@@ -1,3 +1,4 @@
+import { FleetFormations } from '@/components/FleetFormations';
 import { ShipCard } from '@/components/ShipCard';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -83,6 +84,10 @@ export function FleetView() {
         <span className="text-primary">⚡</span>
         Your Fleet
       </h2>
+
+      {/* Fleet Formations */}
+      <FleetFormations />
+
 
       {/* Render ships grouped by tier */}
       {Object.entries(shipsByTier).map(([tier, shipList]) => {

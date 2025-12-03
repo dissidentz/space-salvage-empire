@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.3',
+    date: '2025-12-03',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Fleet Formations System - Organize ships for specialized bonuses',
+      },
+      {
+        category: 'feature',
+        description: 'Added 5 unique formations: Mining, Scout, Salvage, Expedition, and Production',
+      },
+      {
+        category: 'improvement',
+        description: 'Added Fleet Formations UI to Fleet View',
+      },
+    ],
+  },
+  {
     version: '0.2.2',
     date: '2025-12-03',
     changes: [

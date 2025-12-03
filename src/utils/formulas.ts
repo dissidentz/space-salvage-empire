@@ -21,7 +21,7 @@ export interface Multipliers {
   orbit?: number | Record<ResourceType, number>;
   tech?: number | Record<string, number>;
   prestige?: number;
-  formation?: number;
+  formation?: number | Record<string, number>;
   colony?: number;
   upgrade?: {
     production: Record<string, number>;
@@ -169,12 +169,28 @@ export function calculateProduction(
     }
   }
 
+  // Calculate formation multiplier
+  let formationMultiplier = 1.0;
+  if (multipliers.formation) {
+      if (typeof multipliers.formation === 'number') {
+          formationMultiplier = multipliers.formation;
+      } else {
+          // Apply global production bonus
+          formationMultiplier *= (multipliers.formation['all_production'] || 1.0);
+          
+          // Apply resource-specific bonus if applicable
+          if (resourceType && multipliers.formation[`${resourceType}_production`]) {
+              formationMultiplier *= multipliers.formation[`${resourceType}_production`];
+          }
+      }
+  }
+
   // Calculate global multiplier
   const globalMultiplier =
     orbitMultiplier *
     techMultiplier *
     (multipliers.prestige ?? 1) *
-    (multipliers.formation ?? 1) *
+    formationMultiplier *
     (multipliers.colony ?? 1);
 
   // Calculate upgrade multiplier and flat bonus

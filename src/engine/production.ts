@@ -1,5 +1,6 @@
 // Production calculation engine for Space Salvage Empire
 
+import { FORMATION_CONFIGS } from '@/config/formations';
 import { ORBIT_CONFIGS } from '@/config/orbits';
 import { SHIP_CONFIGS } from '@/config/ships';
 import type { GameState, ResourceType, ShipType } from '@/types';
@@ -109,7 +110,7 @@ function calculateMultipliers(state: GameState): {
   orbit: Record<ResourceType, number>;
   tech: Record<string, number>;
   prestige: number;
-  formation: number;
+  formation: Record<string, number>;
   colony: number;
   upgrade: UpgradeMultipliers;
 } {
@@ -133,14 +134,27 @@ function calculateMultipliers(state: GameState): {
   const upgradeMultipliers = getUpgradeMultipliers(state);
   
   const prestigeMultiplier = 1.0; // TODO: Calculate from prestige perks
-  const formationMultiplier = 1.0; // TODO: Calculate from active formation
+  
+  // Calculate formation multipliers
+  const formationMultipliers: Record<string, number> = {};
+  if (state.activeFormation) {
+      const config = FORMATION_CONFIGS[state.activeFormation];
+      if (config) {
+          config.effects.forEach(effect => {
+              if (effect.type === 'multiplier') {
+                  formationMultipliers[effect.target] = effect.value;
+              }
+          });
+      }
+  }
+  
   const colonyMultiplier = hasColonyInOrbit(state) ? 1.25 : 1.0;
 
   return {
     orbit: orbitMultipliers,
     tech: techMultipliers,
     prestige: prestigeMultiplier,
-    formation: formationMultiplier,
+    formation: formationMultipliers,
     colony: colonyMultiplier,
     upgrade: upgradeMultipliers,
   };

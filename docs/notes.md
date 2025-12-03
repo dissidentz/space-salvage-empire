@@ -5,16 +5,18 @@ Based on my review of your project documentation and current codebase, here's wh
 Tech unlocked: market_access (exists in tech tree)
 Status: Tech unlocks it, but no actual trading functionality or UI to sell/convert resources
 Mentioned in: Game Design Doc (Run 4 unlock), Development Roadmap
+Based on my review of your project documentation and current codebase, here's what has NOT been implemented yet:
+
+🚫 Not Yet Implemented
+1. Trading Post System
+Tech unlocked: market_access (exists in tech tree)
+Status: Tech unlocks it, but no actual trading functionality or UI to sell/convert resources
+Mentioned in: Game Design Doc (Run 4 unlock), Development Roadmap
 
 2. Contracts System
 Tech unlocked: contracts (exists in tech tree)
 Status: Tech tree has the unlock, but no contract generation, tracking, or rewards system
 Mentioned in: Game Design Doc (Run 6 unlock), Progression Doc
-
-3. Fleet Formations System
-Tech unlocked: fleet_management (exists in tech tree)
-Status: Tech tree has the unlock, but no formation bonuses or ship grouping mechanics
-Mentioned in: Game Design Doc (Run 8 unlock), Progression Doc
 
 4. Auto-Scout & Auto-Salvage
 Techs exist: auto_scout, auto_salvage, total_automation
@@ -74,8 +76,8 @@ For context, here's what is working:
 ✅ Resource production & management
 ✅ Instant Warp Ability (Tier 4 Exploration)
 ✅ Adjacent Orbit Scouting (Tier 3 Exploration)
+✅ Fleet Formations System (Tier 4 Economy)
 Would you like me to help implement any of these missing features? The most impactful ones to tackle next would probably be:
 
 Trading Post (new strategic resource conversion gameplay)
 Contracts System (optional objectives for bonuses)
-Fleet Formations (strategic ship grouping with bonuses)
