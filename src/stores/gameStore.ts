@@ -697,13 +697,18 @@ export const useGameStore = create<GameStore>()(
           const origin = state.currentOrbit;
           const startTime = state.travelState.startTime;
           
-          set(s => ({
-            currentOrbit: destination,
-            travelState: null,
-            stats: {
-              ...s.stats,
-              totalTravels: s.stats.totalTravels + 1,
-              farthestOrbit: destination, // Simplified, needs logic to compare orbits
+          set(s => {
+            const currentFarthest = ORBIT_CONFIGS[s.stats.farthestOrbit || 'leo'];
+            const newDest = ORBIT_CONFIGS[destination];
+            const newFarthest = newDest.index > currentFarthest.index ? destination : s.stats.farthestOrbit;
+
+            return {
+              currentOrbit: destination,
+              travelState: null,
+              stats: {
+                ...s.stats,
+                totalTravels: s.stats.totalTravels + 1,
+                farthestOrbit: newFarthest,
               travelHistory: [
                 ...(s.stats.travelHistory || []),
                 {
@@ -719,7 +724,8 @@ export const useGameStore = create<GameStore>()(
                 },
               ],
             },
-          }));
+          };
+        });
 
           state.addNotification('success', `Arrived at ${ORBIT_CONFIGS[destination].name}`);
         }

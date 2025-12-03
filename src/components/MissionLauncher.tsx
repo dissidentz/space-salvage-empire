@@ -43,9 +43,9 @@ export function MissionLauncher() {
     return ships[shipType] - busyShips;
   };
 
-  // Get all unlocked orbits (excluding current)
+  // Get all unlocked orbits (including current)
   const availableOrbits = (Object.keys(ORBIT_CONFIGS) as OrbitType[]).filter(
-    orbit => orbit !== currentOrbit && canTravelToOrbit(orbit)
+    orbit => orbit === currentOrbit || canTravelToOrbit(orbit)
   );
 
   const handleLaunch = () => {
@@ -177,11 +177,14 @@ export function MissionLauncher() {
             
             {/* Colony Ship Info (Colony only) */}
             {missionType === 'colony' && (
-                <div className="p-3 bg-slate-700/30 rounded flex items-center justify-between">
-                    <span className="text-sm font-medium">Colony Ships Available:</span>
-                    <Badge variant={getAvailableCount('colonyShip') > 0 ? 'default' : 'destructive'}>
-                        {getAvailableCount('colonyShip')} / {ships.colonyShip}
-                    </Badge>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Select Ship</label>
+                    <div className="p-3 bg-slate-700/30 rounded flex items-center justify-between">
+                        <span className="text-sm font-medium">Colony Ships Available:</span>
+                        <Badge variant={getAvailableCount('colonyShip') > 0 ? 'default' : 'destructive'}>
+                            {getAvailableCount('colonyShip')} / {ships.colonyShip}
+                        </Badge>
+                    </div>
                 </div>
             )}
 
@@ -217,7 +220,6 @@ export function MissionLauncher() {
             </div>
 
             {/* Mission Details */}
-            {targetOrbit && (
             <div className="p-3 bg-slate-700/30 rounded space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
@@ -225,7 +227,9 @@ export function MissionLauncher() {
                     <span>Fuel Cost:</span>
                 </div>
                 <span className="font-medium">
-                    {missionType === 'scout' ? (targetOrbit === 'leo' || targetOrbit === 'geo' ? '0' : '50') : formatNumber(ORBIT_CONFIGS[targetOrbit].fuelCost)} fuel
+                    {targetOrbit 
+                        ? (missionType === 'scout' ? (targetOrbit === 'leo' || targetOrbit === 'geo' ? '0' : '50') : formatNumber(ORBIT_CONFIGS[targetOrbit].fuelCost)) + ' fuel'
+                        : '-'}
                 </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -238,19 +242,13 @@ export function MissionLauncher() {
                 </span>
                 </div>
             </div>
-            )}
 
             {/* Launch Button */}
-            {missionType === 'scout' && missions.filter(m => m.type === 'scout').length >= 3 && (
-                <div className="text-xs text-yellow-400 text-center mb-2">
-                    Maximum scout mission limit reached (3/3)
-                </div>
-            )}
             
             <Button
-            className="w-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50"
+            className="w-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 text-blue-200 hover:text-blue-100"
             onClick={handleLaunch}
-            disabled={!canLaunch() || (missionType === 'scout' && missions.filter(m => m.type === 'scout').length >= 3)}
+            disabled={!canLaunch()}
             >
             <Send className="w-4 h-4 mr-2" />
             Launch {missionType === 'scout' ? 'Scout' : 'Colony'} Mission

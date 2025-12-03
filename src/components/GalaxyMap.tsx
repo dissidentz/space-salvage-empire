@@ -1,20 +1,18 @@
-import { MissionLauncher } from '@/components/MissionLauncher';
-import { MissionQueue } from '@/components/MissionQueue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { OrbitType } from '@/types';
 import { Clock, Fuel, MapPin, Star, Target, Zap } from 'lucide-react';
-import { useMemo } from 'react';
-import { DerelictListView } from './DerelictListView';
+import { useEffect, useMemo, useState } from 'react';
 
 interface OrbitNode {
   orbit: OrbitType;
@@ -31,6 +29,23 @@ export function GalaxyMap() {
   const travelToOrbit = useGameStore(state => state.travelToOrbit);
   const resources = useGameStore(state => state.resources);
   const derelicts = useGameStore(state => state.derelicts);
+  const getTravelProgress = useGameStore(state => state.getTravelProgress);
+
+  const [progress, setProgress] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+
+  useEffect(() => {
+    if (!travelState?.traveling) return;
+
+    const updateProgress = () => {
+      setProgress(getTravelProgress());
+      setTimeRemaining(Math.max(0, travelState.endTime - Date.now()));
+    };
+
+    updateProgress();
+    const interval = setInterval(updateProgress, 100);
+    return () => clearInterval(interval);
+  }, [travelState, getTravelProgress]);
 
   // Generate stable star positions (pre-calculated to avoid Math.random in render)
   const stars = useMemo(
@@ -166,9 +181,6 @@ export function GalaxyMap() {
 
   return (
     <div className="space-y-4">
-      {/* Mission Queue - Shows active missions */}
-      <MissionQueue />
-
       {/* Main Galaxy Map Card */}
       <Card className="w-full max-w-4xl mx-auto bg-linear-to-br from-slate-950 via-blue-950/20 to-purple-950/20 border-slate-700/50 shadow-2xl">
         <CardHeader className="pb-4">
@@ -432,14 +444,19 @@ export function GalaxyMap() {
             <span>Fuel: {formatNumber(resources.fuel)}</span>
           </div>
         </div>
+
+        {/* Travel Progress Bar */}
+        {travelState?.traveling && (
+          <div className="w-full max-w-md mx-auto space-y-2">
+            <div className="flex justify-between text-sm text-blue-300">
+              <span>Traveling to {ORBIT_CONFIGS[travelState.destination!].name}...</span>
+              <span>{formatTime(timeRemaining)} remaining</span>
+            </div>
+            <Progress value={progress * 100} className="h-2 bg-slate-700" />
+          </div>
+        )}
       </CardContent>
     </Card>
-
-      {/* Mission Control Panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <MissionLauncher />
-        <DerelictListView />
-      </div>
     </div>
   );
 }

@@ -162,7 +162,7 @@ export function MissionQueue() {
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-2 max-h-[450px] overflow-y-auto pr-2">
         {missions.map(mission => (
           <MissionCard key={mission.id} mission={mission} />
         ))}

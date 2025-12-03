@@ -11,6 +11,56 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.0',
+    date: '2025-12-02',
+    changes: [
+      {
+        category: 'feature',
+        description: '✅ PHASE 1: Orbit Progression System - Complete travel mechanics with fuel costs, travel times, and progress tracking',
+      },
+      {
+        category: 'feature',
+        description: '✅ PHASE 2: Ship Production & Purchasing - All 11 ship types fully implemented with exponential cost scaling',
+      },
+      {
+        category: 'feature',
+        description: '✅ PHASE 3: Mission System - Scout and Salvage missions with proper completion, rewards, and notifications',
+      },
+      {
+        category: 'feature',
+        description: '✅ PHASE 4: Derelict System - Passive spawning, 5 rarity tiers, loot tables, and 15-minute expiration',
+      },
+      {
+        category: 'feature',
+        description: '✅ PHASE 5: Tech Tree - 45+ technologies across 3 branches (Efficiency, Exploration, Economy) with prerequisites',
+      },
+      {
+        category: 'feature',
+        description: '✅ PHASE 6: Prestige & Dark Matter - Quantum Reset system with 5 tiers of perks and 8 Ark components',
+      },
+      {
+        category: 'improvement',
+        description: 'Added travel progress bar and time remaining display to Galaxy Map',
+      },
+      {
+        category: 'improvement',
+        description: 'Added "Traveling to..." status indicator on Dashboard during orbit travel',
+      },
+      {
+        category: 'improvement',
+        description: 'Removed redundant "Change Orbit" button from Dashboard (available in sidebar)',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed farthest orbit tracking to only update when progressing to numerically higher orbits',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed test file missing darkMatter property in Resources type',
+      },
+    ],
+  },
+  {
     version: '0.1.5',
     date: '2025-12-02',
     changes: [
