@@ -21,6 +21,8 @@ Techs exist: auto_scout, auto_salvage, total_automation
 Status: Tech unlocks exist, but no automation logic to auto-deploy missions
 Needed for: QoL improvements in later runs
 
+--Complete, needs testing
+
 5. Hacking System
 Status: Derelict configs mention SALVAGE/HACK/DISMANTLE actions, but only basic salvage is currently implemented
 The "HACK" action (150% loot + bonus DF, 85% success, costs electronics) is not functional
@@ -70,6 +72,8 @@ For context, here's what is working:
 ✅ Ship upgrades
 ✅ Colony deployment
 ✅ Resource production & management
+✅ Instant Warp Ability (Tier 4 Exploration)
+✅ Adjacent Orbit Scouting (Tier 3 Exploration)
 Would you like me to help implement any of these missing features? The most impactful ones to tackle next would probably be:
 
 Trading Post (new strategic resource conversion gameplay)

@@ -1,15 +1,15 @@
 // src/stores/gameStore.ts
 import {
-  DERELICT_CONFIGS,
-  calculateDerelictRewards,
-  getRandomDerelictType,
-  rollDerelictRarity,
+    DERELICT_CONFIGS,
+    calculateDerelictRewards,
+    getRandomDerelictType,
+    rollDerelictRarity,
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, getAdjacentOrbits, isOrbitUnlocked } from '@/config/orbits';
 import {
-  ARK_COMPONENTS,
-  PRESTIGE_PERKS,
-  calculateDarkMatterGain,
+    ARK_COMPONENTS,
+    PRESTIGE_PERKS,
+    calculateDarkMatterGain,
 } from '@/config/prestige';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
@@ -17,19 +17,19 @@ import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
 import { getTechEffects, getTechMultipliers } from '@/engine/getTechMultipliers';
 import { calculateProductionRates } from '@/engine/production';
 import type {
-  ArkComponentType,
-  Derelict,
-  DerelictAction,
-  GameState,
-  Mission,
-  OrbitType,
-  ResourceType,
-  ShipType
+    ArkComponentType,
+    Derelict,
+    DerelictAction,
+    GameState,
+    Mission,
+    OrbitType,
+    ResourceType,
+    ShipType
 } from '@/types';
 import {
-  calculateBulkShipCost,
-  calculateShipCost,
-  canAffordCost,
+    calculateBulkShipCost,
+    calculateShipCost,
+    canAffordCost,
 } from '@/utils/formulas';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -651,8 +651,41 @@ export const useGameStore = create<GameStore>()(
         return state.resources.fuel >= config.fuelCost;
       },
 
-      travelToOrbit: (targetOrbit) => {
+      travelToOrbit: (targetOrbit, useInstantWarp = false) => {
         const state = get();
+        
+        if (useInstantWarp) {
+            if (!state.instantWarpAvailable) return false;
+            if (state.currentOrbit === targetOrbit) return false;
+            // Instant travel!
+            set(s => ({
+                instantWarpAvailable: false,
+                currentOrbit: targetOrbit,
+                stats: {
+                    ...s.stats,
+                    instantWarpUsed: true,
+                    totalTravels: s.stats.totalTravels + 1,
+                    farthestOrbit: ORBIT_CONFIGS[targetOrbit].index > ORBIT_CONFIGS[s.stats.farthestOrbit].index ? targetOrbit : s.stats.farthestOrbit,
+                    travelHistory: [
+                        ...(s.stats.travelHistory || []),
+                        {
+                            id: Math.random().toString(36).substr(2, 9),
+                            origin: s.currentOrbit,
+                            destination: targetOrbit,
+                            startTime: Date.now(),
+                            endTime: Date.now(),
+                            fuelCost: 0,
+                            actualTravelTime: 0,
+                            completed: true,
+                            cancelled: false,
+                        }
+                    ]
+                }
+            }));
+            state.addNotification('success', `Instant Warp to ${ORBIT_CONFIGS[targetOrbit].name} successful!`);
+            return true;
+        }
+
         if (!state.canTravelToOrbit(targetOrbit)) return false;
 
         const config = ORBIT_CONFIGS[targetOrbit];
@@ -1479,6 +1512,16 @@ export const useGameStore = create<GameStore>()(
         
         if (!state.canAffordTech(techId)) return false;
         
+        // Handle unlock effects immediately
+        let instantWarpUnlocked = false;
+        if (tech.effects) {
+            tech.effects.forEach(effect => {
+                if (effect.type === 'unlock' && effect.target === 'instant_warp_ability') {
+                    instantWarpUnlocked = true;
+                }
+            });
+        }
+
         set((state) => ({
           resources: {
             ...state.resources,
@@ -1491,7 +1534,8 @@ export const useGameStore = create<GameStore>()(
           stats: {
             ...state.stats,
             techsPurchased: state.stats.techsPurchased + 1,
-          }
+          },
+          instantWarpAvailable: instantWarpUnlocked ? true : state.instantWarpAvailable,
         }));
         
         state.addNotification('success', `Researched ${tech.name}`);

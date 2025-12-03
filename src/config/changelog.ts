@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.2',
+    date: '2025-12-03',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented "Instant Warp" ability - One free instant travel per run (Tier 4 Exploration)',
+      },
+      {
+        category: 'feature',
+        description: 'Verified "Adjacent Orbit Scouting" - Scouts can discover derelicts in neighboring orbits (Tier 3 Exploration)',
+      },
+      {
+        category: 'improvement',
+        description: 'Added automated tests for Instant Warp and Adjacent Orbit Scouting mechanics',
+      },
+    ],
+  },
+  {
     version: '0.2.1',
     date: '2025-12-03',
     changes: [
