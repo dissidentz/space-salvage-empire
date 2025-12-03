@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.4',
+    date: '2025-12-03',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed Dual Missions bug - Fleet Coordination and Total Automation now properly allow 2 missions per ship',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Auto-Salvage to launch multiple missions when ship slots are available',
+      },
+      {
+        category: 'improvement',
+        description: 'Added comprehensive automated tests for Auto-Salvage and Dual Missions features',
+      },
+    ],
+  },
+  {
     version: '0.2.3',
     date: '2025-12-03',
     changes: [

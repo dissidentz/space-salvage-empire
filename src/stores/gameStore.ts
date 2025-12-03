@@ -902,9 +902,15 @@ export const useGameStore = create<GameStore>()(
         
         // Validation
         if (state.ships[shipType] <= 0) return false;
-        // Check if ship is already busy (simplified: assume 1 ship = 1 mission for now, or check count)
+        // Check if ship is already busy
+        // Check if dual missions are enabled
+        const hasDualMissions = 
+          state.techTree.purchased.includes('fleet_coordination') || 
+          state.techTree.purchased.includes('total_automation');
+        const maxMissionsPerShip = hasDualMissions ? 2 : 1;
+        
         const busyShips = state.missions.filter(m => m.shipType === shipType).length;
-        if (busyShips >= state.ships[shipType]) return false;
+        if (busyShips >= state.ships[shipType] * maxMissionsPerShip) return false;
 
         // Fuel cost check - LEO and GEO missions cost no fuel
         const fuelCost = targetOrbit === 'leo' || targetOrbit === 'geo' ? 0 : 50; 
@@ -946,8 +952,15 @@ export const useGameStore = create<GameStore>()(
 
         // Validation
         if (state.ships[shipType] <= 0) return false;
+        
+        // Check if dual missions are enabled
+        const hasDualMissions = 
+          state.techTree.purchased.includes('fleet_coordination') || 
+          state.techTree.purchased.includes('total_automation');
+        const maxMissionsPerShip = hasDualMissions ? 2 : 1;
+        
         const busyShips = state.missions.filter(m => m.shipType === shipType).length;
-        if (busyShips >= state.ships[shipType]) return false;
+        if (busyShips >= state.ships[shipType] * maxMissionsPerShip) return false;
 
         // Only charge fuel if derelict is in a different orbit, and not in LEO or GEO
         let fuelCost = 0;
@@ -1859,10 +1872,7 @@ export const useGameStore = create<GameStore>()(
             const availableSalvage = state.ships.salvageFrigate * maxMissionsPerShip - busySalvage;
             
             if (availableSalvage > 0) {
-              const success = state.startSalvageMission(derelict.id, 'salvageFrigate', 'salvage');
-              if (success) {
-                break;
-              }
+              state.startSalvageMission(derelict.id, 'salvageFrigate', 'salvage');
             }
           }
         }
