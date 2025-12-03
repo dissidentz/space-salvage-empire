@@ -238,6 +238,29 @@ export function getNextOrbit(currentOrbit: OrbitType): OrbitType | null {
 }
 
 /**
+ * Get adjacent orbits (previous and next in progression)
+ * Used for quantum_entanglement_comms tech feature
+ */
+export function getAdjacentOrbits(currentOrbit: OrbitType): OrbitType[] {
+  const current = ORBIT_CONFIGS[currentOrbit];
+  const orbitOrder: OrbitType[] = ['leo', 'geo', 'lunar', 'mars', 'asteroidBelt', 'jovian', 'kuiper', 'deepSpace'];
+  const adjacentOrbits: OrbitType[] = [];
+  
+  // Add previous orbit if not at the start
+  if (current.index > 0) {
+    adjacentOrbits.push(orbitOrder[current.index - 1]);
+  }
+  
+  // Add next orbit if not at the end
+  if (current.index < 7) {
+    adjacentOrbits.push(orbitOrder[current.index + 1]);
+  }
+  
+  return adjacentOrbits;
+}
+
+
+/**
  * Check if an orbit is unlocked
  */
 export function isOrbitUnlocked(

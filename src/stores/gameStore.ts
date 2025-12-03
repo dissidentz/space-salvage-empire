@@ -1,15 +1,15 @@
 // src/stores/gameStore.ts
 import {
-  DERELICT_CONFIGS,
-  calculateDerelictRewards,
-  getRandomDerelictType,
-  rollDerelictRarity,
+    DERELICT_CONFIGS,
+    calculateDerelictRewards,
+    getRandomDerelictType,
+    rollDerelictRarity,
 } from '@/config/derelicts';
-import { ORBIT_CONFIGS, isOrbitUnlocked } from '@/config/orbits';
+import { ORBIT_CONFIGS, getAdjacentOrbits, isOrbitUnlocked } from '@/config/orbits';
 import {
-  ARK_COMPONENTS,
-  PRESTIGE_PERKS,
-  calculateDarkMatterGain,
+    ARK_COMPONENTS,
+    PRESTIGE_PERKS,
+    calculateDarkMatterGain,
 } from '@/config/prestige';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
@@ -17,19 +17,19 @@ import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
 import { getTechEffects, getTechMultipliers } from '@/engine/getTechMultipliers';
 import { calculateProductionRates } from '@/engine/production';
 import type {
-  ArkComponentType,
-  Derelict,
-  DerelictAction,
-  GameState,
-  Mission,
-  OrbitType,
-  ResourceType,
-  ShipType
+    ArkComponentType,
+    Derelict,
+    DerelictAction,
+    GameState,
+    Mission,
+    OrbitType,
+    ResourceType,
+    ShipType
 } from '@/types';
 import {
-  calculateBulkShipCost,
-  calculateShipCost,
-  canAffordCost,
+    calculateBulkShipCost,
+    calculateShipCost,
+    canAffordCost,
 } from '@/utils/formulas';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -87,7 +87,7 @@ interface GameStore extends GameState {
   ) => void;
 
   // UI actions
-  setActiveView: (view: 'dashboard' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog') => void;
+  setActiveView: (view: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog') => void;
   openModal: (modal: string, data?: any) => void;
   closeModal: () => void;
   addNotification: (
@@ -331,7 +331,7 @@ const INITIAL_STATE = {
 
   ui: {
     activeTab: 'fleet' as 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar',
-    activeView: 'dashboard' as 'dashboard' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'missionLog',
+    activeView: 'dashboard' as 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog',
     openModal: null,
     modalData: undefined,
     notifications: [],
@@ -844,13 +844,6 @@ export const useGameStore = create<GameStore>()(
         const busyShips = state.missions.filter(m => m.shipType === shipType).length;
         if (busyShips >= state.ships[shipType]) return false;
 
-        // Limit concurrent scout missions to 3
-        const activeScoutMissions = state.missions.filter(m => m.type === 'scout').length;
-        if (activeScoutMissions >= 3) {
-            state.addNotification('warning', 'Maximum of 3 scout missions allowed at once.');
-            return false;
-        }
-
         // Fuel cost check - LEO and GEO missions cost no fuel
         const fuelCost = targetOrbit === 'leo' || targetOrbit === 'geo' ? 0 : 50; 
         if (state.resources.fuel < fuelCost) return false;
@@ -953,11 +946,34 @@ export const useGameStore = create<GameStore>()(
 
         if (success) {
           if (mission.type === 'scout') {
-             // Generate derelict
-             const derelict = state.spawnDerelict(mission.targetOrbit);
+             // Determine which orbit to spawn derelict in
+             let spawnOrbit = mission.targetOrbit;
+             
+             // Check if quantum_entanglement_comms tech is unlocked
+             const hasAdjacentScouting = state.techTree.purchased.includes('quantum_entanglement_comms');
+             
+             if (hasAdjacentScouting) {
+               // Get adjacent orbits and add target orbit to the pool
+               const adjacentOrbits = getAdjacentOrbits(mission.targetOrbit);
+               const possibleOrbits = [mission.targetOrbit, ...adjacentOrbits];
+               
+               // Randomly select one orbit from the pool
+               spawnOrbit = possibleOrbits[Math.floor(Math.random() * possibleOrbits.length)];
+             }
+             
+             // Generate derelict in the selected orbit
+             const derelict = state.spawnDerelict(spawnOrbit);
              if (derelict) {
                  discoveredDerelict = derelict;
-                 state.addNotification('success', `Scout mission successful! Discovered: ${DERELICT_CONFIGS[derelict.type].name}`);
+                 const orbitName = ORBIT_CONFIGS[spawnOrbit].name;
+                 const derelictName = DERELICT_CONFIGS[derelict.type].name;
+                 
+                 // Show which orbit the derelict was found in
+                 if (hasAdjacentScouting && spawnOrbit !== mission.targetOrbit) {
+                   state.addNotification('success', `Scout found ${derelictName} in adjacent ${orbitName}!`);
+                 } else {
+                   state.addNotification('success', `Scout discovered ${derelictName} in ${orbitName}`);
+                 }
              } else {
                  state.addNotification('warning', `Scout mission completed but found nothing.`);
              }

@@ -19,6 +19,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { DERELICT_CONFIGS } from '@/config/derelicts';
+import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { Derelict, DerelictAction } from '@/types';
 import {
@@ -32,6 +33,7 @@ import {
     AlertTriangle,
     Clock,
     Fuel,
+    MapPin,
     Package,
     Rocket,
     Sparkles,
@@ -126,6 +128,11 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                 <span className="font-medium">{config.name}</span>
                 <Badge className={getRarityBgColor(derelict.rarity)}>
                   <span className={getRarityColor(derelict.rarity)}>{derelict.rarity}</span>
+                </Badge>
+                {/* Orbit Location Badge */}
+                <Badge variant="outline" className="bg-slate-700/50 border-slate-600">
+                  <MapPin className={`w-3 h-3 mr-1 ${getOrbitColor(derelict.orbit)}`} />
+                  <span className={getOrbitColor(derelict.orbit)}>{ORBIT_CONFIGS[derelict.orbit].name}</span>
                 </Badge>
                 {derelict.isArkComponent && (
                   <Badge className="bg-orange-500/20 border-orange-500/50">

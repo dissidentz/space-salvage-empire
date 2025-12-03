@@ -11,6 +11,36 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.1.5',
+    date: '2025-12-02',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented "Adjacent Orbit Scouting" - scouts can now discover derelicts in neighboring orbits when "Quantum Entanglement Comms" tech is unlocked',
+      },
+      {
+        category: 'feature',
+        description: 'Added dedicated Fleet page for better ship management and cleaner Dashboard',
+      },
+      {
+        category: 'improvement',
+        description: 'Removed limit of 3 concurrent scout missions - launch as many as you have probes for!',
+      },
+      {
+        category: 'improvement',
+        description: 'Added orbit location badge to Derelict Cards to clearly show where discoveries are located',
+      },
+      {
+        category: 'improvement',
+        description: 'Added "Change Orbit" button to Dashboard header for quick navigation',
+      },
+      {
+        category: 'improvement',
+        description: 'Simplified Scout Probe availability UI (removed "Limit: 3" text)',
+      },
+    ],
+  },
+  {
     version: '0.1.4',
     date: '2025-12-02',
     changes: [

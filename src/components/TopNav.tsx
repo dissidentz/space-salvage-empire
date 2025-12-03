@@ -7,6 +7,7 @@ import {
     FlaskConical,
     LayoutDashboard,
     Map,
+    Rocket,
     ScrollText,
     Settings
 } from 'lucide-react';
@@ -21,6 +22,12 @@ export function TopNav() {
       label: 'Dashboard', 
       icon: LayoutDashboard,
       view: 'dashboard' as const
+    },
+    { 
+      id: 'fleet', 
+      label: 'Fleet', 
+      icon: Rocket,
+      view: 'fleet' as const
     },
     { 
       id: 'galaxyMap', 

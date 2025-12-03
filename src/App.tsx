@@ -15,6 +15,7 @@ import { Component } from 'react';
 import { NotificationManager } from './components/NotificationManager';
 import { ChangelogView } from './components/views/ChangelogView';
 import { DashboardView } from './components/views/DashboardView';
+import { FleetView } from './components/views/FleetView';
 import { MissionLogView } from './components/views/MissionLogView';
 import { PrestigeView } from './components/views/PrestigeView';
 import { SettingsView } from './components/views/SettingsView';
@@ -39,6 +40,8 @@ function App() {
   // Render the appropriate view
   const renderView = () => {
     switch (activeView) {
+      case 'fleet':
+        return <FleetView />;
       case 'galaxyMap':
         return <GalaxyMap />;
       case 'settings':
