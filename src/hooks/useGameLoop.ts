@@ -15,12 +15,18 @@ export function useGameLoop() {
     console.log('Game loop starting...');
 
     const interval = setInterval(() => {
+      const tickStart = performance.now();
       const state = useGameStore.getState();
 
       // Calculate production for this tick
       const deltas = calculateTickProduction(state);
 
       // Apply resource changes
+      // Apply resource changes
+      const resourceUpdates: Partial<Record<ResourceType, number>> = {};
+      const statUpdates: Partial<typeof state.stats> = {};
+      let hasUpdates = false;
+
       for (const [resource, delta] of Object.entries(deltas)) {
         if (delta !== 0) {
           const resourceType = resource as ResourceType;
@@ -32,58 +38,59 @@ export function useGameLoop() {
 
           // Only apply if there's an actual change
           if (actualDelta !== 0) {
-            state.addResource(resourceType, actualDelta);
+            resourceUpdates[resourceType] = (resourceUpdates[resourceType] || 0) + actualDelta;
+            hasUpdates = true;
           }
 
           // Track stats for positive production
           if (delta > 0) {
-            // Update stats based on resource type
-            if (resourceType === 'debris') {
-              useGameStore.setState(s => ({
-                stats: {
-                  ...s.stats,
-                  totalDebrisCollected: s.stats.totalDebrisCollected + delta,
-                },
-              }));
-            } else if (resourceType === 'metal') {
-              useGameStore.setState(s => ({
-                stats: {
-                  ...s.stats,
-                  totalMetalProduced: s.stats.totalMetalProduced + delta,
-                },
-              }));
-            } else if (resourceType === 'electronics') {
-              useGameStore.setState(s => ({
-                stats: {
-                  ...s.stats,
-                  totalElectronicsGained:
-                    s.stats.totalElectronicsGained + delta,
-                },
-              }));
-            } else if (resourceType === 'fuel') {
-              useGameStore.setState(s => ({
-                stats: {
-                  ...s.stats,
-                  totalFuelSynthesized: s.stats.totalFuelSynthesized + delta,
-                },
-              }));
-            }
+             if (resourceType === 'debris') {
+                statUpdates.totalDebrisCollected = (statUpdates.totalDebrisCollected || state.stats.totalDebrisCollected) + delta;
+             } else if (resourceType === 'metal') {
+                statUpdates.totalMetalProduced = (statUpdates.totalMetalProduced || state.stats.totalMetalProduced) + delta;
+             } else if (resourceType === 'electronics') {
+                statUpdates.totalElectronicsGained = (statUpdates.totalElectronicsGained || state.stats.totalElectronicsGained) + delta;
+             } else if (resourceType === 'fuel') {
+                statUpdates.totalFuelSynthesized = (statUpdates.totalFuelSynthesized || state.stats.totalFuelSynthesized) + delta;
+             }
+             hasUpdates = true;
           }
         }
+      }
+
+      if (hasUpdates) {
+          useGameStore.setState(s => {
+              const newResources = { ...s.resources };
+              for (const [res, amount] of Object.entries(resourceUpdates)) {
+                  newResources[res as ResourceType] = (newResources[res as ResourceType] || 0) + amount;
+              }
+              
+              // Merge stats
+              const newStats = { ...s.stats, ...statUpdates };
+              
+              return {
+                  resources: newResources,
+                  stats: newStats
+              };
+          });
       }
 
       // Check for completed travel
       state.completeTravelIfReady();
 
       // Check for completed missions
-      state.missions.forEach(mission => {
-        if (mission.status === 'inProgress' && Date.now() >= mission.endTime) {
-          state.completeMissionIfReady(mission.id);
-        }
-      });
+      // Create a snapshot of mission IDs to avoid race conditions
+      const now = Date.now();
+      const completedMissionIds = state.missions
+        .filter(m => m.status === 'inProgress' && now >= m.endTime)
+        .map(m => m.id);
+
+      // Process all completed missions in a single batch update
+      if (completedMissionIds.length > 0) {
+        state.completeAllReadyMissions(completedMissionIds);
+      }
 
       // Check for expired derelicts
-      const now = Date.now();
       state.derelicts.forEach(derelict => {
         // Only expire if no mission is currently targeting this derelict
         const isTargeted = state.missions.some(
@@ -100,6 +107,11 @@ export function useGameLoop() {
 
       // Check passive spawning
       checkPassiveSpawning();
+
+      const tickDuration = performance.now() - tickStart;
+      if (tickDuration > 16) { // Warn if tick takes longer than 1 frame (16ms)
+         console.warn(`Game loop tick took ${tickDuration.toFixed(2)}ms`);
+      }
     }, 100); // 10 ticks per second
 
     // Update production rates every second for display

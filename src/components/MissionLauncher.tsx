@@ -50,44 +50,51 @@ export function MissionLauncher() {
 
   const handleLaunch = () => {
     if (!targetOrbit) {
-      alert('Please select a target orbit');
+      useGameStore.getState().addNotification('error', 'Please select a target orbit');
       return;
     }
 
     if (missionType === 'scout') {
         if (!selectedShip) {
-            alert('Please select a ship');
+            useGameStore.getState().addNotification('error', 'Please select a ship');
             return;
         }
         const fuelCost = targetOrbit === 'leo' || targetOrbit === 'geo' ? 0 : 50;
         if (resources.fuel < fuelCost) {
-            alert(`Insufficient fuel. Need ${fuelCost} fuel.`);
+            useGameStore.getState().addNotification('error', `Insufficient fuel. Need ${fuelCost} fuel.`);
             return;
         }
         const success = startScoutMission(selectedShip, targetOrbit);
         if (success) {
             setSelectedShip(null);
             setTargetOrbit(null);
+            useGameStore.getState().addNotification('success', 'Scout mission launched successfully!');
         } else {
-            alert('Failed to launch mission.');
+            // Error notification is handled in startScoutMission if it returns false (e.g. limits)
+            // But if it returns false without notification, we might want one here.
+            // Checking gameStore, startScoutMission adds notification for limits.
+            // So generic failure might be redundant if store handles it.
+            // But let's add one just in case if store didn't.
+            // Actually, let's trust the return value logic or add a generic one if no specific error.
         }
     } else if (missionType === 'colony') {
         // Check availability
         if (getAvailableCount('colonyShip') <= 0) {
-            alert('No Colony Ship available.');
+            useGameStore.getState().addNotification('error', 'No Colony Ship available.');
             return;
         }
         // Check fuel
         const fuelCost = ORBIT_CONFIGS[targetOrbit].fuelCost;
         if (resources.fuel < fuelCost) {
-            alert(`Insufficient fuel. Need ${fuelCost} fuel.`);
+            useGameStore.getState().addNotification('error', `Insufficient fuel. Need ${fuelCost} fuel.`);
             return;
         }
         const success = startColonyMission(targetOrbit);
         if (success) {
             setTargetOrbit(null);
+            useGameStore.getState().addNotification('success', 'Colony mission launched successfully!');
         } else {
-             alert('Failed to launch colony mission.');
+             useGameStore.getState().addNotification('error', 'Failed to launch colony mission.');
         }
     }
   };
@@ -234,10 +241,16 @@ export function MissionLauncher() {
             )}
 
             {/* Launch Button */}
+            {missionType === 'scout' && missions.filter(m => m.type === 'scout').length >= 3 && (
+                <div className="text-xs text-yellow-400 text-center mb-2">
+                    Maximum scout mission limit reached (3/3)
+                </div>
+            )}
+            
             <Button
             className="w-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50"
             onClick={handleLaunch}
-            disabled={!canLaunch()}
+            disabled={!canLaunch() || (missionType === 'scout' && missions.filter(m => m.type === 'scout').length >= 3)}
             >
             <Send className="w-4 h-4 mr-2" />
             Launch {missionType === 'scout' ? 'Scout' : 'Colony'} Mission

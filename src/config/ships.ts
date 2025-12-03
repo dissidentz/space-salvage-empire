@@ -235,8 +235,10 @@ export const SHIP_CONFIGS: Record<ShipType, ShipConfig> = {
       exoticAlloys: 50000 
     },
     costGrowth: GROWTH_RATES.LEGENDARY,
-    baseProduction: 0.05, // 0.05 AI Cores/sec (very slow)
+    baseProduction: 0.5, // Consumes 0.5 Exotic Alloys/sec
     producesResource: 'aiCores',
+    consumesResource: 'exoticAlloys',
+    conversionRatio: 0.1, // 0.5 Alloys -> 0.05 AI Cores
     unlockRequirements: {
       orbit: 'kuiper',
       tech: ['advancedAI'],

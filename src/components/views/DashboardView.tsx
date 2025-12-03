@@ -123,7 +123,22 @@ export function DashboardView() {
                                 : 'bg-red-500/10 text-red-400 border-red-500/50'
                             }
                           >
-                            {ships.scoutProbe - missions.filter(m => m.shipType === 'scoutProbe').length}/{ships.scoutProbe} Available
+                            {(() => {
+                              const activeScouts = missions.filter(m => m.shipType === 'scoutProbe').length;
+                              const availableShips = ships.scoutProbe - activeScouts;
+                              const missionLimit = 3;
+                              const remainingSlots = Math.max(0, missionLimit - activeScouts);
+                              const effectiveAvailable = Math.min(availableShips, remainingSlots);
+                              
+                              return (
+                                <span>
+                                  {effectiveAvailable}/{ships.scoutProbe} Available
+                                  {remainingSlots < availableShips && (
+                                    <span className="ml-1 text-xs opacity-70">(Limit: {missionLimit})</span>
+                                  )}
+                                </span>
+                              );
+                            })()}
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">

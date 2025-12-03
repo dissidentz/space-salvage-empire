@@ -11,6 +11,44 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.1.4',
+    date: '2025-12-02',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed Tech Tree effects not being applied - flat_bonus effects like "Click Amplification" now work correctly',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed manual debris clicking not applying tech multipliers (e.g., click_power)',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed production logic allowing negative resources when input materials were insufficient',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Scout Probe availability UI to show effective availability considering mission limit (now shows "3/10 Available (Limit: 3)" instead of "10/10")',
+      },
+      {
+        category: 'improvement',
+        description: 'Added visual indicator on Mission Launcher when scout mission limit (3) is reached',
+      },
+      {
+        category: 'improvement',
+        description: 'Production now scales down gracefully when input resources run out instead of stopping completely',
+      },
+      {
+        category: 'feature',
+        description: 'Completed AI Core Fabricator ship - now correctly consumes Exotic Alloys to produce AI Cores',
+      },
+      {
+        category: 'improvement',
+        description: 'Replaced all browser alert() dialogs with in-game notifications for better UX',
+      },
+    ],
+  },
+  {
     version: '0.1.3',
     date: '2025-12-01',
     changes: [

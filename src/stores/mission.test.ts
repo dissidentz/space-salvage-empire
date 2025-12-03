@@ -92,13 +92,13 @@ describe('Mission System', () => {
     expect(success).toBe(true);
     expect(updatedStore.missions.length).toBe(1);
     expect(updatedStore.missions[0].type).toBe('scout');
-    expect(updatedStore.resources.fuel).toBe(950); // 1000 - 50
+    expect(updatedStore.resources.fuel).toBe(1000); // LEO missions cost 0 fuel
   });
 
   it('should fail to start scout mission without fuel', () => {
     useGameStore.setState({ resources: { ...useGameStore.getState().resources, fuel: 0 } });
     const store = useGameStore.getState();
-    const success = store.startScoutMission('scoutProbe', 'leo');
+    const success = store.startScoutMission('scoutProbe', 'lunar'); // lunar requires fuel, LEO doesn't
 
     const updatedStore = useGameStore.getState();
     expect(success).toBe(false);
@@ -151,7 +151,7 @@ describe('Mission System', () => {
     expect(success).toBe(true);
     expect(updatedStore.missions.length).toBe(1);
     expect(updatedStore.missions[0].type).toBe('salvage');
-    expect(updatedStore.resources.fuel).toBe(900); // 1000 - 100
+    expect(updatedStore.resources.fuel).toBe(1000); // LEO salvage missions cost 0 fuel
   });
 
   it('should cancel a mission and refund fuel', () => {
@@ -166,6 +166,58 @@ describe('Mission System', () => {
     const finalStore = useGameStore.getState();
     expect(success).toBe(true);
     expect(finalStore.missions.length).toBe(0);
-    expect(finalStore.resources.fuel).toBe(975); // 950 + 25 (50% refund)
+    expect(finalStore.resources.fuel).toBe(1000); // 1000 + 0 (50% refund of 0)
+  });
+  it('should complete multiple missions in a single batch', () => {
+    const now = Date.now();
+    const mission1 = {
+      id: 'm1',
+      type: 'scout',
+      shipType: 'scoutProbe',
+      targetOrbit: 'leo',
+      startTime: now - 10000,
+      endTime: now - 1000, // Completed
+      status: 'inProgress',
+      action: 'scout',
+    };
+    const mission2 = {
+      id: 'm2',
+      type: 'scout',
+      shipType: 'scoutProbe',
+      targetOrbit: 'leo',
+      startTime: now - 10000,
+      endTime: now - 1000, // Completed
+      status: 'inProgress',
+      action: 'scout',
+    };
+    const mission3 = {
+      id: 'm3',
+      type: 'scout',
+      shipType: 'scoutProbe',
+      targetOrbit: 'leo',
+      startTime: now,
+      endTime: now + 10000, // Not completed
+      status: 'inProgress',
+      action: 'scout',
+    };
+
+    useGameStore.setState({
+      missions: [mission1, mission2, mission3] as any,
+    });
+
+    const store = useGameStore.getState();
+    store.completeAllReadyMissions(['m1', 'm2']);
+
+    const updatedState = useGameStore.getState();
+    
+    // m1 and m2 should be removed
+    expect(updatedState.missions.find(m => m.id === 'm1')).toBeUndefined();
+    expect(updatedState.missions.find(m => m.id === 'm2')).toBeUndefined();
+    
+    // m3 should remain
+    expect(updatedState.missions.find(m => m.id === 'm3')).toBeDefined();
+
+    // Stats should update
+    expect(updatedState.stats.totalMissionsSucceeded + updatedState.stats.totalMissionsFailed).toBe(2);
   });
 });

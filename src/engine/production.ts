@@ -49,11 +49,21 @@ export function calculateTickProduction(
         multipliers
       );
 
+      // Cap consumption at available input
+      const actualConsumed = Math.min(consumed, availableInput);
+      
+      // Calculate actual production based on what was actually consumed
+      // If we consumed less than required, production scales down linearly
+      const productionRatio = consumed > 0 ? actualConsumed / consumed : 0;
+      const actualProduced = produced * productionRatio;
+
       // Apply resource-specific orbit multiplier to production
       const orbitMultiplier = multipliers.orbit[outputResource] || 1.0;
-      const multipliedProduction = produced * orbitMultiplier;
+      const multipliedProduction = actualProduced * orbitMultiplier;
 
-      deltas[inputResource] = (deltas[inputResource] || 0) - consumed;
+      // console.log(`Ship: ${shipType}, Input: ${inputResource}, Available: ${availableInput}, Consumed: ${consumed}, ActualConsumed: ${actualConsumed}, Produced: ${produced}, ActualProduced: ${actualProduced}`);
+
+      deltas[inputResource] = (deltas[inputResource] || 0) - actualConsumed;
       deltas[outputResource] =
         (deltas[outputResource] || 0) + multipliedProduction;
     }

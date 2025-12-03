@@ -1,35 +1,35 @@
 // src/stores/gameStore.ts
 import {
-    DERELICT_CONFIGS,
-    calculateDerelictRewards,
-    getRandomDerelictType,
-    rollDerelictRarity,
+  DERELICT_CONFIGS,
+  calculateDerelictRewards,
+  getRandomDerelictType,
+  rollDerelictRarity,
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, isOrbitUnlocked } from '@/config/orbits';
 import {
-    ARK_COMPONENTS,
-    PRESTIGE_PERKS,
-    calculateDarkMatterGain,
+  ARK_COMPONENTS,
+  PRESTIGE_PERKS,
+  calculateDarkMatterGain,
 } from '@/config/prestige';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
 import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
-import { getTechMultipliers } from '@/engine/getTechMultipliers';
+import { getTechEffects, getTechMultipliers } from '@/engine/getTechMultipliers';
 import { calculateProductionRates } from '@/engine/production';
 import type {
-    ArkComponentType,
-    Derelict,
-    DerelictAction,
-    GameState,
-    Mission,
-    OrbitType,
-    ResourceType,
-    ShipType
+  ArkComponentType,
+  Derelict,
+  DerelictAction,
+  GameState,
+  Mission,
+  OrbitType,
+  ResourceType,
+  ShipType
 } from '@/types';
 import {
-    calculateBulkShipCost,
-    calculateShipCost,
-    canAffordCost,
+  calculateBulkShipCost,
+  calculateShipCost,
+  canAffordCost,
 } from '@/utils/formulas';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -106,6 +106,7 @@ interface GameStore extends GameState {
   ) => boolean;
   startColonyMission: (targetOrbit: OrbitType) => boolean;
   completeMissionIfReady: (missionId: string) => void;
+  completeAllReadyMissions: (missionIds: string[]) => void;
   cancelMission: (missionId: string) => boolean;
   getMissionProgress: (missionId: string) => number;
 
@@ -413,8 +414,14 @@ export const useGameStore = create<GameStore>()(
 
       clickDebris: () => {
         const state = get();
-        // Base click value + upgrades
+        // Base click value + upgrades + tech
         let clickValue = 1;
+        
+        // Apply tech multipliers
+        const techEffects = getTechEffects(state.techTree.purchased);
+        if (techEffects.multipliers.click_power) {
+          clickValue *= techEffects.multipliers.click_power;
+        }
         
         // Apply upgrades
         const clickUpgrade = state.upgrades.debris_click_power;
@@ -807,7 +814,7 @@ export const useGameStore = create<GameStore>()(
             ...state.ui,
             notifications: [...state.ui.notifications, notification],
             // Keep last 100 events in log
-            eventLog: [eventLog, ...state.ui.eventLog].slice(0, 100),
+            eventLog: [eventLog, ...(state.ui.eventLog || [])].slice(0, 100),
           },
         }));
 
@@ -836,6 +843,13 @@ export const useGameStore = create<GameStore>()(
         // Check if ship is already busy (simplified: assume 1 ship = 1 mission for now, or check count)
         const busyShips = state.missions.filter(m => m.shipType === shipType).length;
         if (busyShips >= state.ships[shipType]) return false;
+
+        // Limit concurrent scout missions to 3
+        const activeScoutMissions = state.missions.filter(m => m.type === 'scout').length;
+        if (activeScoutMissions >= 3) {
+            state.addNotification('warning', 'Maximum of 3 scout missions allowed at once.');
+            return false;
+        }
 
         // Fuel cost check - LEO and GEO missions cost no fuel
         const fuelCost = targetOrbit === 'leo' || targetOrbit === 'geo' ? 0 : 50; 
@@ -1011,6 +1025,229 @@ export const useGameStore = create<GameStore>()(
         state.onMissionComplete(missionId, success, rewards);
       },
 
+      completeAllReadyMissions: (missionIds) => {
+        const state = get();
+        const now = Date.now();
+        // Filter missions that are actually ready and in progress
+        const missionsToComplete = state.missions.filter(m => 
+            missionIds.includes(m.id) && 
+            m.status === 'inProgress' && 
+            now >= m.endTime
+        );
+
+        if (missionsToComplete.length === 0) return;
+
+        const results: { 
+            missionId: string; 
+            success: boolean; 
+            rewards?: Partial<Record<ResourceType, number>>; 
+            discoveredDerelict?: Derelict 
+        }[] = [];
+        
+        const newDerelicts: Derelict[] = [];
+        const resourceChanges: Partial<Record<ResourceType, number>> = {};
+        const salvagedDerelictIds: string[] = [];
+        const newColonies: any[] = [];
+        
+        let succeededCount = 0;
+        let failedCount = 0;
+        const historyEntries: any[] = [];
+
+        missionsToComplete.forEach(mission => {
+            try {
+                let success = true;
+                const shipConfig = SHIP_CONFIGS[mission.shipType];
+                const successRate = shipConfig.baseSuccessRate || 0.5;
+    
+                if (Math.random() > successRate) {
+                    success = false;
+                }
+    
+                let rewards: Partial<Record<ResourceType, number>> | undefined;
+                let discoveredDerelict: Derelict | undefined;
+    
+                if (success) {
+                    if (mission.type === 'scout') {
+                        const orbitConfig = ORBIT_CONFIGS[mission.targetOrbit];
+                        const rarity = rollDerelictRarity(orbitConfig.spawnRates);
+                        const type = getRandomDerelictType(mission.targetOrbit, rarity);
+                        
+                        if (type) {
+                            const config = DERELICT_CONFIGS[type];
+                            discoveredDerelict = {
+                                id: Math.random().toString(36).substr(2, 9),
+                                type,
+                                rarity,
+                                orbit: mission.targetOrbit,
+                                discoveredAt: now,
+                                expiresAt: now + 15 * 60 * 1000,
+                                requiredShip: config.requiredShip,
+                                fuelCost: config.fuelCost,
+                                baseMissionTime: config.baseMissionTime,
+                                riskLevel: config.riskLevel || 0,
+                                isHazardous: config.isHazardous || false,
+                                rewards: config.rewards,
+                                isArkComponent: config.isArkComponent,
+                                arkComponentType: config.arkComponentType,
+                            };
+                            newDerelicts.push(discoveredDerelict);
+                        }
+                    } else if (mission.type === 'salvage' && mission.targetDerelict) {
+                        const derelict = state.derelicts.find(d => d.id === mission.targetDerelict);
+                        if (derelict && !salvagedDerelictIds.includes(derelict.id)) {
+                            rewards = calculateDerelictRewards(DERELICT_CONFIGS[derelict.type]);
+                            
+                            // Apply action modifiers
+                            if (mission.action === 'hack') {
+                                if (rewards.dataFragments) rewards.dataFragments *= 2;
+                                if (rewards.electronics) rewards.electronics *= 1.5;
+                                if (rewards.metal) rewards.metal *= 0.5;
+                            } else if (mission.action === 'dismantle') {
+                                if (rewards.metal) rewards.metal *= 1.5;
+                                if (rewards.electronics) rewards.electronics *= 1.2;
+                                if (rewards.dataFragments) rewards.dataFragments *= 0.1;
+                                if (rewards.rareMaterials) rewards.rareMaterials *= 0.5;
+                            }
+                            
+                            // Round values
+                            for (const key in rewards) {
+                                rewards[key as ResourceType] = Math.floor(rewards[key as ResourceType]!);
+                            }
+                            
+                            // Accumulate
+                            for (const [res, amount] of Object.entries(rewards)) {
+                                resourceChanges[res as ResourceType] = (resourceChanges[res as ResourceType] || 0) + amount;
+                            }
+                            
+                            salvagedDerelictIds.push(derelict.id);
+                        }
+                    } else if (mission.type === 'colony') {
+                         newColonies.push({
+                            id: Math.random().toString(36).substr(2, 9),
+                            orbit: mission.targetOrbit,
+                            establishedAt: now,
+                            level: 1,
+                            productionBonus: 0.25,
+                            autoSalvage: false,
+                         });
+                    }
+                }
+    
+                if (success) succeededCount++;
+                else failedCount++;
+    
+                results.push({ missionId: mission.id, success, rewards, discoveredDerelict });
+                
+                historyEntries.push({
+                    id: mission.id,
+                    type: mission.type,
+                    shipType: mission.shipType,
+                    targetOrbit: mission.targetOrbit,
+                    startTime: mission.startTime,
+                    endTime: now,
+                    success,
+                    rewards,
+                    discoveredDerelict: discoveredDerelict?.id,
+                    derelictType: discoveredDerelict?.type
+                });
+            } catch (error) {
+                console.error(`Error processing mission ${mission.id}:`, error);
+                // Still mark as failed so it gets removed
+                failedCount++;
+                results.push({ missionId: mission.id, success: false });
+                historyEntries.push({
+                    id: mission.id,
+                    type: mission.type,
+                    shipType: mission.shipType,
+                    targetOrbit: mission.targetOrbit,
+                    startTime: mission.startTime,
+                    endTime: now,
+                    success: false,
+                    error: 'Processing Error'
+                });
+            }
+        });
+
+        // Apply State Updates
+        set(s => {
+            // Resources
+            const newResources = { ...s.resources };
+            for (const [res, amount] of Object.entries(resourceChanges)) {
+                newResources[res as ResourceType] = (newResources[res as ResourceType] || 0) + amount;
+            }
+
+            // Missions
+            const completedIds = results.map(r => r.missionId);
+            const remainingMissions = s.missions.filter(m => !completedIds.includes(m.id));
+
+            // Derelicts
+            const remainingDerelicts = s.derelicts.filter(d => !salvagedDerelictIds.includes(d.id));
+            const finalDerelicts = [...remainingDerelicts, ...newDerelicts];
+
+            // Colonies
+            const finalColonies = [...s.colonies, ...newColonies];
+            
+            // Ships (Colony ships are consumed)
+            const newShips = { ...s.ships };
+            if (newColonies.length > 0) {
+                newShips.colonyShip = Math.max(0, newShips.colonyShip - newColonies.length);
+            }
+
+            // Stats
+            const newStats = {
+                ...s.stats,
+                totalMissionsSucceeded: s.stats.totalMissionsSucceeded + succeededCount,
+                totalMissionsFailed: s.stats.totalMissionsFailed + failedCount,
+                missionHistory: [
+                    ...historyEntries,
+                    ...(s.stats.missionHistory || [])
+                ].slice(0, 50),
+                totalDerelictsDiscovered: s.stats.totalDerelictsDiscovered + newDerelicts.length,
+                totalDerelictsSalvaged: s.stats.totalDerelictsSalvaged + salvagedDerelictIds.length,
+                coloniesEstablished: s.stats.coloniesEstablished + newColonies.length,
+            };
+            
+            // Update derelictsByRarity
+            newDerelicts.forEach(d => {
+                newStats.derelictsByRarity[d.rarity] = (newStats.derelictsByRarity[d.rarity] || 0) + 1;
+            });
+
+            return {
+                resources: newResources,
+                missions: remainingMissions,
+                derelicts: finalDerelicts,
+                colonies: finalColonies,
+                ships: newShips,
+                stats: newStats
+            };
+        });
+
+        // Side effects (Notifications)
+        results.forEach(r => {
+             state.onMissionComplete(r.missionId, r.success, r.rewards);
+             if (r.success) {
+                 if (r.discoveredDerelict) {
+                     state.addNotification('success', `Scout mission successful! Discovered: ${DERELICT_CONFIGS[r.discoveredDerelict.type].name}`);
+                 }
+             } else {
+                 state.addNotification('warning', `Mission failed.`);
+             }
+        });
+        
+        // Colony notifications
+        newColonies.forEach(c => {
+            state.addNotification('success', `Colony established in ${ORBIT_CONFIGS[c.orbit as OrbitType].name}! Production +25%`);
+        });
+        
+        // Salvage notifications
+        salvagedDerelictIds.forEach(id => {
+             const result = results.find(r => r.success && r.rewards && missionsToComplete.find(m => m.id === r.missionId)?.targetDerelict === id);
+             if (result) {
+                 state.onDerelictSalvaged(id, result.rewards);
+             }
+        });
+      },
+
       cancelMission: (missionId) => {
         const state = get();
         const mission = state.missions.find(m => m.id === missionId);
@@ -1044,6 +1281,12 @@ export const useGameStore = create<GameStore>()(
         const type = getRandomDerelictType(orbit, rarity);
         
         if (!type) return null;
+
+        // Limit max active derelicts to 6
+        if (get().derelicts.length >= 6) {
+            // Optional: Notification? Might be spammy if triggered by passive spawn
+            return null;
+        }
         
         const config = DERELICT_CONFIGS[type];
         

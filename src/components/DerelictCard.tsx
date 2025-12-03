@@ -103,10 +103,14 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
     const success = startSalvageMission(derelict.id, derelict.requiredShip, action);
     if (!success) {
       if (availableShips <= 0) {
-        alert(`No ${getShipDisplayName(derelict.requiredShip)} available. All ships are on missions.`);
+        useGameStore.getState().addNotification('error', `No ${getShipDisplayName(derelict.requiredShip)} available. All ships are on missions.`);
       } else if (!canAfford) {
-        alert(`Insufficient fuel. Need ${actualFuelCost} fuel.`);
+        useGameStore.getState().addNotification('error', `Insufficient fuel. Need ${actualFuelCost} fuel.`);
+      } else {
+         useGameStore.getState().addNotification('error', 'Failed to launch salvage mission.');
       }
+    } else {
+        useGameStore.getState().addNotification('success', `Salvage mission launched!`);
     }
   };
 
