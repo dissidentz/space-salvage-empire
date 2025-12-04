@@ -59,6 +59,8 @@ export function calculateShipCost(
   if (multipliers.tech && typeof multipliers.tech !== 'number') {
     // Global ship cost reduction
     costMultiplier *= (multipliers.tech['shipCost'] || 1.0);
+    // Corporate Empire global cost reduction
+    costMultiplier *= (multipliers.tech['all_costs'] || 1.0);
     // Specific ship cost reduction
     costMultiplier *= (multipliers.tech[`${shipType}_cost`] || 1.0);
   }
@@ -107,6 +109,7 @@ export function calculateBulkShipCost(
   let costMultiplier = 1.0;
   if (multipliers.tech && typeof multipliers.tech !== 'number') {
     costMultiplier *= (multipliers.tech['shipCost'] || 1.0);
+    costMultiplier *= (multipliers.tech['all_costs'] || 1.0);
     costMultiplier *= (multipliers.tech[`${shipType}_cost`] || 1.0);
   }
 
@@ -250,6 +253,7 @@ export function calculateConversion(
   let efficiencyMultiplier = 1.0;
   if (multipliers.tech && typeof multipliers.tech !== 'number') {
     efficiencyMultiplier *= (multipliers.tech[`${shipType}_efficiency`] || 1.0);
+    efficiencyMultiplier *= (multipliers.tech['all_production'] || 1.0);
   }
 
   // Apply upgrade conversion ratio override if present

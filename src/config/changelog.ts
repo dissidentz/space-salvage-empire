@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.8',
+    date: '2025-12-04',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Economy tech features: Bulk Buy buttons (Buy 10/100/Max), Offline Production, and Passive Clicks',
+      },
+      {
+        category: 'balance',
+        description: 'Implemented "Corporate Empire" tech effects: -30% all costs, +30% all production',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed "Basic Automation" tech to correctly apply +10% production to Salvage Drones',
+      },
+    ],
+  },
+  {
     version: '0.2.7',
     date: '2025-12-04',
     changes: [

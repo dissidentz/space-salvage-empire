@@ -1,6 +1,7 @@
 // Game loop hook - handles production calculations and resource updates
 
 import { checkPassiveSpawning } from '@/engine/derelictSpawning';
+import { getTechEffects } from '@/engine/getTechMultipliers';
 import { calculateTickProduction } from '@/engine/production';
 import { useGameStore } from '@/stores/gameStore';
 import type { ResourceType } from '@/types';
@@ -20,6 +21,17 @@ export function useGameLoop() {
 
       // Calculate production for this tick
       const deltas = calculateTickProduction(state);
+
+      // Calculate passive clicks
+      const techEffects = getTechEffects(state.techTree.purchased);
+      const passiveClicks = techEffects.flatBonuses.passive_clicks || 0;
+      if (passiveClicks > 0) {
+          const clickPower = techEffects.multipliers.passive_click_power || 1.0;
+          const debrisPerClick = 1 * clickPower; // Base 1 debris per click
+          const debrisPerTick = (passiveClicks * debrisPerClick) / 10; // 10 ticks per second
+          
+          deltas['debris'] = (deltas['debris'] || 0) + debrisPerTick;
+      }
 
       // Apply resource changes
       // Apply resource changes

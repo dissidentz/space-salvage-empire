@@ -598,14 +598,14 @@ const ECONOMY_TECHS: TechNode[] = [
   {
     id: 'basic_automation',
     name: 'Basic Automation',
-    description: 'Salvage Drones work 10% faster when idle',
+    description: 'Salvage Drones production +10%',
     branch: 'economy',
     tier: 1,
     dataFragmentCost: 20,
     prerequisites: [],
 
     effects: [
-      { type: 'multiplier', target: 'salvageDrone_idle_bonus', value: 1.1 },
+      { type: 'multiplier', target: 'salvageDrone_production', value: 1.1 },
     ],
   },
 

@@ -274,51 +274,57 @@ export const ShipCard = memo(({ shipType }: ShipCardProps) => {
               >
                 Buy 1
               </Button>
-              <Button
-                onClick={() => handleBuy(10)}
-                disabled={!canAfford.buy10 || !sustainability.safe}
-                variant="outline"
-                className="flex-1"
-                size="sm"
-              >
-                Buy 10
-              </Button>
+              {useGameStore(state => state.techTree.purchased.includes('bulk_purchasing_1')) && (
+                <Button
+                  onClick={() => handleBuy(10)}
+                  disabled={!canAfford.buy10 || !sustainability.safe}
+                  variant="outline"
+                  className="flex-1"
+                  size="sm"
+                >
+                  Buy 10
+                </Button>
+              )}
             </div>
 
             {/* Secondary buy buttons */}
-            <div className="flex gap-2 w-full">
-              <Button
-                onClick={() => handleBuy(100)}
-                disabled={!canAfford.buy100 || !sustainability.safe}
-                variant="outline"
-                className="flex-1"
-                size="sm"
-              >
-                Buy 100
-              </Button>
-              <Button
-                onClick={() => handleBuy(1000)}
-                disabled={!canAfford.buy1000 || !sustainability.safe}
-                variant="outline"
-                className="flex-1"
-                size="sm"
-              >
-                Buy 1K
-              </Button>
-            </div>
+            {useGameStore(state => state.techTree.purchased.includes('bulk_purchasing_2')) && (
+              <div className="flex gap-2 w-full">
+                <Button
+                  onClick={() => handleBuy(100)}
+                  disabled={!canAfford.buy100 || !sustainability.safe}
+                  variant="outline"
+                  className="flex-1"
+                  size="sm"
+                >
+                  Buy 100
+                </Button>
+                <Button
+                  onClick={() => handleBuy(1000)}
+                  disabled={!canAfford.buy1000 || !sustainability.safe}
+                  variant="outline"
+                  className="flex-1"
+                  size="sm"
+                >
+                  Buy 1K
+                </Button>
+              </div>
+            )}
 
             {/* Tertiary buy button */}
-            <div className="flex gap-2 w-full">
-              <Button
-                onClick={() => handleBuy(maxAffordable)}
-                disabled={maxAffordable === 0 || !sustainability.safe}
-                variant="outline"
-                className="w-full"
-                size="sm"
-              >
-                Max ({formatNumber(maxAffordable)})
-              </Button>
-            </div>
+            {useGameStore(state => state.techTree.purchased.includes('bulk_purchasing_3')) && (
+              <div className="flex gap-2 w-full">
+                <Button
+                  onClick={() => handleBuy(maxAffordable)}
+                  disabled={maxAffordable === 0 || !sustainability.safe}
+                  variant="outline"
+                  className="w-full"
+                  size="sm"
+                >
+                  Max ({formatNumber(maxAffordable)})
+                </Button>
+              </div>
+            )}
           </CardFooter>
         </TabsContent>
 

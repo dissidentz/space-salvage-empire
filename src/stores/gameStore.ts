@@ -16,7 +16,7 @@ import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
 import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
 import { getTechEffects, getTechMultipliers } from '@/engine/getTechMultipliers';
-import { calculateProductionRates } from '@/engine/production';
+import { calculateOfflineProduction, calculateProductionRates } from '@/engine/production';
 import type {
     ArkComponentType,
     Derelict,
@@ -2020,6 +2020,49 @@ export const useGameStore = create<GameStore>()(
         }
         return persistedState;
       },
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+
+        // Calculate offline time
+        const now = Date.now();
+        const lastSave = state.lastSaveTime || now;
+        const offlineTime = now - lastSave;
+        
+        // Only process if offline for more than 10 seconds
+        if (offlineTime > 10000) {
+            // Calculate efficiency based on techs
+            const techEffects = getTechEffects(state.techTree.purchased);
+            const baseEfficiency = 0.5; // Base 50%
+            const techBonus = techEffects.flatBonuses.offline_efficiency || 0;
+            const efficiency = Math.min(1.0, baseEfficiency + techBonus);
+            
+            // Calculate production
+            const gains = calculateOfflineProduction(state, offlineTime, efficiency);
+            
+            // Apply gains
+            let hasGains = false;
+            const gainStrings: string[] = [];
+            
+            for (const [res, amount] of Object.entries(gains)) {
+                if ((amount as number) > 0) {
+                    state.addResource(res as ResourceType, amount as number);
+                    gainStrings.push(`${(amount as number).toFixed(0)} ${res}`);
+                    hasGains = true;
+                }
+            }
+            
+            if (hasGains) {
+                const timeStr = (offlineTime / 1000 / 60).toFixed(1);
+                state.addNotification(
+                    'success', 
+                    `Offline for ${timeStr}m (Eff: ${(efficiency * 100).toFixed(0)}%). Gained: ${gainStrings.join(', ')}`
+                );
+            }
+        }
+        
+        // Update last save time
+        state.updateLastSaveTime(now);
+      }
     }
   )
 );
