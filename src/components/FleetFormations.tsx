@@ -7,7 +7,7 @@ import { Shield, Timer } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { ScrollArea } from './ui/scroll-area';
+import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
 export function FleetFormations() {
   const activeFormation = useGameStore(state => state.activeFormation);
@@ -65,8 +65,8 @@ export function FleetFormations() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[300px] pr-4">
-          <div className="grid gap-4">
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex gap-4 pb-4">
             {Object.values(FORMATION_CONFIGS).map((config) => {
               const isActive = activeFormation === config.id;
               
@@ -97,7 +97,7 @@ export function FleetFormations() {
                 <div 
                   key={config.id}
                   className={cn(
-                    "relative p-4 rounded-lg border transition-all",
+                    "relative p-4 rounded-lg border transition-all w-[350px] flex-none",
                     isActive 
                       ? "border-blue-500 bg-blue-500/10" 
                       : "border-border hover:border-blue-500/50"
@@ -109,7 +109,7 @@ export function FleetFormations() {
                         {config.name}
                         {isActive && <Badge className="bg-blue-500">Active</Badge>}
                       </h4>
-                      <p className="text-sm text-muted-foreground">{config.description}</p>
+                      <p className="text-sm text-muted-foreground whitespace-normal">{config.description}</p>
                     </div>
                     <Button
                       variant={isActive ? "secondary" : "default"}
@@ -135,7 +135,7 @@ export function FleetFormations() {
                     {/* Requirements */}
                     <div className="text-sm">
                       <span className="text-muted-foreground font-medium">Requirements:</span>
-                      <div className="flex flex-wrap gap-2 mt-1">
+                      <div className="flex flex-wrap gap-2 mt-1 whitespace-normal">
                         {Object.entries(config.requirements).map(([shipId, count]) => {
                           const current = ships[shipId as ShipType] || 0;
                           const met = current >= (count as number);
@@ -158,6 +158,7 @@ export function FleetFormations() {
               );
             })}
           </div>
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </CardContent>
     </Card>

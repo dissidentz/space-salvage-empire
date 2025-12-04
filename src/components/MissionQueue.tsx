@@ -60,6 +60,8 @@ function MissionCard({ mission }: MissionCardProps) {
       if (derelict) {
         return DERELICT_CONFIGS[derelict.type].name;
       }
+    } else if (mission.type === 'colony') {
+      return ORBIT_CONFIGS[mission.targetOrbit].name;
     }
     return 'Unknown';
   };

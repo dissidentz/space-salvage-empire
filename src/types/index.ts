@@ -159,6 +159,7 @@ export interface Mission {
   success?: boolean;
   rewards?: Partial<Resources>;
   discoveredDerelict?: string;
+  isAutomated?: boolean;
 }
 
 // Tech tree types

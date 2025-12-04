@@ -11,6 +11,32 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.5',
+    date: '2025-12-04',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed "Instant Warp" button disappearing after use - now correctly shows as disabled with tooltip',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Auto-Salvage logic to respect "Ship Enabled" settings and correctly track available fleet slots',
+      },
+      {
+        category: 'improvement',
+        description: 'Added "[AUTO]" prefix to notifications for automated salvage missions for better visibility',
+      },
+      {
+        category: 'improvement',
+        description: 'Refactored "Fleet Formations" list to use a horizontal layout to reduce vertical scrolling',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed "Location: Unknown" display for Colony Missions in the mission queue',
+      },
+    ],
+  },
+  {
     version: '0.2.4',
     date: '2025-12-03',
     changes: [

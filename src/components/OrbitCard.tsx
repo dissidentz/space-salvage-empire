@@ -12,6 +12,7 @@ interface OrbitCardProps {
   isUnlocked: boolean;
   canAfford: boolean;
   instantWarpAvailable: boolean;
+  hasInstantWarpTech: boolean;
   onTravel: () => void;
   onInstantWarp: () => void;
 }
@@ -22,6 +23,7 @@ export function OrbitCard({
   isUnlocked,
   canAfford,
   instantWarpAvailable,
+  hasInstantWarpTech,
   onTravel,
   onInstantWarp,
 }: OrbitCardProps) {
@@ -139,16 +141,23 @@ export function OrbitCard({
             </Button>
 
             {/* Instant Warp Button */}
-            {instantWarpAvailable && (
-              <Button
-                onClick={onInstantWarp}
-                className="w-full bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 text-purple-100"
-                size="sm"
-                variant="outline"
-              >
-                <Rocket className="mr-2 h-4 w-4 text-purple-400" />
-                Instant Warp (Free)
-              </Button>
+            {hasInstantWarpTech && (
+              <div title={!instantWarpAvailable ? "Instant Warp used for this run. Resets on Prestige." : undefined}>
+                <Button
+                  onClick={onInstantWarp}
+                  disabled={!instantWarpAvailable}
+                  className={`w-full border size-sm ${
+                    instantWarpAvailable 
+                      ? "bg-purple-600/20 hover:bg-purple-600/30 border-purple-500/50 text-purple-100" 
+                      : "bg-gray-800/50 border-gray-700 text-gray-500 cursor-not-allowed"
+                  }`}
+                  size="sm"
+                  variant={instantWarpAvailable ? "outline" : "ghost"}
+                >
+                  <Rocket className={`mr-2 h-4 w-4 ${instantWarpAvailable ? "text-purple-400" : "text-gray-600"}`} />
+                  {instantWarpAvailable ? "Instant Warp (Free)" : "Instant Warp (Used)"}
+                </Button>
+              </div>
             )}
           </div>
         )}

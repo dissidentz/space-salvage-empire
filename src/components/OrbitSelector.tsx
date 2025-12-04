@@ -34,7 +34,9 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
     'deepSpace',
   ];
 
+  const techTree = useGameStore(state => state.techTree);
   const instantWarpAvailable = useGameStore(state => state.instantWarpAvailable);
+  const hasInstantWarpTech = techTree.purchased.includes('instant_warp');
 
   const handleTravel = (orbit: OrbitType, useInstantWarp = false) => {
     const config = ORBIT_CONFIGS[orbit];
@@ -89,6 +91,7 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
                   isUnlocked={isUnlocked}
                   canAfford={canAfford}
                   instantWarpAvailable={instantWarpAvailable}
+                  hasInstantWarpTech={hasInstantWarpTech}
                   onTravel={() => handleTravel(orbit, false)}
                   onInstantWarp={() => handleTravel(orbit, true)}
                 />

@@ -6,6 +6,8 @@ export function AutomationSettings() {
   const hasAutoScout = techTree.purchased.includes('auto_scout');
   const hasAutoSalvage = techTree.purchased.includes('auto_salvage');
   
+  // Safety check: if automationSettings is undefined (old save data), don't render
+  if (!ui?.automationSettings) return null;
   if (!hasAutoScout && !hasAutoSalvage) return null;
   
   return (

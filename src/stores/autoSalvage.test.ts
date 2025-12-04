@@ -96,6 +96,7 @@ describe('Auto-Salvage Debugging', () => {
     // 5. Expect Mission
     expect(useGameStore.getState().missions.length).toBe(1);
     expect(useGameStore.getState().missions[0].targetDerelict).toBe('d1');
+    expect(useGameStore.getState().missions[0].isAutomated).toBe(true);
   });
 
   it('should support dual missions with fleet_coordination', () => {
@@ -129,5 +130,42 @@ describe('Auto-Salvage Debugging', () => {
     // 4. Expect 2 Missions (1 ship, 2 slots)
     // Currently this should FAIL because startSalvageMission blocks it
     expect(useGameStore.getState().missions.length).toBe(2);
+  });
+
+  it('should NOT auto-salvage if ship is disabled', () => {
+    const state = useGameStore.getState();
+    
+    // Setup:
+    // 1. Unlock Auto-Salvage
+    useGameStore.setState(s => ({
+        techTree: { ...s.techTree, purchased: [...s.techTree.purchased, 'auto_salvage'] },
+        ui: { ...s.ui, automationSettings: { ...s.ui.automationSettings, autoSalvageEnabled: true } },
+        ships: { ...s.ships, salvageFrigate: 1 },
+        shipEnabled: { ...s.shipEnabled, salvageFrigate: false }, // DISABLED
+        currentOrbit: 'leo'
+    }));
+    
+    // 2. Add Colony to LEO
+    useGameStore.setState(_s => ({
+        colonies: [{ id: 'c1', orbit: 'leo', establishedAt: 0, level: 1, productionBonus: 0, autoSalvage: true }]
+    }));
+    
+    // 3. Spawn Common Derelict in LEO
+    const derelict = {
+        id: 'd1', type: 'wreckage', rarity: 'common', orbit: 'leo',
+        discoveredAt: Date.now(), expiresAt: Date.now() + 100000,
+        requiredShip: 'salvageFrigate', fuelCost: 0, baseMissionTime: 1000,
+        isHazardous: false, riskLevel: 0, rewards: []
+    };
+    
+    useGameStore.setState(_s => ({
+        derelicts: [derelict as any]
+    }));
+    
+    // 4. Run automation
+    state.processAutomation();
+    
+    // 5. Expect NO Mission
+    expect(useGameStore.getState().missions.length).toBe(0);
   });
 });
