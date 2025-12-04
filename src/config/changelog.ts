@@ -11,6 +11,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.11',
+    date: '2025-12-04',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Updated Dashboard to display all discovered derelicts grouped by orbit',
+      },
+    ],
+  },
+  {
     version: '0.2.10',
     date: '2025-12-04',
     changes: [

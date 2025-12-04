@@ -2,18 +2,29 @@ import { DerelictCard } from '@/components/DerelictCard';
 import { MissionLauncher } from '@/components/MissionLauncher';
 import { MissionQueue } from '@/components/MissionQueue';
 import { OrbitSelector } from '@/components/OrbitSelector';
-import { ORBIT_CONFIGS } from '@/config/orbits';
+import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
+import type { Derelict, OrbitType } from '@/types';
 import { useMemo, useState } from 'react';
 
 export function DashboardView() {
   // Select state
   const ships = useGameStore(state => state.ships);
-  const currentOrbit = useGameStore(state => state.currentOrbit);
   const missions = useGameStore(state => state.missions);
   const travelState = useGameStore(state => state.travelState);
   const allDerelicts = useGameStore(state => state.derelicts);
-  const derelicts = useMemo(() => allDerelicts.filter(d => d.orbit === currentOrbit), [allDerelicts, currentOrbit]);
+  
+  // Group derelicts by orbit
+  const derelictsByOrbit = useMemo(() => {
+    const grouped: Partial<Record<OrbitType, Derelict[]>> = {};
+    allDerelicts.forEach(d => {
+      if (!grouped[d.orbit]) grouped[d.orbit] = [];
+      grouped[d.orbit]!.push(d);
+    });
+    return grouped;
+  }, [allDerelicts]);
+
+  const orbitOrder: OrbitType[] = ['leo', 'geo', 'lunar', 'mars', 'asteroidBelt', 'jovian', 'kuiper', 'deepSpace'];
 
   // Orbit selector state
   const [orbitSelectorOpen, setOrbitSelectorOpen] = useState(false);
@@ -21,7 +32,7 @@ export function DashboardView() {
   return (
     <div className="space-y-6">
       {/* Missions Section */}
-      {(ships.scoutProbe > 0 || ships.salvageFrigate > 0 || missions.length > 0 || derelicts.length > 0) && (
+      {(ships.scoutProbe > 0 || ships.salvageFrigate > 0 || missions.length > 0 || allDerelicts.length > 0) && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -45,16 +56,26 @@ export function DashboardView() {
           </div>
 
           {/* Discovered Derelicts */}
-          {derelicts.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-muted-foreground">
-                Discovered Derelicts in {ORBIT_CONFIGS[currentOrbit].name}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {derelicts.map(derelict => (
-                  <DerelictCard key={derelict.id} derelict={derelict} />
-                ))}
-              </div>
+          {allDerelicts.length > 0 && (
+            <div className="space-y-8">
+              {orbitOrder.map(orbit => {
+                const orbitDerelicts = derelictsByOrbit[orbit];
+                if (!orbitDerelicts || orbitDerelicts.length === 0) return null;
+
+                return (
+                  <div key={orbit} className="space-y-3">
+                    <h3 className="text-lg font-semibold text-muted-foreground flex items-center gap-2">
+                       <span className={`w-2 h-2 rounded-full ${getOrbitColor(orbit).replace('text-', 'bg-')}`} />
+                       Discovered Derelicts in {ORBIT_CONFIGS[orbit].name}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {orbitDerelicts.map(derelict => (
+                        <DerelictCard key={derelict.id} derelict={derelict} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

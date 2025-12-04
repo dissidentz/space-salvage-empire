@@ -24,7 +24,6 @@ import { useGameStore } from '@/stores/gameStore';
 import type { Derelict, DerelictAction } from '@/types';
 import {
     formatMissionDuration,
-    formatRewards,
     getRarityBgColor,
     getRarityColor,
     getShipDisplayName
@@ -154,37 +153,33 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          {/* Stats Row */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+            {/* Duration */}
             <div className="flex items-center gap-1 text-muted-foreground">
               <Clock className="w-3 h-3 text-blue-400" />
               <span>{formatMissionDuration(derelict.baseMissionTime)}</span>
             </div>
+            
+            {/* Fuel */}
             <div className="flex items-center gap-1 text-muted-foreground">
               <Fuel className="w-3 h-3 text-orange-400" />
               <span>{actualFuelCost} fuel</span>
             </div>
-          </div>
 
-          {/* Hazard Warning */}
-          {derelict.isHazardous && (
-            <div className="flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-xs text-red-400">
-              <AlertTriangle className="w-4 h-4" />
-              <span>Hazardous - {(derelict.riskLevel * 100).toFixed(0)}% risk</span>
+            {/* Expiry */}
+            <div className="flex items-center gap-1 text-yellow-400">
+              <Clock className="w-3 h-3" />
+              <span>Expires: {formatMissionDuration(timeUntilExpiry)}</span>
             </div>
-          )}
 
-          {/* Rewards Preview */}
-          <div className="p-2 bg-slate-700/30 rounded text-xs">
-            <div className="text-muted-foreground mb-1">Potential Rewards:</div>
-            <div className="text-green-400">{formatRewards(derelict.rewards)}</div>
-          </div>
-
-          {/* Expiry Timer */}
-          <div className="flex items-center gap-2 text-xs">
-            <Clock className="w-3 h-3 text-yellow-400" />
-            <span className="text-yellow-400">
-              Expires in {formatMissionDuration(timeUntilExpiry)}
-            </span>
+            {/* Hazard */}
+            {derelict.isHazardous && (
+              <div className="flex items-center gap-1 text-red-400">
+                <AlertTriangle className="w-3 h-3" />
+                <span>Hazard: {(derelict.riskLevel * 100).toFixed(0)}%</span>
+              </div>
+            )}
           </div>
 
           {/* Active Mission Indicator */}
