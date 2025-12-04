@@ -11,6 +11,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.6',
+    date: '2025-12-04',
+    changes: [
+      {
+        category: 'balance',
+        description: 'Scout missions to LEO, GEO, Lunar Orbit, and your current orbit are now free (0 fuel cost)',
+      },
+    ],
+  },
+  {
     version: '0.2.5',
     date: '2025-12-04',
     changes: [

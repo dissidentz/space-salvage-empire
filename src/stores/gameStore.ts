@@ -914,8 +914,9 @@ export const useGameStore = create<GameStore>()(
         const busyShips = state.missions.filter(m => m.shipType === shipType).length;
         if (busyShips >= state.ships[shipType] * maxMissionsPerShip) return false;
 
-        // Fuel cost check - LEO and GEO missions cost no fuel
-        const fuelCost = targetOrbit === 'leo' || targetOrbit === 'geo' ? 0 : 50; 
+        // Fuel cost check - LEO, GEO, Lunar, and current orbit missions cost no fuel
+        const freeOrbits: OrbitType[] = ['leo', 'geo', 'lunar', state.currentOrbit];
+        const fuelCost = freeOrbits.includes(targetOrbit) ? 0 : 50; 
         if (state.resources.fuel < fuelCost) return false;
 
         if (fuelCost > 0) {
