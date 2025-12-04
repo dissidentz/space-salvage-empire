@@ -179,7 +179,7 @@ const EFFICIENCY_TECHS: TechNode[] = [
     dataFragmentCost: 300,
     prerequisites: [],
 
-    effects: [{ type: 'multiplier', target: 'ship_cost', value: 0.85 }],
+    effects: [{ type: 'multiplier', target: 'shipCost', value: 0.85 }],
   },
 
   // Tier 4
@@ -270,7 +270,7 @@ const EFFICIENCY_TECHS: TechNode[] = [
     dataFragmentCost: 10000,
     prerequisites: [],
 
-    effects: [{ type: 'multiplier', target: 'ship_cost', value: 0.5 }],
+    effects: [{ type: 'multiplier', target: 'shipCost', value: 0.5 }],
   },
   {
     id: 'advancedAI',
@@ -709,7 +709,7 @@ const ECONOMY_TECHS: TechNode[] = [
     dataFragmentCost: 500,
     prerequisites: [],
 
-    effects: [{ type: 'multiplier', target: 'ship_cost', value: 0.8 }],
+    effects: [{ type: 'multiplier', target: 'shipCost', value: 0.8 }],
   },
 
   // Tier 4

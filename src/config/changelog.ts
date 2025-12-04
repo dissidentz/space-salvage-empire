@@ -18,6 +18,10 @@ export const CHANGELOG: ChangelogEntry[] = [
         category: 'balance',
         description: 'Scout missions to LEO, GEO, Lunar Orbit, and your current orbit are now free (0 fuel cost)',
       },
+      {
+        category: 'bugfix',
+        description: 'Fixed ship cost reduction techs (Zero-Point Energy, Arkwright Protocol, Smart Manufacturing) not applying their discounts',
+      },
     ],
   },
   {

@@ -64,7 +64,7 @@ function App() {
     <SidebarProvider>
       <SidebarLeft />
       <SidebarInset className="relative pb-16">
-        <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2 border-b px-3">
+        <header className="bg-sidebar sticky top-0 flex h-14 shrink-0 items-center gap-2 border-b px-3">
           <SidebarTrigger />
           <Separator
             orientation="vertical"
