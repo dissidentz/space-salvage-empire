@@ -24,6 +24,7 @@ import { useGameStore } from '@/stores/gameStore';
 import type { Derelict, DerelictAction } from '@/types';
 import {
     formatMissionDuration,
+    formatRewards,
     getRarityBgColor,
     getRarityColor,
     getShipDisplayName
@@ -180,6 +181,12 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                 <span>Hazard: {(derelict.riskLevel * 100).toFixed(0)}%</span>
               </div>
             )}
+          </div>
+
+          {/* Rewards Preview */}
+          <div className="p-2 bg-slate-700/30 rounded text-xs">
+            <span className="text-muted-foreground">Rewards: </span>
+            <span className="text-green-400">{formatRewards(derelict.rewards)}</span>
           </div>
 
           {/* Active Mission Indicator */}
