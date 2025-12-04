@@ -193,6 +193,9 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                   <div className="flex items-center gap-2 text-blue-400">
                     <Rocket className="w-4 h-4 animate-pulse" />
                     <span>Mission in Progress...</span>
+                    <span className="text-blue-300 font-medium">
+                      {Math.floor(missionProgress * 100)}%
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-blue-300 font-mono">
@@ -216,9 +219,6 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                     className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300"
                     style={{ width: `${missionProgress * 100}%` }}
                   />
-                </div>
-                <div className="text-xs text-blue-300 text-right">
-                  {Math.floor(missionProgress * 100)}% complete
                 </div>
               </div>
             );
