@@ -1926,33 +1926,47 @@ export const useGameStore = create<GameStore>()(
         }
         
         // Auto-Salvage Logic
-        if (hasAutoSalvage && state.ui.automationSettings?.autoSalvageEnabled && state.shipEnabled.salvageFrigate) {
+        if (hasAutoSalvage && state.ui.automationSettings?.autoSalvageEnabled) {
           const colonizedOrbits = state.colonies.map(c => c.orbit);
-          const commonDerelicts = state.derelicts.filter(
-            d => d.rarity === 'common' && colonizedOrbits.includes(d.orbit)
+          // Target ALL derelicts in colonized orbits
+          const targetDerelicts = state.derelicts.filter(
+            d => colonizedOrbits.includes(d.orbit)
           );
           
           const hasDualMissions = state.techTree.purchased.includes('fleet_coordination') || hasTotalAutomation;
           const maxMissionsPerShip = hasDualMissions ? 2 : 1;
           
-          const busySalvage = state.missions.filter(
-            m => m.shipType === 'salvageFrigate'
-          ).length;
-          let availableSalvage = state.ships.salvageFrigate * maxMissionsPerShip - busySalvage;
+          // Calculate available ships
+          const busySalvage = state.missions.filter(m => m.shipType === 'salvageFrigate').length;
+          let availableSalvage = (state.ships.salvageFrigate || 0) * maxMissionsPerShip - busySalvage;
+
+          const busyHeavy = state.missions.filter(m => m.shipType === 'heavySalvageFrigate').length;
+          let availableHeavy = (state.ships.heavySalvageFrigate || 0) * maxMissionsPerShip - busyHeavy;
           
-          for (const derelict of commonDerelicts) {
-            if (availableSalvage > 0) {
-              // Check if already targeted (startSalvageMission does this check too but good to be safe)
+          for (const derelict of targetDerelicts) {
+            // Determine which ship to use
+            let shipToUse: 'salvageFrigate' | 'heavySalvageFrigate' | null = null;
+            
+            if (derelict.requiredShip === 'salvageFrigate' && availableSalvage > 0 && state.shipEnabled.salvageFrigate) {
+                shipToUse = 'salvageFrigate';
+            } else if (derelict.requiredShip === 'heavySalvageFrigate' && availableHeavy > 0 && state.shipEnabled.heavySalvageFrigate) {
+                shipToUse = 'heavySalvageFrigate';
+            }
+
+            if (shipToUse) {
+              // Check if already targeted
               const isTargeted = state.missions.some(m => m.targetDerelict === derelict.id);
               if (!isTargeted) {
-                 const success = state.startSalvageMission(derelict.id, 'salvageFrigate', 'salvage', true);
+                 const success = state.startSalvageMission(derelict.id, shipToUse, 'salvage', true);
                  if (success) {
-                     availableSalvage--;
+                     if (shipToUse === 'salvageFrigate') availableSalvage--;
+                     if (shipToUse === 'heavySalvageFrigate') availableHeavy--;
                  }
               }
-            } else {
-                break; // No more ships available
             }
+            
+            // Break if no ships left at all
+            if (availableSalvage <= 0 && availableHeavy <= 0) break;
           }
         }
       },

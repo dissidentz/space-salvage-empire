@@ -87,3 +87,6 @@ Derelict spawn rate multipliers (Deep Space Sensors, Predictive Algorithms, Xeno
 These would require passing game state to the derelicts module or refactoring how spawn rates work.
 Storage Limits (Resource Compression): System doesn't exist yet.
 Trading Post & Contracts: Large new systems, deferred as per plan.
+
+
+we need to be able to see all derelicts on the dashboard in all orbits.

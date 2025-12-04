@@ -11,6 +11,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.10',
+    date: '2025-12-04',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Upgraded Auto-Salvage to support Heavy Salvage Frigates and target all derelicts in colonized orbits',
+      },
+    ],
+  },
+  {
     version: '0.2.9',
     date: '2025-12-04',
     changes: [
