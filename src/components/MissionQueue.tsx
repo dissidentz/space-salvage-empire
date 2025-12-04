@@ -3,22 +3,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { DERELICT_CONFIGS } from '@/config/derelicts';
 import { ORBIT_CONFIGS } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { Mission } from '@/types';
 import {
-    formatMissionDuration,
-    getMissionProgress,
-    getMissionTimeRemaining,
-    getMissionTypeBgColor,
-    getMissionTypeColor,
-    getShipDisplayName,
+  formatMissionDuration,
+  getMissionProgress,
+  getMissionTimeRemaining,
+  getMissionTypeBgColor,
+  getMissionTypeColor,
+  getShipDisplayName,
 } from '@/utils/missionHelpers';
 import { Clock, Fuel, MapPin, Rocket, Target, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -68,42 +68,41 @@ function MissionCard({ mission }: MissionCardProps) {
 
   return (
     <Card className="bg-slate-800/50 border-slate-700/50">
-      <CardContent className="p-4">
-        <div className="space-y-3">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2 flex-1">
+      <CardContent className="p-3">
+        <div className="space-y-2">
+          {/* Header Row: Type, Ship, Target, Cancel */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-wrap flex-1">
               <Rocket className={`w-4 h-4 ${getMissionTypeColor(mission.type)}`} />
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium capitalize">{mission.type} Mission</span>
-                  <Badge className={getMissionTypeBgColor(mission.type)}>
-                    {getShipDisplayName(mission.shipType)}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                  {mission.type === 'scout' ? (
-                    <>
-                      <MapPin className="w-3 h-3" />
-                      <span>{getTargetName()}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Target className="w-3 h-3" />
-                      <span>{getTargetName()}</span>
-                    </>
-                  )}
-                </div>
-              </div>
+              <span className="font-medium capitalize">{mission.type}</span>
+              <Badge className={getMissionTypeBgColor(mission.type)}>
+                {getShipDisplayName(mission.shipType)}
+              </Badge>
+              <span className="text-muted-foreground">→</span>
+              {mission.type === 'scout' ? (
+                <span className="flex items-center gap-1 text-muted-foreground">
+                  <MapPin className="w-3 h-3" />
+                  {getTargetName()}
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-muted-foreground">
+                  <Target className="w-3 h-3" />
+                  {getTargetName()}
+                </span>
+              )}
+              {mission.action && (
+                <Badge variant="outline" className="text-xs capitalize">
+                  {mission.action}
+                </Badge>
+              )}
             </div>
-
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-500/10"
                     onClick={handleCancel}
                   >
                     <X className="w-4 h-4" />
@@ -116,29 +115,18 @@ function MissionCard({ mission }: MissionCardProps) {
             </TooltipProvider>
           </div>
 
-          {/* Progress Bar */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                <span>{formatMissionDuration(timeRemaining)} remaining</span>
-              </div>
-              <span>{progress.toFixed(0)}%</span>
+          {/* Progress Row: Time, Progress Bar, %, Fuel */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+              <Clock className="w-3 h-3" />
+              <span>{formatMissionDuration(timeRemaining)}</span>
             </div>
-            <Progress value={progress} className="h-2" />
-          </div>
-
-          {/* Mission Details */}
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
+            <Progress value={progress} className="h-2 flex-1" />
+            <span className="text-xs text-muted-foreground whitespace-nowrap">{progress.toFixed(0)}%</span>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
               <Fuel className="w-3 h-3 text-orange-400" />
-              <span>{mission.fuelCost} fuel</span>
+              <span>{mission.fuelCost}</span>
             </div>
-            {mission.action && (
-              <div className="flex items-center gap-1">
-                <span className="capitalize">{mission.action}</span>
-              </div>
-            )}
           </div>
         </div>
       </CardContent>
