@@ -9,7 +9,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 
-import { ORBIT_CONFIGS } from '@/config/orbits';
+import { ORBIT_CONFIGS, getAdjacentOrbits } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { OrbitType, ShipType } from '@/types';
 import {
@@ -32,6 +32,7 @@ export function MissionLauncher() {
   const canTravelToOrbit = useGameStore(state => state.canTravelToOrbit);
   const colonies = useGameStore(state => state.colonies);
   const techTree = useGameStore(state => state.techTree);
+  const isUpgradeUnlocked = useGameStore(state => state.isUpgradeUnlocked);
 
   const [missionType, setMissionType] = useState<string>('scout');
   const [selectedShip, setSelectedShip] = useState<ShipType | null>(null);
@@ -50,8 +51,21 @@ export function MissionLauncher() {
   };
 
   // Get all unlocked orbits (including current)
+  const hasLongRangeComms = isUpgradeUnlocked('long_range_comms');
+  
   const availableOrbits = (Object.keys(ORBIT_CONFIGS) as OrbitType[]).filter(
-    orbit => orbit === currentOrbit || canTravelToOrbit(orbit)
+    orbit => {
+      if (orbit === currentOrbit) return true;
+      if (canTravelToOrbit(orbit)) return true;
+      
+      // Long-Range Comms allows scouting adjacent orbits
+      if (missionType === 'scout' && hasLongRangeComms) {
+        const adjacent = getAdjacentOrbits(currentOrbit);
+        return adjacent.includes(orbit);
+      }
+      
+      return false;
+    }
   );
 
   const handleLaunch = () => {

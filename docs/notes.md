@@ -1,11 +1,5 @@
 Based on my review of your project documentation and current codebase, here's what has NOT been implemented yet:
 
-🚫 Not Yet Implemented
-1. Trading Post System
-Tech unlocked: market_access (exists in tech tree)
-Status: Tech unlocks it, but no actual trading functionality or UI to sell/convert resources
-Mentioned in: Game Design Doc (Run 4 unlock), Development Roadmap
-Based on my review of your project documentation and current codebase, here's what has NOT been implemented yet:
 
 🚫 Not Yet Implemented
 1. Trading Post System
@@ -87,20 +81,9 @@ Contracts System (optional objectives for bonuses)
 
 
 
-Done! Committed v0.2.7 with the following Exploration tech fixes:
-
-✅ Now Working:
-
-Tech Category	Techs
-Scout Discovery	Basic Sensors, Advanced Sensors
-Mission Time	Fast Survey, Rapid Deployment
-Travel Time	Orbital Mechanics I & II
-Fuel Cost	Fuel Efficiency I & II
-Success Rates	Salvage Training, Reinforced Hulls
-Salvage Rewards	Salvage Mastery, Master Salvager
 ⏳ Deferred (needs architecture change):
 
 Derelict spawn rate multipliers (Deep Space Sensors, Predictive Algorithms, Xenoarchaeology, Ark-Tech Integration)
 These would require passing game state to the derelicts module or refactoring how spawn rates work.
-
-Ready to audit the Economy branch next?
+Storage Limits (Resource Compression): System doesn't exist yet.
+Trading Post & Contracts: Large new systems, deferred as per plan.

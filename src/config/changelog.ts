@@ -11,6 +11,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.9',
+    date: '2025-12-04',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed "Long-Range Comms" upgrade to correctly allow scouting of adjacent orbits',
+      },
+    ],
+  },
+  {
     version: '0.2.8',
     date: '2025-12-04',
     changes: [
