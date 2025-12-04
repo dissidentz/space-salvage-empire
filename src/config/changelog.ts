@@ -11,6 +11,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.7',
+    date: '2025-12-04',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Exploration techs now apply correctly: scout discovery rate, mission times, travel time, fuel costs, salvage rewards, and success rate bonuses',
+      },
+    ],
+  },
+  {
     version: '0.2.6',
     date: '2025-12-04',
     changes: [

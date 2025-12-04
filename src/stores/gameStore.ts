@@ -697,9 +697,22 @@ export const useGameStore = create<GameStore>()(
 
         const config = ORBIT_CONFIGS[targetOrbit];
         
+        // Apply tech fuel cost multipliers
+        const techEffects = getTechEffects(state.techTree.purchased);
+        let fuelMultiplier = state.activeFormation === 'expeditionFleet' ? 0.8 : 1.0;
+        if (techEffects.multipliers.fuel_cost) {
+          fuelMultiplier *= techEffects.multipliers.fuel_cost;
+        }
+        
         // Deduct fuel
-        const fuelMultiplier = state.activeFormation === 'expeditionFleet' ? 0.8 : 1.0;
-        state.subtractResource('fuel', config.fuelCost * fuelMultiplier);
+        const actualFuelCost = Math.floor(config.fuelCost * fuelMultiplier);
+        state.subtractResource('fuel', actualFuelCost);
+
+        // Apply tech travel time multipliers
+        let travelMultiplier = state.activeFormation === 'expeditionFleet' ? 0.85 : 1.0;
+        if (techEffects.multipliers.travel_time) {
+          travelMultiplier *= techEffects.multipliers.travel_time;
+        }
 
         // Start travel
         const now = Date.now();
@@ -708,12 +721,12 @@ export const useGameStore = create<GameStore>()(
             traveling: true,
             destination: targetOrbit,
             startTime: now,
-            endTime: now + config.travelTime * (state.activeFormation === 'expeditionFleet' ? 0.85 : 1.0),
+            endTime: now + config.travelTime * travelMultiplier,
             progress: 0,
           },
           stats: {
             ...state.stats,
-            totalFuelSpent: state.stats.totalFuelSpent + config.fuelCost,
+            totalFuelSpent: state.stats.totalFuelSpent + actualFuelCost,
           },
         });
 
@@ -924,7 +937,18 @@ export const useGameStore = create<GameStore>()(
         }
 
         const now = Date.now();
-        const duration = (config.baseMissionDuration || 600000) * (state.activeFormation === 'scoutFleet' ? 0.9 : 1.0);
+        let duration = config.baseMissionDuration || 600000;
+        
+        // Apply tech mission time multipliers
+        const techEffects = getTechEffects(state.techTree.purchased);
+        if (techEffects.multipliers.scout_mission_time) {
+          duration *= techEffects.multipliers.scout_mission_time;
+        }
+        if (techEffects.multipliers.mission_time) {
+          duration *= techEffects.multipliers.mission_time;
+        }
+        // Apply formation bonus
+        duration *= (state.activeFormation === 'scoutFleet' ? 0.9 : 1.0);
 
         const mission: Mission = {
           id: Math.random().toString(36).substr(2, 9),
@@ -1014,7 +1038,23 @@ export const useGameStore = create<GameStore>()(
         // Determine success
         let success = true;
         const shipConfig = SHIP_CONFIGS[mission.shipType];
-        const successRate = shipConfig.baseSuccessRate || 0.5;
+        let successRate = shipConfig.baseSuccessRate || 0.5;
+        
+        // Apply tech bonuses to success rate
+        const techEffects = getTechEffects(state.techTree.purchased);
+        // Scout discovery rate bonus
+        if (mission.type === 'scout' && techEffects.multipliers.scout_discovery_rate) {
+          successRate *= techEffects.multipliers.scout_discovery_rate;
+        }
+        // Salvage success rate bonus
+        if (mission.type === 'salvage' && techEffects.flatBonuses.salvage_success_rate) {
+          successRate += techEffects.flatBonuses.salvage_success_rate;
+        }
+        // Global mission success rate bonus
+        if (techEffects.flatBonuses.mission_success_rate) {
+          successRate += techEffects.flatBonuses.mission_success_rate;
+        }
+        successRate = Math.min(successRate, 1.0); // Cap at 100%
         
         if (Math.random() > successRate) {
           success = false;
@@ -1085,6 +1125,18 @@ export const useGameStore = create<GameStore>()(
                     if (rewards.exoticAlloys) rewards.exoticAlloys *= 1.15;
                     if (rewards.aiCores) rewards.aiCores *= 1.15;
                     if (rewards.dataFragments) rewards.dataFragments *= 1.15;
+                }
+                
+                // Apply tech salvage rewards multiplier
+                if (techEffects.multipliers.salvage_rewards) {
+                    const salvageMultiplier = techEffects.multipliers.salvage_rewards;
+                    if (rewards.metal) rewards.metal *= salvageMultiplier;
+                    if (rewards.electronics) rewards.electronics *= salvageMultiplier;
+                    if (rewards.rareMaterials) rewards.rareMaterials *= salvageMultiplier;
+                    if (rewards.exoticAlloys) rewards.exoticAlloys *= salvageMultiplier;
+                    if (rewards.aiCores) rewards.aiCores *= salvageMultiplier;
+                    if (rewards.dataFragments) rewards.dataFragments *= salvageMultiplier;
+                    if (rewards.fuel) rewards.fuel *= salvageMultiplier;
                 }
                 
                 // Round values
@@ -1165,7 +1217,20 @@ export const useGameStore = create<GameStore>()(
             try {
                 let success = true;
                 const shipConfig = SHIP_CONFIGS[mission.shipType];
-                const successRate = shipConfig.baseSuccessRate || 0.5;
+                let successRate = shipConfig.baseSuccessRate || 0.5;
+                
+                // Apply tech bonuses to success rate
+                const techEffects = getTechEffects(state.techTree.purchased);
+                if (mission.type === 'scout' && techEffects.multipliers.scout_discovery_rate) {
+                  successRate *= techEffects.multipliers.scout_discovery_rate;
+                }
+                if (mission.type === 'salvage' && techEffects.flatBonuses.salvage_success_rate) {
+                  successRate += techEffects.flatBonuses.salvage_success_rate;
+                }
+                if (techEffects.flatBonuses.mission_success_rate) {
+                  successRate += techEffects.flatBonuses.mission_success_rate;
+                }
+                successRate = Math.min(successRate, 1.0);
     
                 if (Math.random() > successRate) {
                     success = false;
