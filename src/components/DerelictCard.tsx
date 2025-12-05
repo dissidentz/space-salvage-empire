@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/tooltip';
 import { DERELICT_CONFIGS } from '@/config/derelicts';
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
+import { ARK_COMPONENTS } from '@/config/prestige';
 import { useGameStore } from '@/stores/gameStore';
 import type { Derelict, DerelictAction } from '@/types';
 import {
@@ -58,6 +59,11 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
   const [missionTimeRemaining, setMissionTimeRemaining] = useState(0);
 
   const config = DERELICT_CONFIGS[derelict.type];
+
+  // Determine display name
+  const displayName = derelict.isArkComponent && derelict.arkComponentType 
+    ? ARK_COMPONENTS[derelict.arkComponentType].name 
+    : config.name;
 
   // Update expiry countdown
   // Update expiry countdown
@@ -125,7 +131,7 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <Target className={`w-4 h-4 ${getRarityColor(derelict.rarity)}`} />
-                <span className="font-medium">{config.name}</span>
+                <span className="font-medium">{displayName}</span>
                 <Badge className={getRarityBgColor(derelict.rarity)}>
                   <span className={getRarityColor(derelict.rarity)}>{derelict.rarity}</span>
                 </Badge>

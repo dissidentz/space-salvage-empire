@@ -21,10 +21,10 @@ export function checkPassiveSpawning() {
   // Multipliers
   const orbitMult = orbitConfig.spawnMultiplier || 1.0;
   
-  // Tech multipliers could be added here
-  // const techMult = state.getTechMultiplier('passive_spawn_rate');
+  // Tech multipliers
+  const techMult = state.getTechMultiplier('passive_spawn_rate');
   
-  const finalChance = baseSpawnRate * orbitMult;
+  const finalChance = baseSpawnRate * orbitMult * techMult;
   
   if (Math.random() < finalChance) {
     // Check max derelicts

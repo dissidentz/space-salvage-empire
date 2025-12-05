@@ -2,6 +2,7 @@
 import {
     DERELICT_CONFIGS,
     calculateDerelictRewards,
+    getArkComponentTypeForOrbit,
     getRandomDerelictType,
     rollDerelictRarity,
 } from '@/config/derelicts';
@@ -1233,6 +1234,16 @@ export const useGameStore = create<GameStore>()(
                 if (techEffects.flatBonuses.mission_success_rate) {
                   successRate += techEffects.flatBonuses.mission_success_rate;
                 }
+                
+                // Risk/Reward Logic for Hacking
+                // Hacking is riskier: -10% success rate
+                if (mission.action === 'hack') {
+                    successRate -= 0.1;
+                } else if (mission.action === 'dismantle') {
+                     // Dismantling is safer but destructive? Or standard? 
+                     // Leaving standard for now as per design doc prioritization.
+                }
+
                 successRate = Math.min(successRate, 1.0);
     
                 if (Math.random() > successRate) {
@@ -1250,6 +1261,12 @@ export const useGameStore = create<GameStore>()(
                         
                         if (type) {
                             const config = DERELICT_CONFIGS[type];
+                            
+                            // Ark Component Uniqueness Logic
+                            const selectedArkType = type === 'arkComponent' 
+                                ? getArkComponentTypeForOrbit(mission.targetOrbit)
+                                : undefined;
+
                             discoveredDerelict = {
                                 id: Math.random().toString(36).substr(2, 9),
                                 type,
@@ -1264,7 +1281,7 @@ export const useGameStore = create<GameStore>()(
                                 isHazardous: config.isHazardous || false,
                                 rewards: config.rewards,
                                 isArkComponent: config.isArkComponent,
-                                arkComponentType: config.arkComponentType,
+                                arkComponentType: selectedArkType,
                             };
                             newDerelicts.push(discoveredDerelict);
                         }
@@ -1466,6 +1483,11 @@ export const useGameStore = create<GameStore>()(
         
         const config = DERELICT_CONFIGS[type];
         
+        // Ark Component Uniqueness Logic
+        const selectedArkType = type === 'arkComponent' 
+            ? getArkComponentTypeForOrbit(orbit)
+            : undefined;
+        
         const derelict: Derelict = {
           id: Math.random().toString(36).substr(2, 9),
           type,
@@ -1480,7 +1502,7 @@ export const useGameStore = create<GameStore>()(
           riskLevel: config.riskLevel,
           rewards: config.rewards,
           isArkComponent: config.isArkComponent,
-          arkComponentType: config.arkComponentType,
+          arkComponentType: selectedArkType,
         };
 
         set(state => ({

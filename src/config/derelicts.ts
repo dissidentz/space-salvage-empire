@@ -343,3 +343,24 @@ export function getRandomDerelictType(orbit: OrbitType, rarity: DerelictRarity):
   if (available.length === 0) return null;
   return available[Math.floor(Math.random() * available.length)];
 }
+
+/**
+ * Get a random Ark Component type based on orbit logic
+ * Navigation Array is exclusive to Deep Space
+ */
+export function getArkComponentTypeForOrbit(orbit: OrbitType): ArkComponentType {
+  const standardComponents: ArkComponentType[] = [
+    'propulsionCore', 'lifeSupportGrid', 'powerDistribution',
+    'hullPlating', 'weaponsArray', 'computingCore', 'cryoBay'
+  ];
+
+  // In Deep Space, 20% chance for the exclusive Navigation Array
+  if (orbit === 'deepSpace') {
+    if (Math.random() < 0.2) {
+      return 'navigationArray';
+    }
+  }
+
+  // Default to picking one of the 7 standard components
+  return standardComponents[Math.floor(Math.random() * standardComponents.length)];
+}

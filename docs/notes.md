@@ -90,3 +90,62 @@ Trading Post & Contracts: Large new systems, deferred as per plan.
 
 
 we need to be able to see all derelicts on the dashboard in all orbits.
+
+
+
+
+
+
+
+🚫 Missing Major Systems
+These features are mentioned in the design docs but do not exist in the codebase:
+
+Trading Post / Market System
+Status: Missing logic and UI.
+Impact: Players cannot sell excess resources for credits/fuel/rare materials.
+Evidence: No marketStore.ts, TradingView.tsx, or resource conversion actions.
+
+Contracts System
+Status: Missing logic and UI.
+Impact: Players can't take on optional objectives for bonuses.
+Evidence: 
+gameStore.ts
+ has an empty contracts: [] array but no logic to generate or process them.
+
+Resource Storage Limits
+Status: Missing logic.
+Impact: There are no caps on resources; players can hoard infinitely without "Resource Compression" tech.
+Evidence: 
+addResource
+ function simply increments values without checking against a max capacity.
+
+Victory Screen & Endless Mode
+Status: logic exists to "complete" the Ark, but there is no screen to show it.
+Impact: Winning the game just shows a toast notification ("The Ark is complete!"), without a proper victory summary, stats screen, or options for "Endless Mode" vs "New Game+".
+Evidence: 
+buildArkComponent
+ sets arkComplete flag but no VictoryView.tsx exists to handle the transition.
+
+
+⚠️ Incomplete / Partially Implemented Features
+These features exist but are missing critical logic or configuration:
+
+
+
+
+
+
+
+✅ What IS Implemented
+Previous notes were slightly outdated. I verified these are now working:
+
+Ark Component Uniqueness: Properly implemented. Ark components now have specific types assigned upon generation.
+Deep Space Exclusivity: Implemented. The 'Navigation Array' component is exclusive to Deep Space orbit spawns.
+Hacking Risk/Reward Logic: Implemented. Hacking now applies a -10% penalty to mission success rate, balancing the increased rewards.
+Passive Spawn Rate Multipliers: Implemented. Connected `passive_spawn_rate` tech multiplier to the spawning engine.
+Automation (Auto-Scout/Auto-Salvage): Fully implemented in store and UI.
+Fleet Formations: Logic and UI exist.
+Instant Warp: Logic implemented in travelToOrbit.
+Dual Missions: Logic implemented (ships have individual states).
+Adjacent Orbit Scouting: Helper functions exist in config.
+Would you like me to tackle one of the missing feature sets, like the Ark Component Uniqueness or Trading Post?

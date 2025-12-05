@@ -9,7 +9,30 @@ export interface ChangelogEntry {
   }[];
 }
 
+
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '0.2.13',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Ark Component Uniqueness - 8 distinct Ark components now spawn with specific types',
+      },
+      {
+        category: 'feature',
+        description: 'Added Deep Space Exclusivity - "Navigation Array" Ark component is now exclusive to Deep Space orbit',
+      },
+      {
+        category: 'feature',
+        description: 'Implemented Hacking Risk/Reward Logic - Hacking now has a -10% success rate penalty for 2x data rewards',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Passive Spawn Rate Multipliers not applying tech upgrades correctly',
+      },
+    ],
+  },
   {
     version: '0.2.12',
     date: '2025-12-05',

@@ -9,7 +9,7 @@ import {
     calculatePerTickProduction,
     calculateProduction,
 } from '@/utils/formulas';
-import { getTechMultipliers } from './getTechMultipliers';
+import { getTechEffects, getTechMultipliers } from './getTechMultipliers';
 import { getUpgradeMultipliers, type UpgradeMultipliers } from './getUpgradeMultipliers';
 
 /**
@@ -67,6 +67,17 @@ export function calculateTickProduction(
       deltas[inputResource] = (deltas[inputResource] || 0) - actualConsumed;
       deltas[outputResource] =
         (deltas[outputResource] || 0) + multipliedProduction;
+
+      // Handle bonus exotic alloy production from fuel synthesizers (fusion_mastery tech)
+      if (shipType === 'fuelSynthesizer') {
+        const techEffects = getTechEffects(state.techTree.purchased);
+        const bonusExoticAlloyRate = techEffects.flatBonuses['fuelSynthesizer_exoticAlloy'] || 0;
+        if (bonusExoticAlloyRate > 0) {
+          const bonusPerSecond = bonusExoticAlloyRate * count;
+          const bonusPerTick = calculatePerTickProduction(bonusPerSecond);
+          deltas['exoticAlloys'] = (deltas['exoticAlloys'] || 0) + bonusPerTick;
+        }
+      }
     }
     // Handle simple production ships (Drones, Extractors, Miners)
     else if (config.producesResource) {
@@ -218,6 +229,16 @@ export function calculateProductionRates(
 
       rates[outputResource] = (rates[outputResource] || 0) + productionPerSecond;
       rates[config.consumesResource] = (rates[config.consumesResource] || 0) - consumptionPerSecond;
+
+      // Handle bonus exotic alloy production from fuel synthesizers (fusion_mastery tech)
+      if (shipType === 'fuelSynthesizer') {
+        const techEffects = getTechEffects(state.techTree.purchased);
+        const bonusExoticAlloyRate = techEffects.flatBonuses['fuelSynthesizer_exoticAlloy'] || 0;
+        if (bonusExoticAlloyRate > 0) {
+          const bonusPerSecond = bonusExoticAlloyRate * count;
+          rates['exoticAlloys'] = (rates['exoticAlloys'] || 0) + bonusPerSecond;
+        }
+      }
     }
     // Handle simple production ships
     else if (config.producesResource) {
