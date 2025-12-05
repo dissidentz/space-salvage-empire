@@ -4,6 +4,7 @@ import { useGameStore } from '@/stores/gameStore';
 import {
     Atom,
     BookOpen,
+    FileText,
     FlaskConical,
     LayoutDashboard,
     Map,
@@ -58,6 +59,12 @@ export function TopNav() {
       label: 'Log', 
       icon: ScrollText,
       view: 'missionLog' as const
+    },
+    { 
+      id: 'contracts', 
+      label: 'Contracts', 
+      icon: FileText,
+      view: 'contracts' as const
     },
     { 
       id: 'settings', 

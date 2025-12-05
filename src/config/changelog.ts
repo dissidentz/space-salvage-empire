@@ -12,6 +12,28 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.14',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Contracts System - Optional objectives for bonus rewards (unlocked at Economy Tier 3)',
+      },
+      {
+        category: 'feature',
+        description: 'Added 4 Contract Types: Salvage Quota, Resource Rush, Discovery Mission, and Risky Business',
+      },
+      {
+        category: 'feature',
+        description: 'Added "Contracts" view with progress tracking, active/available tabs, and reward claiming',
+      },
+      {
+        category: 'feature',
+        description: 'Added "Abandon Contract" functionality to dismiss failed or unwanted contracts',
+      },
+    ],
+  },
+  {
     version: '0.2.13',
     date: '2025-12-05',
     changes: [

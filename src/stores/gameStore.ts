@@ -16,10 +16,12 @@ import {
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
 import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
+import { generateRandomContract } from '@/engine/contracts';
 import { getTechEffects, getTechMultipliers } from '@/engine/getTechMultipliers';
 import { calculateOfflineProduction, calculateProductionRates } from '@/engine/production';
 import type {
     ArkComponentType,
+    ContractType,
     Derelict,
     DerelictAction,
     FormationType,
@@ -95,7 +97,7 @@ interface GameStore extends GameState {
   ) => void;
 
   // UI actions
-  setActiveView: (view: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog') => void;
+  setActiveView: (view: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts') => void;
   openModal: (modal: string, data?: any) => void;
   closeModal: () => void;
   addNotification: (
@@ -149,6 +151,13 @@ interface GameStore extends GameState {
 
   // Fleet Formations
   setFormation: (type: FormationType | null) => boolean;
+
+  // Contracts
+  generateContracts: () => void;
+  acceptContract: (contractId: string) => void;
+  updateContractProgress: (type: ContractType | 'any', amount: number, orbit?: OrbitType) => void;
+  claimContractReward: (contractId: string) => void;
+  abandonContract: (contractId: string) => void;
 }
 
 const INITIAL_STATE = {
@@ -389,13 +398,19 @@ export const useGameStore = create<GameStore>()(
       instantWarpAvailable: INITIAL_STATE.instantWarpAvailable,
 
       // Actions
-      addResource: (type, amount) =>
+      addResource: (type, amount) => {
         set(state => ({
           resources: {
             ...state.resources,
             [type]: state.resources[type] + amount,
           },
-        })),
+        }));
+
+        // Contract Hook: Resource Rush
+        if (type === 'metal' && amount > 0) {
+            get().updateContractProgress('resourceRush', amount);
+        }
+      },
 
       subtractResource: (type, amount) => {
         const state = get();
@@ -801,6 +816,9 @@ export const useGameStore = create<GameStore>()(
             },
           };
         });
+
+          // Contract Hook: Speed Run
+          get().updateContractProgress('speedRun', 1, destination);
 
           state.addNotification('success', `Arrived at ${ORBIT_CONFIGS[destination].name}`);
         }
@@ -1284,6 +1302,11 @@ export const useGameStore = create<GameStore>()(
                                 arkComponentType: selectedArkType,
                             };
                             newDerelicts.push(discoveredDerelict);
+
+                            // Contract hook: Discovery
+                            if (['rare', 'epic', 'legendary'].includes(rarity)) {
+                                get().updateContractProgress('discoveryMission', 1, mission.targetOrbit);
+                            }
                         }
                     } else if (mission.type === 'salvage' && mission.targetDerelict) {
                         const derelict = state.derelicts.find(d => d.id === mission.targetDerelict);
@@ -1313,6 +1336,14 @@ export const useGameStore = create<GameStore>()(
                             }
                             
                             salvagedDerelictIds.push(derelict.id);
+
+                            // Contract hook: Salvage Quota
+                            get().updateContractProgress('salvageQuota', 1, derelict.orbit);
+                            
+                            // Contract hook: Risky Business
+                            if (mission.action === 'hack') {
+                                get().updateContractProgress('riskyBusiness', 1);
+                            }
                         }
                     } else if (mission.type === 'colony') {
                          newColonies.push({
@@ -1360,6 +1391,11 @@ export const useGameStore = create<GameStore>()(
                 });
             }
         });
+
+        // Contract hook: Resource Rush (from missions)
+        if ((resourceChanges.metal || 0) > 0) {
+             get().updateContractProgress('resourceRush', resourceChanges.metal!);
+        }
 
         // Apply State Updates
         set(s => {
@@ -2063,6 +2099,115 @@ export const useGameStore = create<GameStore>()(
         newState.updateComputedRates(newRates);
 
         return true;
+      },
+
+      // Contracts
+      generateContracts: () => {
+        const state = get();
+        // Check availability
+        // If contract tech not unlocked, do nothing
+        if (!state.techTree.purchased.includes('contracts')) return;
+
+        const available = state.contracts.filter(c => c.status === 'available');
+        if (available.length >= 3) return;
+
+        const newContracts = [...state.contracts];
+        let added = false;
+        // Fill up to 3 available
+        while (newContracts.filter(c => c.status === 'available').length < 3) {
+             const contract = generateRandomContract(state.currentOrbit);
+             newContracts.push(contract);
+             added = true;
+        }
+        
+        if (added) {
+            set({ contracts: newContracts });
+        }
+      },
+
+      acceptContract: (id: string) => {
+        const state = get();
+        const contract = state.contracts.find(c => c.id === id);
+        if(!contract || contract.status !== 'available') return;
+
+        // Limit active contracts to 3
+        const active = state.contracts.filter(c => c.status === 'active');
+        if (active.length >= 3) {
+            state.addNotification('warning', 'Max 3 active contracts allowed.');
+            return;
+        }
+
+        const updatedContracts = state.contracts.map(c => 
+            c.id === id 
+            ? { ...c, status: 'active' as const, startTime: Date.now(), expiresAt: Date.now() + c.duration } 
+            : c
+        );
+
+        set({ contracts: updatedContracts });
+        state.addNotification('success', `Contract Accepted`); 
+      },
+
+      updateContractProgress: (type, amount, orbit) => {
+          set(state => {
+              let updated = false;
+              let completedAny = false;
+
+              const newContracts = state.contracts.map(c => {
+                  if (c.status !== 'active') return c;
+                  
+                  let match = false;
+                  if (type === 'any') { 
+                      match = true; 
+                  } else if (c.type === type) {
+                      match = true;
+                  }
+                  
+                  // For salvage/discovery, check orbit if specified and if contract has targetOrbit
+                  if (match && c.targetOrbit && orbit && c.targetOrbit !== orbit) {
+                      match = false;
+                  }
+                  
+                  if (match) {
+                      updated = true;
+                      const newProgress = Math.min(c.targetAmount, c.progress + amount);
+                      
+                      // Check for completion
+                      if (newProgress >= c.targetAmount && c.status === 'active') {
+                           completedAny = true;
+                           return { ...c, progress: newProgress, status: 'completed' as const };
+                      }
+                      return { ...c, progress: newProgress };
+                  }
+                  return c;
+              });
+
+              if (completedAny) {
+                  state.addNotification('success', 'Contract Objectives Met!');
+              }
+
+              return updated ? { contracts: newContracts } : {};
+          });
+      },
+
+      claimContractReward: (id: string) => {
+          const state = get();
+          const contract = state.contracts.find(c => c.id === id);
+          if (!contract || contract.status !== 'completed') return;
+          
+          Object.entries(contract.rewards).forEach(([res, amt]) => {
+              state.addResource(res as ResourceType, amt as number);
+          });
+          
+          // Remove contract from list
+          const newContracts = state.contracts.filter(c => c.id !== id);
+          set({ contracts: newContracts });
+          state.addNotification('success', 'Contract Reward Claimed!');
+      },
+
+      abandonContract: (contractId: string) => {
+          set(state => ({
+              contracts: state.contracts.filter(c => c.id !== contractId)
+          }));
       },
     }),
     {

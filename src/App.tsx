@@ -6,15 +6,16 @@ import { SidebarLeft } from '@/components/sidebar-left';
 import { TopNav } from '@/components/TopNav';
 import { Separator } from '@/components/ui/separator';
 import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import type { ErrorInfo } from 'react';
 import { Component } from 'react';
 import { NotificationManager } from './components/NotificationManager';
 import { ChangelogView } from './components/views/ChangelogView';
+import { ContractsView } from './components/views/ContractsView';
 import { DashboardView } from './components/views/DashboardView';
 import { FleetView } from './components/views/FleetView';
 import { MissionLogView } from './components/views/MissionLogView';
@@ -55,6 +56,8 @@ function App() {
         return <ChangelogView />;
       case 'missionLog':
         return <MissionLogView />;
+      case 'contracts':
+        return <ContractsView />;
       case 'dashboard':
       default:
         return <DashboardView />;

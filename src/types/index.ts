@@ -322,7 +322,7 @@ export interface Contract {
   expiresAt: number;
   duration: number;
   progress: number;
-  completed: boolean;
+  status: 'available' | 'active' | 'completed' | 'failed';
   rewards: Partial<Resources>;
 }
 
@@ -344,7 +344,7 @@ export interface EventLog {
 
 export interface UIState {
   activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
-  activeView: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog';
+  activeView: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts';
   openModal: string | null;
   modalData?: unknown;
   notifications: Notification[];

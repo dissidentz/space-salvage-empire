@@ -1,6 +1,6 @@
 // Mission helper utilities for UI components
 import { SHIP_CONFIGS } from '@/config/ships';
-import type { DerelictRarity, DerelictReward, Mission, MissionType, ShipType } from '@/types';
+import type { DerelictRarity, DerelictReward, Mission, MissionType, Resources, ShipType } from '@/types';
 
 /**
  * Format mission duration in human-readable format
@@ -155,4 +155,14 @@ export function formatNumber(num: number): string {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
   return num.toFixed(0);
+}
+
+/**
+ * Format partial resources rewards
+ */
+export function formatResourceRewards(rewards: Partial<Resources>): string {
+  if (!rewards) return '';
+  return Object.entries(rewards)
+    .map(([res, amount]) => `${formatNumber(amount as number)} ${res}`)
+    .join(', ');
 }

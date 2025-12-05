@@ -85,6 +85,11 @@ export function useGameLoop() {
                   stats: newStats
               };
           });
+
+          // Contract Hook: Resource Rush
+          if ((resourceUpdates.metal || 0) > 0) {
+              useGameStore.getState().updateContractProgress('resourceRush', resourceUpdates.metal!);
+          }
       }
 
       // Check for completed travel
