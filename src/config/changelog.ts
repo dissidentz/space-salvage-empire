@@ -12,6 +12,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.15',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Trading Post System - Barter excess resources for scarce materials (unlocked at Tier 2)',
+      },
+      {
+        category: 'feature',
+        description: 'Added "Trading" view with exchange rate calculator and 5 core trade routes',
+      },
+      {
+        category: 'feature',
+        description: 'Market Mastery tech now boosts trading output by 50%',
+      },
+    ],
+  },
+  {
     version: '0.2.14',
     date: '2025-12-05',
     changes: [

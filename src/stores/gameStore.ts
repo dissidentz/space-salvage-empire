@@ -16,6 +16,7 @@ import {
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
 import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
+import { TRADE_ROUTES } from '@/config/trading';
 import { generateRandomContract } from '@/engine/contracts';
 import { getTechEffects, getTechMultipliers } from '@/engine/getTechMultipliers';
 import { calculateOfflineProduction, calculateProductionRates } from '@/engine/production';
@@ -97,8 +98,10 @@ interface GameStore extends GameState {
   ) => void;
 
   // UI actions
-  setActiveView: (view: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts') => void;
+  // UI actions
+  setActiveView: (view: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts' | 'trading') => void;
   openModal: (modal: string, data?: any) => void;
+
   closeModal: () => void;
   addNotification: (
     type: 'info' | 'success' | 'warning' | 'error',
@@ -155,9 +158,13 @@ interface GameStore extends GameState {
   // Contracts
   generateContracts: () => void;
   acceptContract: (contractId: string) => void;
+
   updateContractProgress: (type: ContractType | 'any', amount: number, orbit?: OrbitType) => void;
   claimContractReward: (contractId: string) => void;
   abandonContract: (contractId: string) => void;
+
+  // Trading
+  tradeResources: (routeId: string, amount: number) => void;
 }
 
 const INITIAL_STATE = {
@@ -2208,6 +2215,44 @@ export const useGameStore = create<GameStore>()(
           set(state => ({
               contracts: state.contracts.filter(c => c.id !== contractId)
           }));
+      },
+
+      tradeResources: (routeId, amount) => {
+        const state = get();
+        // Verify market access
+        if (!state.techTree.purchased.includes('market_access')) {
+            state.addNotification('error', 'Trading Post not unlocked!');
+            return;
+        }
+
+        const route = TRADE_ROUTES.find(r => r.id === routeId);
+        if (!route) return;
+
+        // Calculate costs
+        const cost = route.inputAmount * amount;
+        
+        if (state.resources[route.input] < cost) {
+            state.addNotification('error', `Insufficient ${route.input} for trade!`);
+            return;
+        }
+
+        // Calculate output with multipliers
+        const baseOutput = route.outputAmount * amount;
+        const multipliers = getTechMultipliers(state.techTree.purchased);
+        // Apply market_mastery (target: 'trading_post_rates')
+        const tradeMultiplier = multipliers['trading_post_rates'] || 1;
+        
+        const finalOutput = Math.floor(baseOutput * tradeMultiplier);
+
+        set(state => ({
+            resources: {
+                ...state.resources,
+                [route.input]: state.resources[route.input] - cost,
+                [route.output]: state.resources[route.output] + finalOutput
+            }
+        }));
+
+        state.addNotification('success', `Traded ${cost} ${route.input} for ${finalOutput} ${route.output}`);
       },
     }),
     {

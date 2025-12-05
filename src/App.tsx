@@ -22,6 +22,7 @@ import { MissionLogView } from './components/views/MissionLogView';
 import { PrestigeView } from './components/views/PrestigeView';
 import { SettingsView } from './components/views/SettingsView';
 import { TechTreeView } from './components/views/TechTreeView';
+import { TradingView } from './components/views/TradingView';
 import { useGameLoop } from './hooks/useGameLoop';
 import { useGameStore } from './stores/gameStore';
 
@@ -58,6 +59,8 @@ function App() {
         return <MissionLogView />;
       case 'contracts':
         return <ContractsView />;
+      case 'trading':
+        return <TradingView />;
       case 'dashboard':
       default:
         return <DashboardView />;

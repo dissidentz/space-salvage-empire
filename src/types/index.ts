@@ -344,7 +344,7 @@ export interface EventLog {
 
 export interface UIState {
   activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
-  activeView: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts';
+  activeView: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts' | 'trading';
   openModal: string | null;
   modalData?: unknown;
   notifications: Notification[];

@@ -2,15 +2,7 @@ Based on my review of your project documentation and current codebase, here's wh
 
 
 🚫 Not Yet Implemented
-1. Trading Post System
-Tech unlocked: market_access (exists in tech tree)
-Status: Tech unlocks it, but no actual trading functionality or UI to sell/convert resources
-Mentioned in: Game Design Doc (Run 4 unlock), Development Roadmap
 
-2. Contracts System
-Tech unlocked: contracts (exists in tech tree)
-Status: Tech tree has the unlock, but no contract generation, tracking, or rewards system
-Mentioned in: Game Design Doc (Run 6 unlock), Progression Doc
 
 4. Auto-Scout & Auto-Salvage
 Techs exist: auto_scout, auto_salvage, total_automation
@@ -71,10 +63,12 @@ For context, here's what is working:
 ✅ Instant Warp Ability (Tier 4 Exploration)
 ✅ Adjacent Orbit Scouting (Tier 3 Exploration)
 ✅ Fleet Formations System (Tier 4 Economy)
+✅ Contracts System (Tier 3 Economy)
+✅ Trading Post System (Tier 2 Economy)
 Would you like me to help implement any of these missing features? The most impactful ones to tackle next would probably be:
 
-Trading Post (new strategic resource conversion gameplay)
-Contracts System (optional objectives for bonuses)
+
+
 
 
 
@@ -100,17 +94,7 @@ we need to be able to see all derelicts on the dashboard in all orbits.
 🚫 Missing Major Systems
 These features are mentioned in the design docs but do not exist in the codebase:
 
-Trading Post / Market System
-Status: Missing logic and UI.
-Impact: Players cannot sell excess resources for credits/fuel/rare materials.
-Evidence: No marketStore.ts, TradingView.tsx, or resource conversion actions.
 
-Contracts System
-Status: Missing logic and UI.
-Impact: Players can't take on optional objectives for bonuses.
-Evidence: 
-gameStore.ts
- has an empty contracts: [] array but no logic to generate or process them.
 
 Resource Storage Limits
 Status: Missing logic.
