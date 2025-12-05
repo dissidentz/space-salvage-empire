@@ -169,16 +169,6 @@ export function MissionLauncher() {
       <CardContent className="space-y-4">
         {/* Automation Settings */}
         <AutomationSettings />
-        
-        {/* Quick Scout Button */}
-        <Button
-          onClick={handleQuickScout}
-          disabled={!canQuickScout()}
-          className="w-full bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-blue-100 hover:text-blue-50"
-        >
-          <Rocket className="w-4 h-4 mr-2" />
-          Quick Scout Current Orbit ({ORBIT_CONFIGS[currentOrbit].name})
-        </Button>
 
         <div className="flex gap-2 mb-4">
             <Button 
@@ -197,37 +187,81 @@ export function MissionLauncher() {
             </Button>
         </div>
             
-        <div className="space-y-4">
-            {/* Ship Selection (Scout only) */}
-            {missionType === 'scout' && (
-                <div className="space-y-2">
-                <label className="text-sm font-medium">Select Ship</label>
+        <div className="space-y-3">
+            {/* Ship and Target Selection - Side by Side */}
+            <div className="grid grid-cols-2 gap-3">
+                {/* Ship Selection (Scout only) */}
+                {missionType === 'scout' ? (
+                    <div className="space-y-1">
+                    <label className="text-xs font-medium text-muted-foreground">Select Ship</label>
+                    <Select
+                        value={selectedShip || ''}
+                        onValueChange={value => setSelectedShip(value as ShipType)}
+                    >
+                        <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Choose ship..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                        {scoutShips.map(shipType => {
+                            const available = getAvailableCount(shipType);
+                            const total = ships[shipType];
+                            const totalCapacity = total * maxMissionsPerShip;
+                            return (
+                            <SelectItem
+                                key={shipType}
+                                value={shipType}
+                                disabled={available <= 0}
+                            >
+                                <div className="flex items-center justify-between w-full">
+                                <span>{getShipDisplayName(shipType)}</span>
+                                <Badge
+                                    variant={available > 0 ? 'secondary' : 'outline'}
+                                    className="ml-2"
+                                >
+                                    {available}/{totalCapacity}
+                                </Badge>
+                                </div>
+                            </SelectItem>
+                            );
+                        })}
+                        </SelectContent>
+                    </Select>
+                    </div>
+                ) : (
+                    <div className="space-y-1">
+                        <label className="text-xs font-medium text-muted-foreground">Colony Ship</label>
+                        <div className="h-9 px-3 bg-slate-700/30 rounded flex items-center justify-between text-sm">
+                            <span>Available:</span>
+                            <Badge variant={getAvailableCount('colonyShip') > 0 ? 'default' : 'destructive'}>
+                                {getAvailableCount('colonyShip')} / {ships.colonyShip * maxMissionsPerShip}
+                            </Badge>
+                        </div>
+                    </div>
+                )}
+
+                {/* Target Orbit Selection */}
+                <div className="space-y-1">
+                <label className="text-xs font-medium text-muted-foreground">Target Orbit</label>
                 <Select
-                    value={selectedShip || ''}
-                    onValueChange={value => setSelectedShip(value as ShipType)}
+                    value={targetOrbit || ''}
+                    onValueChange={value => setTargetOrbit(value as OrbitType)}
                 >
-                    <SelectTrigger>
-                    <SelectValue placeholder="Choose a scout ship..." />
+                    <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Choose destination..." />
                     </SelectTrigger>
                     <SelectContent>
-                    {scoutShips.map(shipType => {
-                        const available = getAvailableCount(shipType);
-                        const total = ships[shipType];
-                        const totalCapacity = total * maxMissionsPerShip;
+                    {availableOrbits.map(orbit => {
+                        const config = ORBIT_CONFIGS[orbit];
+                        const hasColony = colonies.some(c => c.orbit === orbit);
+                        // Filter out orbits that already have colonies if missionType is colony
+                        if (missionType === 'colony' && hasColony) return null;
+                        
                         return (
-                        <SelectItem
-                            key={shipType}
-                            value={shipType}
-                            disabled={available <= 0}
-                        >
-                            <div className="flex items-center justify-between w-full">
-                            <span>{getShipDisplayName(shipType)}</span>
-                            <Badge
-                                variant={available > 0 ? 'secondary' : 'outline'}
-                                className="ml-2"
-                            >
-                                {available}/{totalCapacity}
-                            </Badge>
+                        <SelectItem key={orbit} value={orbit}>
+                            <div className="flex items-center gap-2">
+                            <MapPin className="w-3 h-3" />
+                            <span>{config.name}</span>
+                            {hasColony && <Badge variant="secondary" className="ml-2 text-xs">Colony</Badge>}
                             </div>
                         </SelectItem>
                         );
@@ -235,86 +269,49 @@ export function MissionLauncher() {
                     </SelectContent>
                 </Select>
                 </div>
-            )}
-            
-            {/* Colony Ship Info (Colony only) */}
-            {missionType === 'colony' && (
-                <div className="space-y-2">
-                    <label className="text-sm font-medium">Select Ship</label>
-                    <div className="p-3 bg-slate-700/30 rounded flex items-center justify-between">
-                        <span className="text-sm font-medium">Colony Ships Available:</span>
-                        <Badge variant={getAvailableCount('colonyShip') > 0 ? 'default' : 'destructive'}>
-                            {getAvailableCount('colonyShip')} / {ships.colonyShip * maxMissionsPerShip}
-                        </Badge>
+            </div>
+
+            {/* Mission Details - Fuel and Duration on same line */}
+            <div className="p-2 bg-slate-700/30 rounded flex items-center justify-between text-sm">
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                        <Fuel className="w-3.5 h-3.5 text-orange-400" />
+                        <span className="text-muted-foreground">Fuel:</span>
+                        <span className="font-medium">
+                            {targetOrbit 
+                                ? (missionType === 'scout' ? (targetOrbit === 'leo' || targetOrbit === 'geo' ? '0' : '50') : formatNumber(ORBIT_CONFIGS[targetOrbit].fuelCost))
+                                : '-'}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-blue-400" />
+                        <span className="text-muted-foreground">Duration:</span>
+                        <span className="font-medium">
+                            {missionType === 'scout' ? formatMissionDuration(600000) : formatMissionDuration(3600000)}
+                        </span>
                     </div>
                 </div>
-            )}
-
-            {/* Target Orbit Selection */}
-            <div className="space-y-2">
-            <label className="text-sm font-medium">Target Orbit</label>
-            <Select
-                value={targetOrbit || ''}
-                onValueChange={value => setTargetOrbit(value as OrbitType)}
-            >
-                <SelectTrigger>
-                <SelectValue placeholder="Choose destination..." />
-                </SelectTrigger>
-                <SelectContent>
-                {availableOrbits.map(orbit => {
-                    const config = ORBIT_CONFIGS[orbit];
-                    const hasColony = colonies.some(c => c.orbit === orbit);
-                    // Filter out orbits that already have colonies if missionType is colony
-                    if (missionType === 'colony' && hasColony) return null;
-                    
-                    return (
-                    <SelectItem key={orbit} value={orbit}>
-                        <div className="flex items-center gap-2">
-                        <MapPin className="w-3 h-3" />
-                        <span>{config.name}</span>
-                        {hasColony && <Badge variant="secondary" className="ml-2 text-xs">Colony</Badge>}
-                        </div>
-                    </SelectItem>
-                    );
-                })}
-                </SelectContent>
-            </Select>
             </div>
 
-            {/* Mission Details */}
-            <div className="p-3 bg-slate-700/30 rounded space-y-2 text-sm">
-                <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                    <Fuel className="w-4 h-4 text-orange-400" />
-                    <span>Fuel Cost:</span>
-                </div>
-                <span className="font-medium">
-                    {targetOrbit 
-                        ? (missionType === 'scout' ? (targetOrbit === 'leo' || targetOrbit === 'geo' ? '0' : '50') : formatNumber(ORBIT_CONFIGS[targetOrbit].fuelCost)) + ' fuel'
-                        : '-'}
-                </span>
-                </div>
-                <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                    <Clock className="w-4 h-4 text-blue-400" />
-                    <span>Duration:</span>
-                </div>
-                <span className="font-medium">
-                    {missionType === 'scout' ? formatMissionDuration(600000) : formatMissionDuration(3600000)}
-                </span>
-                </div>
+            {/* Launch Buttons - Side by Side */}
+            <div className="flex gap-2">
+              <Button
+                onClick={handleQuickScout}
+                disabled={!canQuickScout()}
+                className="flex-1 bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/50 text-cyan-200 hover:text-cyan-100"
+              >
+                <Rocket className="w-4 h-4 mr-1" />
+                Quick Scout ({ORBIT_CONFIGS[currentOrbit].name})
+              </Button>
+              <Button
+                className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 text-blue-200 hover:text-blue-100"
+                onClick={handleLaunch}
+                disabled={!canLaunch()}
+              >
+                <Send className="w-4 h-4 mr-1" />
+                Launch {missionType === 'scout' ? 'Scout' : 'Colony'}
+              </Button>
             </div>
-
-            {/* Launch Button */}
-            
-            <Button
-            className="w-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 text-blue-200 hover:text-blue-100"
-            onClick={handleLaunch}
-            disabled={!canLaunch()}
-            >
-            <Send className="w-4 h-4 mr-2" />
-            Launch {missionType === 'scout' ? 'Scout' : 'Colony'} Mission
-            </Button>
         </div>
 
       </CardContent>

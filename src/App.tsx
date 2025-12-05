@@ -1,13 +1,14 @@
 import { AdminPanel } from '@/components/AdminPanel';
+import { AfkSummaryModal } from '@/components/AfkSummaryModal';
 import { GalaxyMap } from '@/components/GalaxyMap';
 import { OrbitSelector } from '@/components/OrbitSelector';
 import { SidebarLeft } from '@/components/sidebar-left';
 import { TopNav } from '@/components/TopNav';
 import { Separator } from '@/components/ui/separator';
 import {
-    SidebarInset,
-    SidebarProvider,
-    SidebarTrigger,
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import type { ErrorInfo } from 'react';
@@ -64,7 +65,7 @@ function App() {
     <SidebarProvider>
       <SidebarLeft />
       <SidebarInset className="relative pb-16">
-        <header className="bg-sidebar sticky top-0 flex h-14 shrink-0 items-center gap-2 border-b px-3">
+        <header className="bg-sidebar sticky top-0 z-50 flex h-14 shrink-0 items-center gap-2 border-b px-3">
           <SidebarTrigger />
           <Separator
             orientation="vertical"
@@ -81,6 +82,7 @@ function App() {
         open={openModal === 'orbitSelector'} 
         onClose={closeModal} 
       />
+      <AfkSummaryModal />
     </SidebarProvider>
   );
 }

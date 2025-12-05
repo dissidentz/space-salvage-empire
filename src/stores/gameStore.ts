@@ -141,6 +141,7 @@ interface GameStore extends GameState {
   // Automation actions
   toggleAutoScout: () => void;
   toggleAutoSalvage: () => void;
+  setAutoScoutTargetLimit: (limit: number) => void;
   processAutomation: () => void;
   
   isTechUnlocked: (techId: string) => boolean;
@@ -369,7 +370,9 @@ const INITIAL_STATE = {
     automationSettings: {
       autoScoutEnabled: true,
       autoSalvageEnabled: true,
+      autoScoutTargetLimit: 5,
     },
+    afkSummary: null,
   },
 
   activeFormation: null,
@@ -1897,6 +1900,18 @@ export const useGameStore = create<GameStore>()(
         }));
       },
       
+      setAutoScoutTargetLimit: (limit: number) => {
+        set(state => ({
+          ui: {
+            ...state.ui,
+            automationSettings: {
+              ...state.ui.automationSettings,
+              autoScoutTargetLimit: Math.max(1, Math.min(20, limit)),
+            },
+          },
+        }));
+      },
+      
       processAutomation: () => {
         const state = get();
         const hasAutoScout = state.techTree.purchased.includes('auto_scout');
@@ -1905,6 +1920,13 @@ export const useGameStore = create<GameStore>()(
         
         // Auto-Scout Logic
         if (hasAutoScout && state.ui.automationSettings?.autoScoutEnabled && state.shipEnabled.scoutProbe) {
+          // Check if we already have enough derelicts
+          const targetLimit = state.ui.automationSettings?.autoScoutTargetLimit ?? 5;
+          if (state.derelicts.length >= targetLimit) {
+            // Skip scouting - we have enough targets
+            return;
+          }
+          
           const hasDualMissions = state.techTree.purchased.includes('fleet_coordination') || hasTotalAutomation;
           const maxMissionsPerShip = hasDualMissions ? 2 : 1;
           
@@ -2037,13 +2059,15 @@ export const useGameStore = create<GameStore>()(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
 
-        // Calculate offline time
+        // Calculate offline time (capped at 4 hours)
+        const MAX_OFFLINE_TIME = 4 * 60 * 60 * 1000; // 4 hours in ms
         const now = Date.now();
         const lastSave = state.lastSaveTime || now;
-        const offlineTime = now - lastSave;
+        const rawOfflineTime = now - lastSave;
+        const offlineTime = Math.min(rawOfflineTime, MAX_OFFLINE_TIME);
         
-        // Only process if offline for more than 10 seconds
-        if (offlineTime > 10000) {
+        // Only process if offline for more than 30 seconds (show modal for meaningful time away)
+        if (offlineTime > 30000) {
             // Calculate efficiency based on techs
             const techEffects = getTechEffects(state.techTree.purchased);
             const baseEfficiency = 0.5; // Base 50%
@@ -2055,22 +2079,29 @@ export const useGameStore = create<GameStore>()(
             
             // Apply gains
             let hasGains = false;
-            const gainStrings: string[] = [];
             
             for (const [res, amount] of Object.entries(gains)) {
                 if ((amount as number) > 0) {
                     state.addResource(res as ResourceType, amount as number);
-                    gainStrings.push(`${(amount as number).toFixed(0)} ${res}`);
                     hasGains = true;
                 }
             }
             
+            // Store AFK summary for modal display
             if (hasGains) {
-                const timeStr = (offlineTime / 1000 / 60).toFixed(1);
-                state.addNotification(
-                    'success', 
-                    `Offline for ${timeStr}m (Eff: ${(efficiency * 100).toFixed(0)}%). Gained: ${gainStrings.join(', ')}`
-                );
+                // We need to set this after state is rehydrated
+                setTimeout(() => {
+                    useGameStore.setState(s => ({
+                        ui: {
+                            ...s.ui,
+                            afkSummary: {
+                                timeAway: offlineTime,
+                                efficiency,
+                                gains,
+                            }
+                        }
+                    }));
+                }, 100);
             }
         }
         

@@ -48,12 +48,12 @@ export function MissionHistory() {
                         {log.type === 'scout' ? 'Scout Mission' : 'Salvage Mission'}
                       </span>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-400">
                       {new Date(log.endTime).toLocaleTimeString()}
                     </span>
                   </div>
                   
-                  <div className="text-sm text-gray-400 ml-6 space-y-1">
+                  <div className="text-sm text-gray-300 ml-6 space-y-1">
                     <div>
                       Ship: <span className="text-gray-300">{shipName}</span> • Orbit: <span className="text-gray-300">{orbitName}</span>
                     </div>

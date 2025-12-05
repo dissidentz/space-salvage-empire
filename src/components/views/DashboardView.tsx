@@ -64,11 +64,11 @@ export function DashboardView() {
 
                 return (
                   <div key={orbit} className="space-y-3">
-                    <h3 className="text-lg font-semibold text-muted-foreground flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                        <span className={`w-2 h-2 rounded-full ${getOrbitColor(orbit).replace('text-', 'bg-')}`} />
                        Discovered Derelicts in {ORBIT_CONFIGS[orbit].name}
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {orbitDerelicts.map(derelict => (
                         <DerelictCard key={derelict.id} derelict={derelict} />
                       ))}

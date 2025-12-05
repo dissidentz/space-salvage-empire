@@ -129,15 +129,15 @@ export function getMissionTypeColor(type: MissionType): string {
 export function getMissionTypeBgColor(type: MissionType): string {
   switch (type) {
     case 'scout':
-      return 'bg-blue-500/20 border-blue-500/50';
+      return 'bg-blue-500/20 border-blue-500/50 text-blue-200';
     case 'salvage':
-      return 'bg-purple-500/20 border-purple-500/50';
+      return 'bg-purple-500/20 border-purple-500/50 text-purple-200';
     case 'travel':
-      return 'bg-cyan-500/20 border-cyan-500/50';
+      return 'bg-cyan-500/20 border-cyan-500/50 text-cyan-200';
     case 'colony':
-      return 'bg-green-500/20 border-green-500/50';
+      return 'bg-green-500/20 border-green-500/50 text-green-200';
     default:
-      return 'bg-slate-500/20 border-slate-500/50';
+      return 'bg-slate-500/20 border-slate-500/50 text-slate-200';
   }
 }
 

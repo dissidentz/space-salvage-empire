@@ -3,22 +3,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { DERELICT_CONFIGS } from '@/config/derelicts';
 import { ORBIT_CONFIGS } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { Mission } from '@/types';
 import {
-  formatMissionDuration,
-  getMissionProgress,
-  getMissionTimeRemaining,
-  getMissionTypeBgColor,
-  getMissionTypeColor,
-  getShipDisplayName,
+    formatMissionDuration,
+    getMissionProgress,
+    getMissionTimeRemaining,
+    getMissionTypeBgColor,
+    getMissionTypeColor,
+    getShipDisplayName,
 } from '@/utils/missionHelpers';
 import { Clock, Fuel, MapPin, Rocket, Target, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -152,7 +152,7 @@ export function MissionQueue() {
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2 max-h-[450px] overflow-y-auto pr-2">
+      <CardContent className="space-y-2 max-h-[280px] overflow-y-auto pr-2">
         {missions.map(mission => (
           <MissionCard key={mission.id} mission={mission} />
         ))}

@@ -11,6 +11,36 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.12',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Added "Welcome Back" modal showing offline earnings - displays time away, efficiency %, and resources collected',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Data Fragments not being included in offline earnings calculations',
+      },
+      {
+        category: 'improvement',
+        description: 'Offline earnings now properly capped at 4 hours maximum',
+      },
+      {
+        category: 'improvement',
+        description: 'Improved derelict grid layout (4 columns on large screens) and card height consistency',
+      },
+      {
+        category: 'improvement',
+        description: 'Better text contrast for orbit titles and mission ship names',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed top menu z-index to stay above scrolling content',
+      },
+    ],
+  },
+  {
     version: '0.2.11',
     date: '2025-12-04',
     changes: [

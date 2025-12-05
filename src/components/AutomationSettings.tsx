@@ -1,7 +1,8 @@
 import { useGameStore } from '@/stores/gameStore';
+import { Settings2 } from 'lucide-react';
 
 export function AutomationSettings() {
-  const { techTree, ui, toggleAutoScout, toggleAutoSalvage } = useGameStore();
+  const { techTree, ui, derelicts, toggleAutoScout, toggleAutoSalvage, setAutoScoutTargetLimit } = useGameStore();
   
   const hasAutoScout = techTree.purchased.includes('auto_scout');
   const hasAutoSalvage = techTree.purchased.includes('auto_salvage');
@@ -10,41 +11,59 @@ export function AutomationSettings() {
   if (!ui?.automationSettings) return null;
   if (!hasAutoScout && !hasAutoSalvage) return null;
   
+  const targetLimit = ui.automationSettings.autoScoutTargetLimit ?? 5;
+  const currentDerelicts = derelicts?.length ?? 0;
+  const isAtLimit = currentDerelicts >= targetLimit;
+  
   return (
-    <div className="automation-settings p-4 bg-slate-800/50 rounded-lg border border-slate-700">
-      <h3 className="text-lg font-semibold text-blue-400 mb-3">Automation</h3>
-      
-      <div className="space-y-2">
+    <div className="p-2 bg-slate-800/50 rounded border border-slate-700/50">
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-1.5 text-xs text-slate-400">
+          <Settings2 className="w-3.5 h-3.5" />
+          <span className="font-medium">Auto:</span>
+        </div>
+        
         {hasAutoScout && (
-          <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-700/30 p-2 rounded transition-colors">
-            <input
-              type="checkbox"
-              checked={ui.automationSettings.autoScoutEnabled}
-              onChange={toggleAutoScout}
-              className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 focus:ring-2"
-            />
-            <span className="text-sm text-slate-200">
-              Auto-Scout
-              <span className="text-xs text-slate-400 ml-2">
-                (Automatically deploy scouts to unlocked orbits)
+          <div className="flex items-center gap-2">
+            <label className="flex items-center gap-1.5 cursor-pointer text-xs">
+              <input
+                type="checkbox"
+                checked={ui.automationSettings.autoScoutEnabled}
+                onChange={toggleAutoScout}
+                className="w-3.5 h-3.5 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 focus:ring-1"
+              />
+              <span className={ui.automationSettings.autoScoutEnabled ? 'text-blue-300' : 'text-slate-400'}>
+                Scout
               </span>
-            </span>
-          </label>
+            </label>
+            {ui.automationSettings.autoScoutEnabled && (
+              <div className="flex items-center gap-1.5 text-xs">
+                <span className={`font-mono ${isAtLimit ? 'text-green-400' : 'text-yellow-400'}`}>
+                  {currentDerelicts}/{targetLimit}
+                </span>
+                <input
+                  type="range"
+                  min="1"
+                  max="20"
+                  value={targetLimit}
+                  onChange={(e) => setAutoScoutTargetLimit(parseInt(e.target.value))}
+                  className="w-16 h-1.5 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                />
+              </div>
+            )}
+          </div>
         )}
         
         {hasAutoSalvage && (
-          <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-700/30 p-2 rounded transition-colors">
+          <label className="flex items-center gap-1.5 cursor-pointer text-xs">
             <input
               type="checkbox"
               checked={ui.automationSettings.autoSalvageEnabled}
               onChange={toggleAutoSalvage}
-              className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 focus:ring-2"
+              className="w-3.5 h-3.5 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 focus:ring-1"
             />
-            <span className="text-sm text-slate-200">
-              Auto-Salvage
-              <span className="text-xs text-slate-400 ml-2">
-                (Auto-salvage common derelicts in colonized orbits)
-              </span>
+            <span className={ui.automationSettings.autoSalvageEnabled ? 'text-purple-300' : 'text-slate-400'}>
+              Salvage
             </span>
           </label>
         )}

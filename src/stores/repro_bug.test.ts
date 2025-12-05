@@ -84,7 +84,9 @@ describe('Bug Reproduction: Scout Mission Accumulation', () => {
         automationSettings: {
           autoScoutEnabled: true,
           autoSalvageEnabled: true,
+          autoScoutTargetLimit: 5,
         },
+        afkSummary: null,
       }
     });
   });

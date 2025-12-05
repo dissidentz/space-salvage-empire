@@ -103,7 +103,7 @@ export function OrbitCard({
         {!isCurrent && (
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-400">Fuel Cost:</span>
+              <span className="text-gray-300">Fuel Cost:</span>
               <span
                 className={
                   canAfford ? 'text-green-400' : 'text-red-400'
@@ -113,7 +113,7 @@ export function OrbitCard({
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Travel Time:</span>
+              <span className="text-gray-300">Travel Time:</span>
               <span>{formatTime(config.travelTime)}</span>
             </div>
           </div>

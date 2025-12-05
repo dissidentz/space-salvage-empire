@@ -233,6 +233,19 @@ export function calculateProductionRates(
     }
   }
 
+  // === PASSIVE DATA FRAGMENT GENERATION ===
+  // Data Fragments: passive generation based on total ships owned (0.01 DF/sec per 10 ships)
+  const totalShips = Object.values(state.ships).reduce((sum, count) => sum + count, 0);
+  if (totalShips > 0) {
+    const shipBonus = Math.floor(totalShips / 10) * 0.01;
+    const dataFragmentMultiplier = multipliers.tech['dataFragment_production'] || 1.0;
+    const finalDataFragmentRate = shipBonus * dataFragmentMultiplier;
+    
+    if (finalDataFragmentRate > 0) {
+      rates['dataFragments'] = (rates['dataFragments'] || 0) + finalDataFragmentRate;
+    }
+  }
+
   return rates;
 }
 

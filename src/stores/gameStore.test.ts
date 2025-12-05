@@ -326,7 +326,9 @@ describe('Travel State Persistence', () => {
         automationSettings: {
           autoScoutEnabled: true,
           autoSalvageEnabled: true,
+          autoScoutTargetLimit: 5,
         },
+        afkSummary: null,
       },
       activeFormation: null,
       formationCooldownEnd: 0,

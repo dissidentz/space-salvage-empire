@@ -140,20 +140,11 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                     <span className="text-orange-400">Ark Component</span>
                   </Badge>
                 )}
-                {/* Ship Availability Badge */}
-                <Badge 
-                  variant="outline" 
-                  className={availableShips > 0 ? 'bg-green-500/10 text-green-400 border-green-500/50' : 'bg-red-500/10 text-red-400 border-red-500/50'}
-                >
-                  <Package className="w-3 h-3 mr-1" />
-                  {availableShips}/{ships[derelict.requiredShip]} {getShipDisplayName(derelict.requiredShip)}
-                </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-1">{config.description}</p>
             </div>
           </div>
 
-          {/* Stats */}
           {/* Stats Row */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
             {/* Duration */}
@@ -181,6 +172,12 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                 <span>Hazard: {(derelict.riskLevel * 100).toFixed(0)}%</span>
               </div>
             )}
+
+            {/* Ship Availability */}
+            <div className={`flex items-center gap-1 ${availableShips > 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <Package className="w-3 h-3" />
+              <span>{availableShips}/{ships[derelict.requiredShip]} {getShipDisplayName(derelict.requiredShip)}</span>
+            </div>
           </div>
 
           {/* Rewards Preview */}

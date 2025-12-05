@@ -363,7 +363,13 @@ export interface UIState {
   automationSettings: {
     autoScoutEnabled: boolean;
     autoSalvageEnabled: boolean;
+    autoScoutTargetLimit: number;  // Only scout when derelicts < this number
   };
+  afkSummary: {
+    timeAway: number;  // ms
+    efficiency: number;  // 0-1
+    gains: Partial<Resources>;
+  } | null;
 }
 
 // Config types

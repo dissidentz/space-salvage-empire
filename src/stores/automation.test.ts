@@ -85,7 +85,9 @@ describe('Automation Logic', () => {
         automationSettings: {
           autoScoutEnabled: true,
           autoSalvageEnabled: true,
+          autoScoutTargetLimit: 5,
         },
+        afkSummary: null,
       },
     });
   });
@@ -204,5 +206,85 @@ describe('Automation Logic', () => {
 
     const state = useGameStore.getState();
     expect(state.missions.length).toBe(0);
+  });
+
+  it('should NOT auto-scout when derelict count >= target limit', () => {
+    // Setup: auto_scout tech purchased, scout probes available, but already at target limit
+    useGameStore.setState({
+      techTree: {
+        purchased: ['auto_scout'],
+        available: [],
+      },
+      ships: {
+        ...useGameStore.getState().ships,
+        scoutProbe: 5,
+      },
+      stats: {
+        ...useGameStore.getState().stats,
+        orbitsUnlocked: ['leo', 'geo', 'lunar'],
+      },
+      ui: {
+        ...useGameStore.getState().ui,
+        automationSettings: {
+          autoScoutEnabled: true,
+          autoSalvageEnabled: false,
+          autoScoutTargetLimit: 3, // Target is 3
+        },
+      },
+      derelicts: [
+        // Already have 3 derelicts (at limit)
+        { id: 'd1', type: 'cargoContainer', orbit: 'leo', rarity: 'common', rewards: [], fuelCost: 10, baseMissionTime: 1000, expiresAt: Date.now() + 10000, discoveredAt: Date.now(), requiredShip: 'salvageFrigate', isHazardous: false, riskLevel: 0 },
+        { id: 'd2', type: 'cargoContainer', orbit: 'geo', rarity: 'common', rewards: [], fuelCost: 10, baseMissionTime: 1000, expiresAt: Date.now() + 10000, discoveredAt: Date.now(), requiredShip: 'salvageFrigate', isHazardous: false, riskLevel: 0 },
+        { id: 'd3', type: 'cargoContainer', orbit: 'lunar', rarity: 'common', rewards: [], fuelCost: 10, baseMissionTime: 1000, expiresAt: Date.now() + 10000, discoveredAt: Date.now(), requiredShip: 'salvageFrigate', isHazardous: false, riskLevel: 0 },
+      ],
+      missions: [],
+    });
+
+    useGameStore.getState().processAutomation();
+
+    const state = useGameStore.getState();
+    // Should NOT have launched any scout missions
+    const scoutMissions = state.missions.filter(m => m.type === 'scout');
+    expect(scoutMissions.length).toBe(0);
+  });
+
+  it('should auto-scout when derelict count < target limit', () => {
+    // Setup: auto_scout tech purchased, scout probes available, below target limit
+    useGameStore.setState({
+      techTree: {
+        purchased: ['auto_scout'],
+        available: [],
+      },
+      ships: {
+        ...useGameStore.getState().ships,
+        scoutProbe: 5,
+      },
+      stats: {
+        ...useGameStore.getState().stats,
+        orbitsUnlocked: ['leo', 'geo', 'lunar'],
+      },
+      currentOrbit: 'leo',
+      ui: {
+        ...useGameStore.getState().ui,
+        automationSettings: {
+          autoScoutEnabled: true,
+          autoSalvageEnabled: false,
+          autoScoutTargetLimit: 5, // Target is 5
+        },
+      },
+      derelicts: [
+        // Only 2 derelicts (below limit of 5)
+        { id: 'd1', type: 'cargoContainer', orbit: 'leo', rarity: 'common', rewards: [], fuelCost: 10, baseMissionTime: 1000, expiresAt: Date.now() + 10000, discoveredAt: Date.now(), requiredShip: 'salvageFrigate', isHazardous: false, riskLevel: 0 },
+        { id: 'd2', type: 'cargoContainer', orbit: 'geo', rarity: 'common', rewards: [], fuelCost: 10, baseMissionTime: 1000, expiresAt: Date.now() + 10000, discoveredAt: Date.now(), requiredShip: 'salvageFrigate', isHazardous: false, riskLevel: 0 },
+      ],
+      missions: [],
+    });
+
+    useGameStore.getState().processAutomation();
+
+    const state = useGameStore.getState();
+    // Should have launched a scout mission
+    const scoutMissions = state.missions.filter(m => m.type === 'scout');
+    expect(scoutMissions.length).toBe(1);
   });
 });

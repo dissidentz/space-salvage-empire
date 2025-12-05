@@ -84,7 +84,9 @@ describe('Mission System', () => {
         automationSettings: {
           autoScoutEnabled: true,
           autoSalvageEnabled: true,
+          autoScoutTargetLimit: 5,
         },
+        afkSummary: null,
       }
     });
   });
