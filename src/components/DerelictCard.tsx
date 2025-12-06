@@ -102,6 +102,10 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
   const actualFuelCost = (derelict.orbit !== currentOrbit && derelict.orbit !== 'leo' && derelict.orbit !== 'geo') ? derelict.fuelCost : 0;
   
   const canAfford = resources.fuel >= actualFuelCost;
+  // Hacking requires 50 Electronics
+  const HACK_COST = 50;
+  const canAffordHack = resources.electronics >= HACK_COST;
+
   // Check if mission already in progress for this derelict
   const isMissionActive = missions.some(m => m.targetDerelict === derelict.id);
   
@@ -261,15 +265,20 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1"
+                    className={`flex-1 ${!canAffordHack ? 'opacity-50' : ''}`}
                     onClick={() => handleLaunchSalvage('hack')}
-                    disabled={!canLaunch}
+                    disabled={!canLaunch || !canAffordHack}
                   >
-                    Hack
+                    <span className={canAffordHack ? 'text-purple-400' : 'text-red-400'}>Hack</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Hack systems - higher data fragment yield</p>
+                  <div className="space-y-1 text-xs">
+                    <p className="font-bold text-purple-400">System Hacking</p>
+                    <p>Cost: <span className={canAffordHack ? 'text-green-400' : 'text-red-400'}>{HACK_COST} Electronics</span></p>
+                    <p>Success Rate: <span className="text-yellow-400">85%</span></p>
+                    <p className="text-muted-foreground">High Data Fragment yield. 1.5x all rewards.</p>
+                  </div>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

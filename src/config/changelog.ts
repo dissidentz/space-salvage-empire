@@ -12,6 +12,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.17',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Hacking System - Spend 50 Electronics for high-risk, high-reward salvage.',
+      },
+      {
+        category: 'improvement',
+        description: 'Hacking operations now yield 2x Data Fragments and 1.5x other resources.',
+      },
+      {
+        category: 'improvement',
+        description: 'Added detailed cost and risk tooltips to the Dereclit Card UI.',
+      },
+    ],
+  },
+  {
     version: '0.2.16',
     date: '2025-12-05',
     changes: [

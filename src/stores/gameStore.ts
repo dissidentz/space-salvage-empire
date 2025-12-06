@@ -1028,8 +1028,18 @@ export const useGameStore = create<GameStore>()(
           fuelCost = derelict.fuelCost;
         }
         
+        // Cost checks
         if (state.resources.fuel < fuelCost) return false;
-
+        
+        // Hacking Cost
+        if (action === 'hack') {
+             if (state.resources.electronics < 50) {
+                 state.addNotification('error', 'Insufficient Electronics for Hacking (Need 50)');
+                 return false;
+             }
+             state.subtractResource('electronics', 50);
+        }
+        
         if (fuelCost > 0) {
           state.subtractResource('fuel', fuelCost);
         }
@@ -1072,6 +1082,10 @@ export const useGameStore = create<GameStore>()(
         let success = true;
         const shipConfig = SHIP_CONFIGS[mission.shipType];
         let successRate = shipConfig.baseSuccessRate || 0.5;
+        
+        if (mission.action === 'hack') {
+            successRate = 0.85; // Fixed 85% success rate for hacking
+        }
         
         // Apply tech bonuses to success rate
         const techEffects = getTechEffects(state.techTree.purchased);
@@ -1140,9 +1154,12 @@ export const useGameStore = create<GameStore>()(
                 
                 // Apply action modifiers
                 if (mission.action === 'hack') {
+                    // 150% base multiplier for all resources
+                    for (const key of Object.keys(rewards)) {
+                        rewards[key as ResourceType]! *= 1.5;
+                    }
+                    // Double Data Fragments on top (3x total)
                     if (rewards.dataFragments) rewards.dataFragments *= 2;
-                    if (rewards.electronics) rewards.electronics *= 1.5;
-                    if (rewards.metal) rewards.metal *= 0.5;
                 } else if (mission.action === 'dismantle') {
                     if (rewards.metal) rewards.metal *= 1.5;
                     if (rewards.electronics) rewards.electronics *= 1.2;
