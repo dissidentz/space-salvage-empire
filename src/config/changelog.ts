@@ -20,6 +20,10 @@ export const CHANGELOG: ChangelogEntry[] = [
         description: 'Implemented DISMANTLE salvage action - 2x fuel cost, 3x mission duration, 100% success rate, 2x all rewards.',
       },
       {
+        category: 'feature',
+        description: 'Deep Space Scanner now provides +2% passive derelict spawn rate per scanner owned.',
+      },
+      {
         category: 'bugfix',
         description: 'Fixed mission completion logic to properly update statistics and history.',
       },

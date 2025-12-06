@@ -24,7 +24,11 @@ export function checkPassiveSpawning() {
   // Tech multipliers
   const techMult = state.getTechMultiplier('passive_spawn_rate');
   
-  const finalChance = baseSpawnRate * orbitMult * techMult;
+  // Deep Space Scanner bonus: +2% per scanner owned
+  const scannerCount = state.ships?.deepSpaceScanner || 0;
+  const scannerMult = 1 + (scannerCount * 0.02);
+  
+  const finalChance = baseSpawnRate * orbitMult * techMult * scannerMult;
   
   if (Math.random() < finalChance) {
     // Check max derelicts
