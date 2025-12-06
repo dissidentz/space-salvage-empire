@@ -24,6 +24,10 @@ export const CHANGELOG: ChangelogEntry[] = [
         description: 'Deep Space Scanner now provides +2% passive derelict spawn rate per scanner owned.',
       },
       {
+        category: 'feature',
+        description: 'Offline efficiency now scales with tech: 50% base → up to 100% with Economy techs.',
+      },
+      {
         category: 'bugfix',
         description: 'Fixed mission completion logic to properly update statistics and history.',
       },

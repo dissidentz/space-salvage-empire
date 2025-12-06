@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import { getTechEffects } from '@/engine/getTechMultipliers';
 import { calculateOfflineProduction } from '@/engine/production';
 import type { OrbitType, ResourceType } from '@/types';
 import { createEconomySlice } from './slices/economySlice';
@@ -341,9 +342,18 @@ export const useGameStore = create<GameStore>()(
       processOfflineGains: (offlineTime: number) => {
           const [set, get] = a;
           const state = get();
-          const efficiency = 0.5; // Default basic efficiency
-          // Check tech for better efficiency?
-          // TODO: Tech check
+          
+          // Calculate efficiency from base + tech bonuses
+          let efficiency = 0.5; // Base 50%
+          
+          // Apply offline efficiency tech bonuses
+          const techEffects = getTechEffects(state.techTree?.purchased || []);
+          if (techEffects.flatBonuses['offline_efficiency']) {
+              efficiency += techEffects.flatBonuses['offline_efficiency'];
+          }
+          
+          // Cap at 100%
+          efficiency = Math.min(efficiency, 1.0);
           
           const gains = calculateOfflineProduction(state, offlineTime, efficiency);
           
