@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { NumberTicker } from '@/components/ui/number-ticker';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Slider } from '@/components/ui/slider';
 import { TRADE_ROUTES, type TradeRoute } from '@/config/trading';
@@ -126,12 +127,16 @@ export function TradingView() {
                         {/* Exchange Rate Visual */}
                         <div className="flex items-center justify-center p-8 bg-slate-900/50 rounded-lg gap-8">
                             <div className="text-center">
-                                <div className="text-2xl font-bold text-slate-200">{selectedRoute.inputAmount * amount}</div>
+                                <div className="text-2xl font-bold text-slate-200">
+                                    <NumberTicker value={selectedRoute.inputAmount * amount} />
+                                </div>
                                 <div className="text-sm text-muted-foreground capitalize">{selectedRoute.input}</div>
                             </div>
                             <ArrowRight className="w-8 h-8 text-slate-600" />
                             <div className="text-center">
-                                <div className="text-3xl font-bold text-green-400">{getOutputAmount(selectedRoute, selectedRoute.inputAmount * amount)}</div>
+                                <div className="text-3xl font-bold text-green-400">
+                                    <NumberTicker value={getOutputAmount(selectedRoute, selectedRoute.inputAmount * amount)} />
+                                </div>
                                 <div className="text-sm text-muted-foreground capitalize">{selectedRoute.output}</div>
                             </div>
                         </div>

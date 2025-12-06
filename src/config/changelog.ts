@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.18',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'improvement',
+        description: 'UI Polish - Added smooth rolling number animations to resource counters and trading interfaces.',
+      },
+      {
+        category: 'improvement',
+        description: 'Refined Sidebar UI with standard Progress components and better layout.',
+      },
+    ],
+  },
+  {
     version: '0.2.17',
     date: '2025-12-05',
     changes: [

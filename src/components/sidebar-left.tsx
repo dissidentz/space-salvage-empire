@@ -1,12 +1,14 @@
 import { Button } from '@/components/ui/button';
+import { NumberTicker } from '@/components/ui/number-ticker';
+import { Progress } from '@/components/ui/progress';
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarRail
+    Sidebar,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarRail
 } from '@/components/ui/sidebar';
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { RESOURCE_DEFINITIONS } from '@/config/resources';
@@ -70,12 +72,7 @@ export function SidebarLeft({
                         <span>Progress</span>
                         <span>{Math.round(getTravelProgress() * 100)}%</span>
                       </div>
-                      <div className="w-full bg-blue-950/50 rounded-full h-1">
-                        <div
-                          className="bg-blue-400 h-1 rounded-full transition-all duration-1000"
-                          style={{ width: `${getTravelProgress() * 100}%` }}
-                        ></div>
-                      </div>
+                      <Progress value={getTravelProgress() * 100} className="h-2 bg-blue-950/50 [&>div]:bg-blue-400" />
                     </div>
                   </div>
                 ) : (
@@ -169,11 +166,11 @@ export function SidebarLeft({
                         </span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className={`font-mono font-bold ${theme.color}`}>
-                        {formatNumber(value)}
+                      <div className="text-right">
+                        <div className={`font-mono font-bold ${theme.color}`}>
+                          <NumberTicker value={value} />
+                        </div>
                       </div>
-                    </div>
                   </div>
                 );
               })}
