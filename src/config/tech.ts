@@ -809,6 +809,48 @@ const ECONOMY_TECHS: TechNode[] = [
 ];
 
 // ============================================================================
+// LOGISTICS BRANCH - Storage & Infrastructure
+// ============================================================================
+
+const LOGISTICS_TECHS: TechNode[] = [
+  // Tier 1
+  {
+    id: 'cargo_logistics',
+    name: 'Cargo Logistics',
+    description: '+50% Storage Capacity',
+    branch: 'economy', // Integrating into Economy branch for now to show up in UI
+    tier: 1,
+    dataFragmentCost: 10,
+    prerequisites: [],
+    effects: [{ type: 'multiplier', target: 'storage_capacity', value: 1.5 }]
+  },
+
+  // Tier 2
+  {
+    id: 'compression_algorithms',
+    name: 'Compression Algorithms',
+    description: '+50% Storage Capacity (stacks)',
+    branch: 'economy',
+    tier: 2,
+    dataFragmentCost: 50,
+    prerequisites: ['cargo_logistics'],
+    effects: [{ type: 'multiplier', target: 'storage_capacity', value: 1.5 }]
+  },
+
+  // Tier 4
+  {
+    id: 'dimensional_warehousing',
+    name: 'Dimensional Warehousing',
+    description: '+100% Storage Capacity',
+    branch: 'economy',
+    tier: 4,
+    dataFragmentCost: 1000,
+    prerequisites: ['compression_algorithms'],
+    effects: [{ type: 'multiplier', target: 'storage_capacity', value: 2.0 }]
+  }
+];
+
+// ============================================================================
 // EXPORTS
 // ============================================================================
 
@@ -816,6 +858,7 @@ export const TECH_TREE: Record<string, TechNode> = [
   ...EFFICIENCY_TECHS,
   ...EXPLORATION_TECHS,
   ...ECONOMY_TECHS,
+  ...LOGISTICS_TECHS,
 ].reduce(
   (acc, tech) => {
     acc[tech.id] = tech;
@@ -827,7 +870,7 @@ export const TECH_TREE: Record<string, TechNode> = [
 export const TECH_BRANCHES: Record<TechBranch, TechNode[]> = {
   efficiency: EFFICIENCY_TECHS,
   exploration: EXPLORATION_TECHS,
-  economy: ECONOMY_TECHS,
+  economy: [...ECONOMY_TECHS, ...LOGISTICS_TECHS],
 };
 
 export const getTechsByBranch = (branch: TechBranch): TechNode[] => {

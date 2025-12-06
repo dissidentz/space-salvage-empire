@@ -50,18 +50,6 @@ export function TopNav() {
       view: 'prestige' as const
     },
     { 
-      id: 'changelog', 
-      label: 'Changelog', 
-      icon: BookOpen,
-      view: 'changelog' as const
-    },
-    { 
-      id: 'missionLog', 
-      label: 'Log', 
-      icon: ScrollText,
-      view: 'missionLog' as const
-    },
-    { 
       id: 'trading', 
       label: 'Trading', 
       icon: Coins,
@@ -72,6 +60,18 @@ export function TopNav() {
       label: 'Contracts', 
       icon: FileText,
       view: 'contracts' as const
+    },
+    { 
+      id: 'changelog', 
+      label: 'Changelog', 
+      icon: BookOpen,
+      view: 'changelog' as const
+    },
+    { 
+      id: 'missionLog', 
+      label: 'Log', 
+      icon: ScrollText,
+      view: 'missionLog' as const
     },
     { 
       id: 'settings', 

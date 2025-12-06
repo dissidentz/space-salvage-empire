@@ -12,6 +12,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.3.0',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'improvement',
+        description: 'Major Codebase Refactor - Decomposed monolithic gameStore into modular slices (Resource, Ship, Mission, Tech, Orbit, Prestige, Economy, UI, Formation) for better maintainability and performance.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Contract Type mismatches in mission completion logic.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Resolved missing type properties in Prestige and Game Store definitions.',
+      },
+    ],
+  },
+  {
     version: '0.2.20',
     date: '2025-12-05',
     changes: [
