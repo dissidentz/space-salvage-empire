@@ -39,7 +39,7 @@ export const createUiSlice: GameSlice<UiSlice> = (set, get) => ({
     set((state) => ({
       ui: {
         ...state.ui,
-        activeModal: modal,
+        openModal: modal,
         modalData: data,
       },
     }));
@@ -49,7 +49,7 @@ export const createUiSlice: GameSlice<UiSlice> = (set, get) => ({
     set((state) => ({
       ui: {
         ...state.ui,
-        activeModal: undefined, // undefined or null? GameState types usually optional
+        openModal: null,
         modalData: undefined,
       },
     }));
