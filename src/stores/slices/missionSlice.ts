@@ -1,17 +1,17 @@
 import {
-    DERELICT_CONFIGS,
-    calculateDerelictRewards
+  DERELICT_CONFIGS,
+  calculateDerelictRewards
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, getAdjacentOrbits } from '@/config/orbits';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getTechEffects } from '@/engine/getTechMultipliers';
 import { getUpgradeMultipliers } from '@/engine/getUpgradeMultipliers';
 import type {
-    DerelictAction,
-    Mission,
-    OrbitType,
-    ResourceType,
-    ShipType
+  DerelictAction,
+  Mission,
+  OrbitType,
+  ResourceType,
+  ShipType
 } from '@/types';
 import type { GameSlice, MissionSlice } from './types';
 
@@ -115,6 +115,11 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
       fuelCost = derelict.fuelCost;
     }
     
+    // DISMANTLE costs 2x fuel
+    if (action === 'dismantle') {
+      fuelCost *= 2;
+    }
+    
     // Cost checks
     if (state.resources.fuel < fuelCost) return false;
     
@@ -139,6 +144,11 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
     
     if (shipType === 'salvageFrigate' && upgradeMultipliers.production.salvageFrigate_missionTime) {
         duration *= upgradeMultipliers.production.salvageFrigate_missionTime;
+    }
+    
+    // DISMANTLE takes 3x time
+    if (action === 'dismantle') {
+      duration *= 3;
     }
   
     const mission: Mission = {
@@ -219,151 +229,172 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
     const now = Date.now();
     if (now < mission.endTime) return;
   
-    // Determine success
-    let success = true;
-    const shipConfig = SHIP_CONFIGS[mission.shipType];
-    let successRate = shipConfig.baseSuccessRate || 0.5;
-    
-    if (mission.action === 'hack') {
-        successRate = 0.85; // Fixed 85% success rate for hacking
-    }
-    
-    // Apply tech bonuses to success rate
-    const techEffects = getTechEffects(state.techTree?.purchased || []);
-    const upgradeMultipliers = getUpgradeMultipliers(state);
-  
-    // Scout discovery rate bonus
-    if (mission.type === 'scout') {
-         if (techEffects.multipliers.scout_discovery_rate) {
-            successRate *= techEffects.multipliers.scout_discovery_rate;
-         }
-         if (upgradeMultipliers.production.scoutProbe_discoveryChance) {
-             successRate *= upgradeMultipliers.production.scoutProbe_discoveryChance;
-         }
-    }
-    // Salvage success rate bonus
-    if (mission.type === 'salvage') {
-         if (techEffects.flatBonuses.salvage_success_rate) {
-            successRate += techEffects.flatBonuses.salvage_success_rate;
-         }
-         if (upgradeMultipliers.flatBonus.salvageFrigate_successRate) {
-             successRate += upgradeMultipliers.flatBonus.salvageFrigate_successRate;
-         }
-    }
-    // Global mission success rate bonus
-    if (techEffects.flatBonuses.mission_success_rate) {
-      successRate += techEffects.flatBonuses.mission_success_rate;
-    }
-    successRate = Math.min(successRate, 1.0); // Cap at 100%
-    
-    if (Math.random() > successRate) {
-      success = false;
-    }
-  
+    let success = false;
     let rewards: Partial<Record<ResourceType, number>> | undefined;
 
-  
-    if (success) {
-      if (mission.type === 'scout') {
-         // Determine which orbit to spawn derelict in
-         let spawnOrbit = mission.targetOrbit;
-         
-         const hasAdjacentScouting = state.techTree?.purchased.includes('quantum_entanglement_comms');
-         
-         if (hasAdjacentScouting) {
-           const adjacentOrbits = getAdjacentOrbits(mission.targetOrbit);
-           const possibleOrbits = [mission.targetOrbit, ...adjacentOrbits];
-           spawnOrbit = possibleOrbits[Math.floor(Math.random() * possibleOrbits.length)];
-         }
-         
-         const derelict = state.spawnDerelict(spawnOrbit);
-         if (derelict) {
-
-             const orbitName = ORBIT_CONFIGS[spawnOrbit].name;
-             const derelictName = DERELICT_CONFIGS[derelict.type].name;
+    try {
+        const shipConfig = SHIP_CONFIGS[mission.shipType];
+        let successRate = shipConfig.baseSuccessRate || 0.5;
+        
+        if (mission.action === 'hack') {
+            successRate = 0.85; // Fixed 85% success rate for hacking
+        }
+        
+        // Apply tech bonuses to success rate
+        const techEffects = getTechEffects(state.techTree?.purchased || []);
+        const upgradeMultipliers = getUpgradeMultipliers(state);
+      
+        // Scout discovery rate bonus
+        if (mission.type === 'scout') {
+             if (techEffects.multipliers.scout_discovery_rate) {
+                successRate *= techEffects.multipliers.scout_discovery_rate;
+             }
+             if (upgradeMultipliers.production.scoutProbe_discoveryChance) {
+                 successRate *= upgradeMultipliers.production.scoutProbe_discoveryChance;
+             }
+        }
+        // Salvage success rate bonus
+        if (mission.type === 'salvage') {
+             if (techEffects.flatBonuses.salvage_success_rate) {
+                successRate += techEffects.flatBonuses.salvage_success_rate;
+             }
+             if (upgradeMultipliers.flatBonus.salvageFrigate_successRate) {
+                 successRate += upgradeMultipliers.flatBonus.salvageFrigate_successRate;
+             }
+        }
+        // Global mission success rate bonus
+        if (techEffects.flatBonuses.mission_success_rate) {
+          successRate += techEffects.flatBonuses.mission_success_rate;
+        }
+        successRate = Math.min(successRate, 1.0); // Cap at 100%
+        
+        // DISMANTLE has 100% success rate
+        if (mission.action === 'dismantle') {
+          successRate = 1.0;
+        }
+        
+        success = true;
+        if (Math.random() > successRate) {
+          success = false;
+        }
+      
+        if (success) {
+          if (mission.type === 'scout') {
+             // Determine which orbit to spawn derelict in
+             let spawnOrbit = mission.targetOrbit;
              
-             if (hasAdjacentScouting && spawnOrbit !== mission.targetOrbit) {
-               state.addNotification('success', `Scout found ${derelictName} in adjacent ${orbitName}!`);
+             const hasAdjacentScouting = state.techTree?.purchased.includes('quantum_entanglement_comms');
+             
+             if (hasAdjacentScouting) {
+               const adjacentOrbits = getAdjacentOrbits(mission.targetOrbit);
+               const possibleOrbits = [mission.targetOrbit, ...adjacentOrbits];
+               spawnOrbit = possibleOrbits[Math.floor(Math.random() * possibleOrbits.length)];
+             }
+             
+             const derelict = state.spawnDerelict(spawnOrbit);
+             if (derelict) {
+    
+                 const orbitName = ORBIT_CONFIGS[spawnOrbit].name;
+                 const derelictName = DERELICT_CONFIGS[derelict.type].name;
+                 
+                 if (hasAdjacentScouting && spawnOrbit !== mission.targetOrbit) {
+                   state.addNotification('success', `Scout found ${derelictName} in adjacent ${orbitName}!`);
+                 } else {
+                   state.addNotification('success', `Scout discovered ${derelictName} in ${orbitName}`);
+                 }
+    
+                 // Contract hook: Discovery
+                 if (['rare', 'epic', 'legendary'].includes(derelict.rarity) && state.updateContractProgress) {
+                    state.updateContractProgress('discoveryMission', 1, mission.targetOrbit);
+                 }
              } else {
-               state.addNotification('success', `Scout discovered ${derelictName} in ${orbitName}`);
+                 state.addNotification('warning', `Scout mission completed but found nothing.`);
              }
-
-             // Contract hook: Discovery
-             if (['rare', 'epic', 'legendary'].includes(derelict.rarity) && state.updateContractProgress) {
-                state.updateContractProgress('discoveryMission', 1, mission.targetOrbit);
-             }
-         } else {
-             state.addNotification('warning', `Scout mission completed but found nothing.`);
-         }
-      } else if (mission.type === 'salvage' && mission.targetDerelict) {
-         // Claim rewards
-         const derelict = state.derelicts.find(d => d.id === mission.targetDerelict);
-         if (derelict) {
-            rewards = calculateDerelictRewards(DERELICT_CONFIGS[derelict.type]);
-            
-            // Apply action modifiers
-            if (mission.action === 'hack') {
-                for (const key of Object.keys(rewards)) {
-                    rewards[key as ResourceType]! *= 1.5;
-                }
-                if (rewards.dataFragments) rewards.dataFragments *= 2;
-            } else if (mission.action === 'dismantle') {
-                if (rewards.metal) rewards.metal *= 1.5;
-                if (rewards.electronics) rewards.electronics *= 1.2;
-                if (rewards.dataFragments) rewards.dataFragments *= 0.1;
-                if (rewards.rareMaterials) rewards.rareMaterials *= 0.5;
-            }
-            
-            // Apply Formation Bonus
-            // Assuming activeFormation is on stats or root state.
-            const activeFormation = (state as any).activeFormation;
-            if (activeFormation === 'salvageFleet') {
-                if (rewards.metal) rewards.metal *= 1.15;
-                if (rewards.electronics) rewards.electronics *= 1.15;
-                if (rewards.rareMaterials) rewards.rareMaterials *= 1.15;
-                if (rewards.exoticAlloys) rewards.exoticAlloys *= 1.15;
-            }
-
-            // Ship Upgrade Loot Bonus
-            if (mission.shipType === 'salvageFrigate' && upgradeMultipliers.production.salvageFrigate_loot) {
-                // Apply multiplier to all except DF/DM if specific or general?
-                // The task was "salvageFrigate_loot multiplier was applied to increase rewards".
-                // I should apply it to main resources.
-                 for (const key of Object.keys(rewards)) {
-                    if (key !== 'darkMatter') { // Usually DM excluded from basic mults unless specified
-                        rewards[key as ResourceType]! *= upgradeMultipliers.production.salvageFrigate_loot;
+          } else if (mission.type === 'salvage' && mission.targetDerelict) {
+             // Claim rewards
+             const derelict = state.derelicts.find(d => d.id === mission.targetDerelict);
+             if (derelict) {
+                rewards = calculateDerelictRewards(DERELICT_CONFIGS[derelict.type]);
+                
+                // Apply action modifiers
+                if (mission.action === 'hack') {
+                    for (const key of Object.keys(rewards)) {
+                        rewards[key as ResourceType]! *= 1.5;
+                    }
+                    if (rewards.dataFragments) rewards.dataFragments *= 2;
+                } else if (mission.action === 'dismantle') {
+                    // DISMANTLE gives 200% of all rewards
+                    for (const key of Object.keys(rewards)) {
+                        rewards[key as ResourceType]! *= 2;
                     }
                 }
-            }
-
-            // Grant rewards
-            for (const [res, amount] of Object.entries(rewards)) {
-                state.addResource(res as ResourceType, amount as number);
-            }
-            
-            state.removeDerelict(derelict.id);
-            state.onDerelictSalvaged(derelict.id, rewards, mission.isAutomated);
-
-            // Contract hook: Salvage
-            // Note: need contract hooks for 'salvageMission', 'clearDebris' (maybe?), 'collectResource' logic handled in addResource
-             if (state.updateContractProgress) {
-                 state.updateContractProgress('salvageQuota', 1, derelict.orbit);
+                
+                // Apply Formation Bonus
+                // Assuming activeFormation is on stats or root state.
+                const activeFormation = (state as any).activeFormation;
+                if (activeFormation === 'salvageFleet') {
+                    if (rewards.metal) rewards.metal *= 1.15;
+                    if (rewards.electronics) rewards.electronics *= 1.15;
+                    if (rewards.rareMaterials) rewards.rareMaterials *= 1.15;
+                    if (rewards.exoticAlloys) rewards.exoticAlloys *= 1.15;
+                }
+    
+                // Ship Upgrade Loot Bonus
+                if (mission.shipType === 'salvageFrigate' && upgradeMultipliers.production.salvageFrigate_loot) {
+                    // Apply multiplier to all except DF/DM if specific or general?
+                    // The task was "salvageFrigate_loot multiplier was applied to increase rewards".
+                    // I should apply it to main resources.
+                     for (const key of Object.keys(rewards)) {
+                        if (key !== 'darkMatter') { // Usually DM excluded from basic mults unless specified
+                            rewards[key as ResourceType]! *= upgradeMultipliers.production.salvageFrigate_loot;
+                        }
+                    }
+                }
+    
+                // Grant rewards
+                for (const [res, amount] of Object.entries(rewards)) {
+                    state.addResource(res as ResourceType, amount as number);
+                }
+                
+                state.removeDerelict(derelict.id);
+                state.onDerelictSalvaged(derelict.id, rewards, mission.isAutomated);
+    
+                // Contract hook: Salvage
+                // Note: need contract hooks for 'salvageMission', 'clearDebris' (maybe?), 'collectResource' logic handled in addResource
+                 if (state.updateContractProgress) {
+                     state.updateContractProgress('salvageQuota', 1, derelict.orbit);
+                 }
              }
-         }
-      } else if (mission.type === 'colony') {
-          state.deployColony(mission.targetOrbit);
-      }
-    } else {
-        // Mission failed
-        if (mission.type === 'salvage' && mission.action === 'hack') {
-            state.addNotification('warning', 'Hacking Failed! Security systems blocked access.');
+          } else if (mission.type === 'colony') {
+              state.deployColony(mission.targetOrbit);
+          }
         } else {
-            state.addNotification('warning', `${SHIP_CONFIGS[mission.shipType].name} mission failed.`);
+            // Mission failed
+            if (mission.type === 'salvage' && mission.action === 'hack') {
+                state.addNotification('warning', 'Hacking Failed! Security systems blocked access.');
+            } else {
+                state.addNotification('warning', `${SHIP_CONFIGS[mission.shipType].name} mission failed.`);
+            }
         }
+    } catch (error) {
+        console.error(`Mission ${missionId} processing failed:`, error);
+        success = false;
+        state.addNotification('error', `Mission system error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   
     set((s) => ({
       missions: s.missions.filter(m => m.id !== missionId),
+      stats: {
+          ...s.stats,
+          totalMissionsSucceeded: success ? (s.stats?.totalMissionsSucceeded || 0) + 1 : (s.stats?.totalMissionsSucceeded || 0),
+          totalMissionsFailed: !success ? (s.stats?.totalMissionsFailed || 0) + 1 : (s.stats?.totalMissionsFailed || 0),
+          missionHistory: [...(s.stats?.missionHistory || []), {
+              ...mission,
+              timestamp: Date.now(),
+              success,
+              rewards
+          }]
+      }
     }));
   
     state.onMissionComplete(missionId, success, rewards);

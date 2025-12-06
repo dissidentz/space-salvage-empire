@@ -310,7 +310,13 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Dismantle for parts - higher metal/electronics yield</p>
+                  <div className="space-y-1 text-xs">
+                    <p className="font-bold text-amber-400">Full Dismantle</p>
+                    <p>Fuel Cost: <span className="text-orange-400">2x</span></p>
+                    <p>Duration: <span className="text-yellow-400">3x</span></p>
+                    <p>Success Rate: <span className="text-green-400">100%</span></p>
+                    <p className="text-muted-foreground">Thorough extraction. 2x all rewards.</p>
+                  </div>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

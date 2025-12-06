@@ -180,6 +180,8 @@ export const createOrbitSlice: GameSlice<OrbitSlice> = (set, get) => ({
     const rarity = rollDerelictRarity(orbitConfig.spawnRates);
     const type = getRandomDerelictType(orbit, rarity);
     
+    console.log(`[DEBUG] spawnDerelict orbit=${orbit}, rarity=${rarity}, type=${type}`);
+
     if (!type) return null;
   
     // Limit max active derelicts to 6
@@ -222,7 +224,7 @@ export const createOrbitSlice: GameSlice<OrbitSlice> = (set, get) => ({
         }
       }
     }));
-    
+        
     get().addNotification(
       'info',
       `New ${rarity} derelict detected in ${orbitConfig.name}!`,

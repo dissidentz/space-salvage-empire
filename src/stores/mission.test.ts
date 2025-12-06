@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useGameStore } from './gameStore';
 
 // Mock zustand persist
@@ -8,6 +8,7 @@ vi.mock('zustand/middleware', () => ({
 
 describe('Mission System', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     useGameStore.setState({
       resources: {
         debris: 0,
@@ -91,6 +92,10 @@ describe('Mission System', () => {
     });
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should start a scout mission', () => {
     const store = useGameStore.getState();
     const success = store.startScoutMission('scoutProbe', 'leo');
@@ -105,7 +110,7 @@ describe('Mission System', () => {
   it('should fail to start scout mission without fuel', () => {
     useGameStore.setState({ resources: { ...useGameStore.getState().resources, fuel: 0 } });
     const store = useGameStore.getState();
-    const success = store.startScoutMission('scoutProbe', 'lunar'); // lunar requires fuel, LEO doesn't
+    const success = store.startScoutMission('scoutProbe', 'mars'); // mars requires fuel
 
     const updatedStore = useGameStore.getState();
     expect(success).toBe(false);
@@ -126,7 +131,7 @@ describe('Mission System', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.1); // Low value < successRate (0.15)
 
     store.completeMissionIfReady(mission.id);
-
+    
     const finalStore = useGameStore.getState();
     expect(finalStore.missions.length).toBe(0);
     expect(finalStore.derelicts.length).toBe(1);

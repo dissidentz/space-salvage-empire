@@ -1,0 +1,94 @@
+
+> spacesalvageempire@0.0.0 test
+> vitest src/stores/repro_bug.test.ts
+
+
+[1m[44m DEV [49m[22m [34mv4.0.13 [39m[90mE:/WebDev/SpaceSalvageEmpire[39m
+
+ [31mΓ¥»[39m src/stores/repro_bug.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 15[2mms[22m[39m
+[31m     [31m├ù[31m should remove scout mission after completion in game loop simulation[39m[32m 12[2mms[22m[39m
+[31m     [31m├ù[31m should remove mission even if processing throws an error[39m[32m 1[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m   Start at [22m 23:24:57
+[2m   Duration [22m 1.11s[2m (transform 219ms, setup 0ms, collect 284ms, tests 15ms, environment 613ms, prepare 14ms)[22m
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx1 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/repro_bug.test.ts[39m
+
+ [31mΓ¥»[39m src/stores/repro_bug.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 15[2mms[22m[39m
+     [32mΓ£ô[39m should remove scout mission after completion in game loop simulation[32m 6[2mms[22m[39m
+[31m     [31m├ù[31m should remove mission even if processing throws an error[39m[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 23:25:39
+[2m   Duration [22m 335ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx2 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/repro_bug.test.ts[39m
+
+ [31mΓ¥»[39m src/stores/repro_bug.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 15[2mms[22m[39m
+     [32mΓ£ô[39m should remove scout mission after completion in game loop simulation[32m 6[2mms[22m[39m
+[31m     [31m├ù[31m should remove mission even if processing throws an error[39m[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 23:26:09
+[2m   Duration [22m 1.98s
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx3 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/repro_bug.test.ts[39m
+
+ [32mΓ£ô[39m src/stores/repro_bug.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 23:28:18
+[2m   Duration [22m 119ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/gameStore.ts [22m[34mx4 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/repro_bug.test.ts[39m
+
+ [32mΓ£ô[39m src/stores/repro_bug.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 23:30:38
+[2m   Duration [22m 157ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx5 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/repro_bug.test.ts[39m
+
+ [32mΓ£ô[39m src/stores/repro_bug.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 23:56:40
+[2m   Duration [22m 112ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx6 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/repro_bug.test.ts[39m
+
+ [32mΓ£ô[39m src/stores/repro_bug.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 23:57:16
+[2m   Duration [22m 248ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m

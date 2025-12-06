@@ -35,6 +35,7 @@ describe('Bug Reproduction: Scout Mission Accumulation', () => {
         aiCoreFabricator: 0,
       },
       missions: [],
+      contracts: [],
       derelicts: [],
       stats: {
         totalDebrisCollected: 0,

@@ -171,6 +171,7 @@ export interface GameStore extends
     exportSave: () => string;
     importSave: (saveData: string) => boolean;
     hardReset: () => void;
+    processOfflineGains: (offlineTime: number) => void;
     
     // Metadata
     version: string;

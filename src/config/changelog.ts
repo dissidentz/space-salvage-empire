@@ -12,6 +12,28 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.3.1',
+    date: '2025-12-06',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented DISMANTLE salvage action - 2x fuel cost, 3x mission duration, 100% success rate, 2x all rewards.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed mission completion logic to properly update statistics and history.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Added robust error handling in mission system to prevent game loop crashes.',
+      },
+      {
+        category: 'improvement',
+        description: 'Updated DISMANTLE tooltip to accurately describe mechanics.',
+      },
+    ],
+  },
+  {
     version: '0.3.0',
     date: '2025-12-05',
     changes: [

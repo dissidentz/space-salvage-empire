@@ -1,0 +1,68 @@
+
+> spacesalvageempire@0.0.0 test
+> vitest
+
+
+[1m[44m DEV [49m[22m [34mv4.0.13 [39m[90mE:/WebDev/SpaceSalvageEmpire[39m
+
+[90mstdout[2m | src/stores/adjacentScouting.test.ts[2m > [22m[2mAdjacent Orbit Scouting[2m > [22m[2mshould discover derelicts in adjacent orbits when tech is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/limits.test.ts[2m > [22m[2mGame Limits[2m > [22m[2mshould limit active derelicts to 6
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+Derelicts after 6 spawns: 6
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+7th spawn result: null
+Derelicts after 7th spawn: 6
+
+ [32mΓ£ô[39m src/stores/limits.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m src/stores/techTree.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+[90mstdout[2m | src/stores/adjacentScouting.test.ts[2m > [22m[2mAdjacent Orbit Scouting[2m > [22m[2mshould only scout target orbit when tech is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=geo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+ [32mΓ£ô[39m src/stores/autoSalvage.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [31mΓ¥»[39m src/stores/repro_bug.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 12[2mms[22m[39m
+[31m     [31m├ù[31m should remove scout mission after completion in game loop simulation[39m[32m 9[2mms[22m[39m
+[31m     [31m├ù[31m should remove mission even if processing throws an error[39m[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m src/stores/gameStore.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m src/stores/formations.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [31mΓ¥»[39m src/stores/adjacentScouting.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 16[2mms[22m[39m
+[31m     [31m├ù[31m should discover derelicts in adjacent orbits when tech is unlocked[39m[32m 12[2mms[22m[39m
+[31m     [31m├ù[31m should only scout target orbit when tech is NOT unlocked[39m[32m 2[2mms[22m[39m
+ [31mΓ¥»[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 20[2mms[22m[39m
+     [32mΓ£ô[39m should start a scout mission[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m should fail to start scout mission without fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete a scout mission and discover a derelict[39m[32m 8[2mms[22m[39m
+     [32mΓ£ô[39m should start a salvage mission[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m should cancel a mission and refund fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete multiple missions in a single batch[39m[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked[39m[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked[39m[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m src/config/orbits.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m src/stores/automation.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m src/stores/instantWarp.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m8 passed[39m[22m[90m (11)[39m
+[2m      Tests [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m43 passed[39m[22m[90m (51)[39m
+[2m   Start at [22m 23:21:50
+[2m   Duration [22m 2.57s[2m (transform 1.44s, setup 0ms, collect 2.41s, tests 120ms, environment 9.69s, prepare 223ms)[22m
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m

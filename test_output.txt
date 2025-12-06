@@ -1,0 +1,535 @@
+
+> spacesalvageempire@0.0.0 test
+> vitest src/stores/mission.test.ts
+
+
+[1m[44m DEV [49m[22m [34mv4.0.13 [39m[90mE:/WebDev/SpaceSalvageEmpire[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] completing mission: p30b3p9at, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 1
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] completing mission: m1, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] completing mission: m2, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 2
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 2
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 3
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 4
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 5
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 1
+
+ [31mΓ¥»[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 23[2mms[22m[39m
+     [32mΓ£ô[39m should start a scout mission[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m should fail to start scout mission without fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete a scout mission and discover a derelict[39m[32m 8[2mms[22m[39m
+     [32mΓ£ô[39m should start a salvage mission[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m should cancel a mission and refund fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete multiple missions in a single batch[39m[32m 2[2mms[22m[39m
+     [32mΓ£ô[39m should spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m should only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked[32m 1[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m6 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:17:06
+[2m   Duration [22m 1.07s[2m (transform 197ms, setup 0ms, collect 250ms, tests 23ms, environment 607ms, prepare 16ms)[22m
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx1 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] completing mission: 2oup9p0hr, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] After mission remove set, derelicts count: 1
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] completing mission: m1, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] After mission remove set, derelicts count: 1
+[DEBUG] completing mission: m2, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 2
+[DEBUG] After mission remove set, derelicts count: 2
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] After mission remove set, derelicts count: 1
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 2
+[DEBUG] After mission remove set, derelicts count: 2
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 3
+[DEBUG] After mission remove set, derelicts count: 3
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 4
+[DEBUG] After mission remove set, derelicts count: 4
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 5
+[DEBUG] After mission remove set, derelicts count: 5
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 6
+[DEBUG] After mission remove set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After mission remove set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After mission remove set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After mission remove set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After mission remove set, derelicts count: 6
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] After mission remove set, derelicts count: 1
+
+ [31mΓ¥»[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 40[2mms[22m[39m
+     [32mΓ£ô[39m should start a scout mission[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m should fail to start scout mission without fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete a scout mission and discover a derelict[39m[32m 16[2mms[22m[39m
+     [32mΓ£ô[39m should start a salvage mission[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m should cancel a mission and refund fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete multiple missions in a single batch[39m[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m should spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked[32m 8[2mms[22m[39m
+     [32mΓ£ô[39m should only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked[32m 1[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m6 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:18:11
+[2m   Duration [22m 155ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/mission.test.ts [22m[34mx2 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] completing mission: wbbfwxano, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] After mission remove set, derelicts count: 1
+[TEST DEBUG] finalStore.derelicts.length: 1
+[TEST DEBUG] finalStore.missions.length: 0
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] completing mission: m1, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] After mission remove set, derelicts count: 1
+[DEBUG] completing mission: m2, success: true
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] After spawn set, derelicts count: 2
+[DEBUG] After mission remove set, derelicts count: 2
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] After mission remove set, derelicts count: 1
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 2
+[DEBUG] After mission remove set, derelicts count: 2
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 3
+[DEBUG] After mission remove set, derelicts count: 3
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 4
+[DEBUG] After mission remove set, derelicts count: 4
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 5
+[DEBUG] After mission remove set, derelicts count: 5
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 6
+[DEBUG] After mission remove set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After mission remove set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After mission remove set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After mission remove set, derelicts count: 6
+[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After mission remove set, derelicts count: 6
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] completing mission: 3llllllll, success: true
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] After spawn set, derelicts count: 1
+[DEBUG] After mission remove set, derelicts count: 1
+
+ [31mΓ¥»[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 29[2mms[22m[39m
+     [32mΓ£ô[39m should start a scout mission[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m should fail to start scout mission without fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete a scout mission and discover a derelict[39m[32m 10[2mms[22m[39m
+     [32mΓ£ô[39m should start a salvage mission[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m should cancel a mission and refund fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete multiple missions in a single batch[39m[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m should spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked[32m 7[2mms[22m[39m
+     [32mΓ£ô[39m should only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked[32m 1[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m6 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:18:48
+[2m   Duration [22m 104ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx3 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 23:19:43
+[2m   Duration [22m 0ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/orbitSlice.ts [22m[34mx4 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 23:19:47
+[2m   Duration [22m 0ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/mission.test.ts [22m[34mx5 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 23:19:51
+[2m   Duration [22m 0ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx6 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [31mΓ¥»[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 33[2mms[22m[39m
+     [32mΓ£ô[39m should start a scout mission[32m 6[2mms[22m[39m
+     [32mΓ£ô[39m should fail to start scout mission without fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete a scout mission and discover a derelict[39m[32m 11[2mms[22m[39m
+     [32mΓ£ô[39m should start a salvage mission[32m 2[2mms[22m[39m
+     [32mΓ£ô[39m should cancel a mission and refund fuel[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m should complete multiple missions in a single batch[39m[32m 3[2mms[22m[39m
+[31m     [31m├ù[31m should spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked[39m[32m 5[2mms[22m[39m
+[31m     [31m├ù[31m should only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked[39m[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:20:12
+[2m   Duration [22m 475ms
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx7 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [32mΓ£ô[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:25:39
+[2m   Duration [22m 152ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx8 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [32mΓ£ô[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:26:09
+[2m   Duration [22m 418ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx9 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [32mΓ£ô[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:28:18
+[2m   Duration [22m 978ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/mission.test.ts [22m[34mx10 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [32mΓ£ô[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:30:36
+[2m   Duration [22m 152ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/gameStore.ts [22m[34mx11 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [32mΓ£ô[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:30:38
+[2m   Duration [22m 906ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx12 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [32mΓ£ô[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:56:40
+[2m   Duration [22m 132ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
+c[3J[1m[44m RERUN [49m[22m [34m[2msrc/stores/slices/missionSlice.ts [22m[34mx13 [34m[39m
+       [2m Filename pattern: [22m[34msrc/stores/mission.test.ts[39m
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete a scout mission and discover a derelict
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould complete multiple missions in a single batch
+[22m[39m[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+[DEBUG] spawnDerelict orbit=leo, rarity=common, type=weatherSatellite
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould spawn derelicts in adjacent orbits when quantum_entanglement_comms is unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+[90mstdout[2m | src/stores/mission.test.ts[2m > [22m[2mMission System[2m > [22m[2mshould only spawn derelicts in target orbit when quantum_entanglement_comms is NOT unlocked
+[22m[39m[DEBUG] spawnDerelict orbit=mars, rarity=common, type=cargoContainer
+
+ [32mΓ£ô[39m src/stores/mission.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 23:57:16
+[2m   Duration [22m 126ms
+
+[1m[42m PASS [49m[22m [32mWaiting for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m
