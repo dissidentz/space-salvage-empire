@@ -26,6 +26,7 @@ export function SidebarLeft({
   const getTravelProgress = useGameStore(state => state.getTravelProgress);
   const resources = useGameStore(state => state.resources);
   const productionRates = useGameStore(state => state.computedRates);
+  const getMaxStorage = useGameStore(state => state.getMaxStorage);
 
 
 
@@ -136,6 +137,8 @@ export function SidebarLeft({
                 const value = resources[id as keyof typeof resources];
                 const rate = productionRates[id as keyof typeof resources] || 0;
                 const theme = RESOURCE_THEME[id as keyof typeof RESOURCE_THEME];
+                const max = getMaxStorage(id as any);
+                const isFull = value >= max && id !== 'darkMatter';
                 
                 // Only show discovered resources (value > 0 or rate > 0)
                 // Exception: always show debris, metal, electronics, fuel
@@ -148,7 +151,7 @@ export function SidebarLeft({
                   <div
                     key={id}
                     className="group flex items-center justify-between py-2 px-2 text-sm rounded-md hover:bg-sidebar-accent/50 transition-colors"
-                    title={def.description}
+                    title={isFull ? "Storage Full! Upgrade capacity or spend resources." : def.description}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`p-1.5 rounded-md bg-sidebar-accent/50 ${theme.color.replace('text-', 'bg-').replace('-400', '-500/20')}`}>
@@ -167,9 +170,14 @@ export function SidebarLeft({
                       </div>
                     </div>
                       <div className="text-right">
-                        <div className={`font-mono font-bold ${theme.color}`}>
+                        <div className={`font-mono font-bold ${isFull ? 'text-red-500' : theme.color}`}>
                           <NumberTicker value={value} />
                         </div>
+                        {max < 900000 && (
+                             <div className="text-[10px] text-muted-foreground/50">
+                                / <NumberTicker value={max} />
+                             </div>
+                        )}
                       </div>
                   </div>
                 );

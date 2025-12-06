@@ -15,6 +15,7 @@ import {
 } from '@/config/prestige';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getUpgrade } from '@/config/shipUpgrades';
+import { BASE_STORAGE_LIMITS } from '@/config/storage'; // Added import
 import { TECH_TREE, arePrerequisitesMet } from '@/config/tech';
 import { TRADE_ROUTES } from '@/config/trading';
 import { generateRandomContract } from '@/engine/contracts';
@@ -54,6 +55,7 @@ interface GameStore extends GameState {
   getProductionRates: () => Partial<Record<ResourceType, number>>;
   updateLastSaveTime: (time: number) => void;
   updateComputedRates: (rates: Partial<Record<ResourceType, number>>) => void;
+  getMaxStorage: (resource: ResourceType) => number;
 
   // Ship toggle actions
   toggleShip: (type: ShipType) => void;
@@ -410,16 +412,35 @@ export const useGameStore = create<GameStore>()(
 
       // Actions
       addResource: (type, amount) => {
+        const state = get();
+        const maxStorage = state.getMaxStorage(type);
+        const currentAmount = state.resources[type];
+        
+        // If already over limit (e.g. from cheat/debug), don't prevent use but prevent adding
+        // Actually, let's just cap the new total
+        
+        let newAmount = currentAmount + amount;
+        
+        // Dark Matter is uncapped
+        if (type !== 'darkMatter') {
+             newAmount = Math.min(newAmount, maxStorage);
+        }
+        
+        // If we tried to add but are full, determining actual delta
+        const actualDelta = newAmount - currentAmount;
+        
+        if (actualDelta <= 0 && amount > 0) return; // Full
+        
         set(state => ({
           resources: {
             ...state.resources,
-            [type]: state.resources[type] + amount,
+            [type]: newAmount,
           },
         }));
 
         // Contract Hook: Resource Rush
-        if (type === 'metal' && amount > 0) {
-            get().updateContractProgress('resourceRush', amount);
+        if (type === 'metal' && actualDelta > 0) {
+            get().updateContractProgress('resourceRush', actualDelta);
         }
       },
 
@@ -552,6 +573,20 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         const newRates = calculateProductionRates(state);
         state.updateComputedRates(newRates);
+      },
+
+      getMaxStorage: (resource: ResourceType) => {
+          const state = get();
+          const base = BASE_STORAGE_LIMITS[resource] || 999999; // Fallback for uncapped stuff like dark matter if not in config
+          
+          let multiplier = 1.0;
+          const techEffects = getTechEffects(state.techTree.purchased);
+          
+          if (techEffects.multipliers.storage_capacity) {
+              multiplier *= techEffects.multipliers.storage_capacity;
+          }
+          
+          return Math.floor(base * multiplier);
       },
 
       // Ship Upgrade Actions

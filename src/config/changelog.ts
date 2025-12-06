@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.19',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Resource Storage Limits - Resources now have capacity caps.',
+      },
+      {
+        category: 'improvement',
+        description: 'Added storage capacity indicators to the sidebar resources list.',
+      },
+    ],
+  },
+  {
     version: '0.2.18',
     date: '2025-12-05',
     changes: [

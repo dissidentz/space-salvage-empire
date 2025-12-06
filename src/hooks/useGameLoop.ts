@@ -45,7 +45,15 @@ export function useGameLoop() {
           const currentAmount = state.resources[resourceType];
 
           // Prevent resources from going negative
-          const newAmount = Math.max(0, currentAmount + delta);
+          // Prevent resources from going negative
+          const maxStorage = state.getMaxStorage(resourceType);
+          let newAmount = currentAmount + delta;
+          
+          if (resourceType !== 'darkMatter') {
+              newAmount = Math.min(newAmount, maxStorage);
+          }
+          
+          newAmount = Math.max(0, newAmount);
           const actualDelta = newAmount - currentAmount;
 
           // Only apply if there's an actual change
