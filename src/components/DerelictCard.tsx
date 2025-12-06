@@ -126,8 +126,21 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
     }
   };
 
+  const orbitColors = {
+    leo: 'border-blue-500/20 bg-blue-950/10',
+    geo: 'border-indigo-500/20 bg-indigo-950/10',
+    lunar: 'border-slate-500/20 bg-slate-950/10',
+    mars: 'border-red-500/20 bg-red-950/10',
+    asteroidBelt: 'border-amber-500/20 bg-amber-950/10',
+    jovian: 'border-orange-500/20 bg-orange-950/10', 
+    kuiper: 'border-cyan-500/20 bg-cyan-950/10',
+    deepSpace: 'border-violet-500/60 bg-violet-950/20 shadow-[0_0_15px_rgba(139,92,246,0.3)]', // High flair
+  };
+
+  const currentOrbitStyle = orbitColors[derelict.orbit as keyof typeof orbitColors] || orbitColors.leo;
+
   return (
-    <Card className="bg-slate-800/50 border-slate-700/50 hover:border-slate-600/50 transition-colors">
+    <Card className={`transition-colors ${currentOrbitStyle} hover:border-slate-600/50`}>
       <CardContent className="p-4">
         <div className="space-y-3">
           {/* Header */}

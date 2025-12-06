@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.20',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Added Deep Space Zone - The final frontier with massive rewards and extreme hazards.',
+      },
+      {
+        category: 'feature',
+        description: 'New Tech: Void Dimensions (Tier 5) - Unlocks travel to Deep Space.',
+      },
+    ],
+  },
+  {
     version: '0.2.19',
     date: '2025-12-05',
     changes: [

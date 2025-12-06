@@ -554,6 +554,17 @@ const EXPLORATION_TECHS: TechNode[] = [
 
     effects: [{ type: 'multiplier', target: 'ark_component_drop_rate', value: 1.1 }],
   },
+  {
+    id: 'void_dimensions',
+    name: 'Void Dimensions',
+    description: 'Unlock travel to Deep Space (High Risk/High Reward)',
+    branch: 'exploration',
+    tier: 5,
+    dataFragmentCost: 10000,
+    prerequisites: ['fleet_coordination'],
+
+    effects: [{ type: 'unlock', target: 'deep_space_travel', value: 1 }],
+  },
 ];
 
 // ============================================================================

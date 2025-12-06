@@ -211,8 +211,7 @@ export const ORBIT_CONFIGS: Record<OrbitType, OrbitConfig> = {
     fuelCost: 1000000,
     travelTime: 6 * 60 * 60 * 1000, // 6 hours
     unlockRequirements: {
-      // Unlocked in Run 9 after finding 7 Ark components
-      // Will be checked in game logic
+      tech: ['void_dimensions'],
     },
     spawnRates: {
       common: 5,
@@ -298,12 +297,9 @@ export function isOrbitUnlocked(
     if (!hasColonies) return false;
   }
 
-  // Deep Space special requirement: 7 Ark components
-  if (targetOrbit === 'deepSpace') {
-    const componentsFound = Object.values(state.prestige.arkComponents || {})
-      .filter(c => c.discovered).length;
-    if (componentsFound < 7) return false;
-  }
+  // Deep Space special requirement: Void Dimensions Tech (Already checked by generic tech check above, but keep logic clean)
+  // If we wanted to keep the Ark Component check as an ALTERNATIVE, we could add it back here, but plan said replace.
+  // So we just rely on generic req.tech above.
 
   return true;
 }
