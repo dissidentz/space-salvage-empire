@@ -214,6 +214,7 @@ export interface PrestigeData {
   arkComponents: Partial<Record<ArkComponentType, ArkComponent>>;
   arkUnlocked: boolean;
   arkComplete: boolean;
+  endlessMode: boolean; // True if player chose to continue after victory
   totalRuns: number;
   fastestRun: number;
   highestOrbit: OrbitType;
@@ -344,7 +345,7 @@ export interface EventLog {
 
 export interface UIState {
   activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
-  activeView: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts' | 'trading';
+  activeView: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts' | 'trading' | 'victory';
   openModal: string | null;
   modalData?: unknown;
   notifications: Notification[];

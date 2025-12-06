@@ -23,6 +23,7 @@ import { PrestigeView } from './components/views/PrestigeView';
 import { SettingsView } from './components/views/SettingsView';
 import { TechTreeView } from './components/views/TechTreeView';
 import { TradingView } from './components/views/TradingView';
+import { VictoryView } from './components/views/VictoryView';
 import { useGameLoop } from './hooks/useGameLoop';
 import { useGameStore } from './stores/gameStore';
 
@@ -61,6 +62,8 @@ function App() {
         return <ContractsView />;
       case 'trading':
         return <TradingView />;
+      case 'victory':
+        return <VictoryView />;
       case 'dashboard':
       default:
         return <DashboardView />;

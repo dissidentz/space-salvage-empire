@@ -12,6 +12,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.2.16',
+    date: '2025-12-05',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Victory Screen - Celebrating Ark completion with run statistics',
+      },
+      {
+        category: 'feature',
+        description: 'Added Endless Mode - Continue playing in the current universe after victory',
+      },
+      {
+        category: 'improvement',
+        description: 'Ark completion now automatically triggers the victory sequence',
+      },
+    ],
+  },
+  {
     version: '0.2.15',
     date: '2025-12-05',
     changes: [

@@ -99,7 +99,7 @@ interface GameStore extends GameState {
 
   // UI actions
   // UI actions
-  setActiveView: (view: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts' | 'trading') => void;
+  setActiveView: (view: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts' | 'trading' | 'victory') => void;
   openModal: (modal: string, data?: any) => void;
 
   closeModal: () => void;
@@ -165,6 +165,9 @@ interface GameStore extends GameState {
 
   // Trading
   tradeResources: (routeId: string, amount: number) => void;
+
+  // Victory
+  continueEndlessMode: () => void;
 }
 
 const INITIAL_STATE = {
@@ -326,6 +329,7 @@ const INITIAL_STATE = {
     arkComponents: {},
     arkUnlocked: false,
     arkComplete: false,
+    endlessMode: false,
     totalRuns: 0,
     fastestRun: 0,
     highestOrbit: 'leo' as OrbitType,
@@ -1897,9 +1901,12 @@ export const useGameStore = create<GameStore>()(
                   prestige: {
                       ...state.prestige,
                       arkComplete: true
+                  },
+                  ui: {
+                      ...state.ui,
+                      activeView: 'victory'
                   }
               }));
-              get().addNotification('success', 'The Ark is complete! You have won the game!');
           }
           
           return true;
@@ -2253,6 +2260,20 @@ export const useGameStore = create<GameStore>()(
         }));
 
         state.addNotification('success', `Traded ${cost} ${route.input} for ${finalOutput} ${route.output}`);
+      },
+
+      continueEndlessMode: () => {
+          set(state => ({
+              prestige: {
+                  ...state.prestige,
+                  endlessMode: true
+              },
+              ui: {
+                  ...state.ui,
+                  activeView: 'dashboard'
+              }
+          }));
+          get().addNotification('info', 'Entering Endless Mode. The journey continues!');
       },
     }),
     {
