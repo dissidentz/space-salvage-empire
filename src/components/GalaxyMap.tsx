@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
@@ -104,16 +104,16 @@ export function GalaxyMap() {
     []
   );
 
-  // Calculate orbit positions in a spiral pattern
+  // Calculate orbit positions in a circular pattern with better spacing
   const orbitNodes = useMemo(() => {
     const nodes: Record<OrbitType, OrbitNode> = {} as Record<
       OrbitType,
       OrbitNode
     >;
     const centerX = 300;
-    const centerY = 300;
-    const baseRadius = 60;
-    const radiusIncrement = 45;
+    const centerY = 180; // Adjusted for better vertical fit
+    const baseRadius = 40;
+    const radiusIncrement = 35; // Reduced from 45 to fit all orbits
 
     const orbitOrder: OrbitType[] = [
       'leo',
@@ -128,7 +128,8 @@ export function GalaxyMap() {
 
     orbitOrder.forEach((orbit, index) => {
       const radius = baseRadius + index * radiusIncrement;
-      const angle = index * 45 * (Math.PI / 180); // Spread them out
+      // Distribute evenly in a circle (360° / 8 orbits = 45° each)
+      const angle = index * 45 * (Math.PI / 180);
 
       nodes[orbit] = {
         orbit,
@@ -215,7 +216,7 @@ export function GalaxyMap() {
           </div>
 
           {/* Central Sun */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute" style={{ left: 292, top: 172 }}>
             <div className="w-8 h-8 bg-linear-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg shadow-yellow-400/50 animate-pulse" />
             <div className="absolute inset-0 w-8 h-8 bg-yellow-400/30 rounded-full animate-ping" />
           </div>
@@ -229,7 +230,7 @@ export function GalaxyMap() {
                 width: node.radius * 2,
                 height: node.radius * 2,
                 left: 300 - node.radius,
-                top: 300 - node.radius,
+                top: 180 - node.radius, // Updated to match new centerY
               }}
             />
           ))}
