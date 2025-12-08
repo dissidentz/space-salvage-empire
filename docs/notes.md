@@ -48,8 +48,8 @@
 ## ⚠️ Needs Verification / Potentially Incomplete
 
 ### Ship Upgrades
-- **Status:** ✅ VERIFIED - Config, UI (`ShipUpgradePanel.tsx`), store logic (`shipSlice.ts`) complete
-- **Documented:** Efficiency I-V, Swarm Protocol, Throughput Boost, etc. (see `complete-system.md`)
+- **Status:** ✅ VERIFIED (Dec 8, 2025) - Full end-to-end verification completed
+- **Trace:** Config (`shipUpgrades.ts`) → Multipliers (`getUpgradeMultipliers.ts`) → Production (`formulas.ts:200-209`) → UI (`ShipUpgradePanel.tsx`) → Purchase (`shipSlice.ts:182-216`)
 
 ### Colony System
 - **Status:** ✅ VERIFIED - Colony production bonus (1.25x) applied in `formulas.ts` line 197
