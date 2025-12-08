@@ -56,25 +56,8 @@
 ### Hazardous Derelicts
 - -20% success rate penalty for non-Heavy Salvage Frigates
 - Heavy Salvage Frigate immune to hazardous penalty
-- Dismantle action bypasses with 100% success
-
-### Trading Post
-- Full implementation: UI (`TradingView.tsx`), config (`trading.ts`), trade logic (`economySlice.ts`)
-- Unlocked by `market_access` tech, boosted by `market_mastery` (+50%)
-
----
-
-## � Not Implemented (from complete-system.md)
-
-### Ships/Systems
-- **AI Core Fabricator** - Ship that produces AI Cores (Run 4+ unlock)
-- **Deep Space Scanner Upgrades** - Quantum Array (+3% spawn), Predictive Algorithms (+10% rare)
-- **Colony Ship Upgrades** - Colony Efficiency (+40%), Auto-Salvage Bay
-- **Heavy Salvage Frigate Upgrades** - Emergency Warp (abort failed missions, recover 50% fuel)
-
 ### Prestige/Progression
 - **Tech Carry-Over** - Keep % of Data Fragments on prestige (prestige perk)
-- **Offline Efficiency Scaling** - Should scale 50%→65%→80%→95%→100% with perks
 - **Skip Orbit Perks** - Start in GEO/Mars/Belt (prestige perks)
 
 ### Miscellaneous
