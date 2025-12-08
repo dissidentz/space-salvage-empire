@@ -10,7 +10,12 @@ export function MissionHistory() {
   const missionHistory = useGameStore(state => state.stats.missionHistory);
 
   if (!missionHistory || missionHistory.length === 0) {
-    return null;
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        <History className="w-12 h-12 mx-auto mb-2 opacity-50" />
+        <p>No missions completed yet</p>
+      </div>
+    );
   }
 
   return (

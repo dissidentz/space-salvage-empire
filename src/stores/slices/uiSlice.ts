@@ -57,13 +57,20 @@ export const createUiSlice: GameSlice<UiSlice> = (set, get) => ({
 
   addNotification: (type, message, duration = 3000) => {
     const id = Math.random().toString(36).substr(2, 9);
+    const timestamp = Date.now();
+    
     set((state) => ({
       ui: {
         ...state.ui,
         notifications: [
           ...state.ui.notifications,
-          { id, type, message, timestamp: Date.now(), duration },
+          { id, type, message, timestamp, duration },
         ],
+        // Also add to persistent event log
+        eventLog: [
+          { id, type, message, timestamp },
+          ...state.ui.eventLog,
+        ].slice(0, 200), // Keep last 200 events
       },
     }));
 
