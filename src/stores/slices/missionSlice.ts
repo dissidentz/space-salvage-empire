@@ -4,6 +4,7 @@ import {
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, getAdjacentOrbits } from '@/config/orbits';
 import { SHIP_CONFIGS } from '@/config/ships';
+import { getAlienTechMultipliers } from '@/engine/getAlienTechMultipliers';
 import { getTechEffects } from '@/engine/getTechMultipliers';
 import { getUpgradeMultipliers } from '@/engine/getUpgradeMultipliers';
 import type {
@@ -54,6 +55,10 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
     if (techEffects.multipliers.mission_time) {
       duration *= techEffects.multipliers.mission_time;
     }
+    
+    // Apply alien tech mission time multiplier (Temporal Shift)
+    const alienTechMults = getAlienTechMultipliers(state.alienTech || {});
+    duration *= alienTechMults.mission_time;
     
     // Apply upgrade multipliers
     const upgradeMultipliers = getUpgradeMultipliers(state);
@@ -145,6 +150,10 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
     if (shipType === 'salvageFrigate' && upgradeMultipliers.production.salvageFrigate_missionTime) {
         duration *= upgradeMultipliers.production.salvageFrigate_missionTime;
     }
+    
+    // Apply alien tech mission time multiplier (Temporal Shift)
+    const alienTechMults = getAlienTechMultipliers(state.alienTech || {});
+    duration *= alienTechMults.mission_time;
     
     // DISMANTLE takes 3x time
     if (action === 'dismantle') {
@@ -357,6 +366,17 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
                             rewards[key as ResourceType]! *= upgradeMultipliers.production.salvageFrigate_loot;
                         }
                     }
+                }
+                
+                // Apply Alien Tech salvage rewards multiplier (Matter Conversion)
+                const alienTechMults = getAlienTechMultipliers(state.alienTech || {});
+                for (const key of Object.keys(rewards)) {
+                    rewards[key as ResourceType]! *= alienTechMults.salvage_rewards;
+                }
+                
+                // Apply Alien Tech artifact drop rate multiplier (Artifact Resonance)
+                if (rewards.alienArtifacts) {
+                    rewards.alienArtifacts *= alienTechMults.alienArtifact_drop_rate;
                 }
     
                 // Grant rewards

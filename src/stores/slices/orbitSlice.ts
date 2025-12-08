@@ -5,6 +5,7 @@ import {
     rollDerelictRarity,
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, isOrbitUnlocked } from '@/config/orbits';
+import { getAlienTechMultipliers } from '@/engine/getAlienTechMultipliers';
 import { getTechEffects } from '@/engine/getTechMultipliers';
 import type { Derelict } from '@/types';
 import type { GameSlice, OrbitSlice } from './types';
@@ -79,6 +80,10 @@ export const createOrbitSlice: GameSlice<OrbitSlice> = (set, get) => ({
     if (techEffects.multipliers.travel_time) {
       travelMultiplier *= techEffects.multipliers.travel_time;
     }
+    
+    // Apply alien tech travel time multiplier (Void Navigation)
+    const alienTechMults = getAlienTechMultipliers(state.alienTech || {});
+    travelMultiplier *= alienTechMults.travel_time;
   
     // Start travel
     const now = Date.now();
