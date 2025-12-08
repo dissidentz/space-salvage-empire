@@ -35,11 +35,16 @@ export const createFormationSlice: GameSlice<FormationSlice> = (set, get) => ({
         if (state.ships[ship as ShipType] < (count as number)) return false;
     }
     
-    // Special case for Production Fleet "Total Ships" logic if needed
-    // Copied from original:
+    // Special case for Production Fleet "Total Ships" logic
     if (type === 'productionFleet') {
          const totalShips = Object.values(state.ships).reduce((a, b) => a + b, 0);
-         if (totalShips < 50) return false;
+         if (totalShips < 100) return false;
+    }
+    
+    // Special case for Expedition Fleet "Total Ships" logic
+    if (type === 'expeditionFleet') {
+         const totalShips = Object.values(state.ships).reduce((a, b) => a + b, 0);
+         if (totalShips < 30) return false;
     }
 
     set({ 

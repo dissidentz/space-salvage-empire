@@ -201,12 +201,35 @@ export const createPrestigeSlice: GameSlice<PrestigeSlice> = (set, get) => ({
      return true;
   },
 
+  discoverArkComponent: (componentId) => {
+      set((state) => ({
+          prestige: {
+              ...state.prestige,
+              arkComponents: {
+                  ...state.prestige.arkComponents,
+                  [componentId as ArkComponentType]: {
+                      ...state.prestige.arkComponents[componentId as ArkComponentType],
+                      type: componentId as ArkComponentType,
+                      discovered: true,
+                  }
+              }
+          }
+      }));
+      get().addNotification('success', `Ark Component Blueprint Discovered: ${ARK_COMPONENTS[componentId as ArkComponentType].name}!`);
+      return true;
+  },
+
   buildArkComponent: (componentId) => {
       const state = get();
       const component = ARK_COMPONENTS[componentId as ArkComponentType];
       if (!component) return false;
       
-      if (state.prestige.arkComponents[componentId as ArkComponentType]?.assembled) return false;
+      const arkState = state.prestige.arkComponents[componentId as ArkComponentType];
+      if (!arkState?.discovered) {
+          state.addNotification('error', 'Component blueprint not yet discovered!');
+          return false;
+      }
+      if (arkState.assembled) return false;
       
       if (!canAffordCost(component.cost, state.resources)) return false;
       
@@ -220,8 +243,7 @@ export const createPrestigeSlice: GameSlice<PrestigeSlice> = (set, get) => ({
               arkComponents: {
                   ...state.prestige.arkComponents,
                   [componentId]: {
-                      type: componentId as ArkComponentType,
-                      discovered: true,
+                      ...state.prestige.arkComponents[componentId as ArkComponentType],
                       assembled: true,
                       assemblyCost: component.cost,
                       assemblyDuration: component.duration

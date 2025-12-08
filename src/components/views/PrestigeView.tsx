@@ -155,20 +155,32 @@ export function PrestigeView() {
                                                 
                                                 {!isBuilt && (
                                                     <div className="mt-4">
-                                                        <div className="text-xs font-mono grid grid-cols-2 gap-2 mb-3">
-                                                            {Object.entries(component.cost).map(([res, amount]) => (
-                                                                <span key={res} className={(resources[res as keyof typeof resources] || 0) >= amount ? 'text-green-400' : 'text-red-400'}>
-                                                                    {amount.toLocaleString()} {res}
+                                                        {state?.discovered ? (
+                                                            <>
+                                                                <div className="text-xs font-mono grid grid-cols-2 gap-2 mb-3">
+                                                                    {Object.entries(component.cost).map(([res, amount]) => (
+                                                                        <span key={res} className={(resources[res as keyof typeof resources] || 0) >= amount ? 'text-green-400' : 'text-red-400'}>
+                                                                            {amount.toLocaleString()} {res}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                                <Button 
+                                                                    className="w-full" 
+                                                                    onClick={() => buildArkComponent(id)}
+                                                                    disabled={!canBuild}
+                                                                >
+                                                                    Construct Component
+                                                                </Button>
+                                                            </>
+                                                        ) : (
+                                                            <div className="flex flex-col items-center justify-center p-4 bg-slate-900/50 rounded border border-dashed border-slate-700">
+                                                                <Lock className="w-8 h-8 text-slate-600 mb-2" />
+                                                                <span className="text-sm font-semibold text-slate-400">Blueprint Undiscovered</span>
+                                                                <span className="text-xs text-slate-600 text-center mt-1">
+                                                                    Salvage Legendary Derelicts to find this blueprint.
                                                                 </span>
-                                                            ))}
-                                                        </div>
-                                                        <Button 
-                                                            className="w-full" 
-                                                            onClick={() => buildArkComponent(id)}
-                                                            disabled={!canBuild}
-                                                        >
-                                                            Construct Component
-                                                        </Button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>

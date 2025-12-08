@@ -1,5 +1,6 @@
 import { ORBIT_CONFIGS } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
+import { getUpgradeMultipliers } from './getUpgradeMultipliers';
 
 /**
  * Check if a passive derelict spawn should occur
@@ -24,9 +25,11 @@ export function checkPassiveSpawning() {
   // Tech multipliers
   const techMult = state.getTechMultiplier('passive_spawn_rate');
   
-  // Deep Space Scanner bonus: +2% per scanner owned
+  // Deep Space Scanner bonus: +2% per scanner owned + upgrade bonus
+  const upgradeMultipliers = getUpgradeMultipliers(state);
   const scannerCount = state.ships?.deepSpaceScanner || 0;
-  const scannerMult = 1 + (scannerCount * 0.02);
+  const scannerBonus = upgradeMultipliers.flatBonus.deepSpaceScanner_spawnRate || 0;
+  const scannerMult = 1 + (scannerCount * (0.02 + scannerBonus));
   
   const finalChance = baseSpawnRate * orbitMult * techMult * scannerMult;
   

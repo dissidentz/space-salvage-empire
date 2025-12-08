@@ -98,6 +98,7 @@ export interface PrestigeSlice {
     prestigeReset: () => void;
     buyPerk: (perkId: string) => boolean;
     unlockArk: () => boolean;
+    discoverArkComponent: (componentId: string) => boolean;
     buildArkComponent: (componentId: string) => boolean;
     getPrestigeMultipliers: () => Record<string, number>;
     

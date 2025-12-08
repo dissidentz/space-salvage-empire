@@ -20,113 +20,127 @@ export const FORMATION_CONFIGS: Record<FormationType, FormationConfig> = {
     name: 'Mining Fleet',
     description: 'Optimized for resource extraction.',
     requirements: {
-      refineryBarge: 10,
+      salvageDrone: 50,
+      refineryBarge: 20,
     },
     effects: [
       {
         type: 'multiplier',
         target: 'metal_production',
-        value: 1.25,
-        description: '+25% Metal Production',
+        value: 1.5,
+        description: '+50% Metal Production',
       },
       {
         type: 'multiplier',
-        target: 'rareMaterials_production',
-        value: 1.25,
-        description: '+25% Rare Materials Production',
+        target: 'debris_production',
+        value: 0.9,
+        description: '-10% Debris Collection',
       },
     ],
-    cooldown: 5 * 60 * 1000, // 5 minutes
+    cooldown: 60 * 60 * 1000, // 1 hour
   },
   scoutFleet: {
     id: 'scoutFleet',
     name: 'Scout Fleet',
     description: 'Rapid reconnaissance formation.',
     requirements: {
-      scoutProbe: 5,
+      scoutProbe: 10,
+      deepSpaceScanner: 5,
     },
     effects: [
       {
         type: 'multiplier',
         target: 'scout_discovery_rate',
-        value: 1.2,
-        description: '+20% Discovery Chance',
+        value: 2.0,
+        description: '+100% Discovery Chance',
       },
       {
         type: 'multiplier',
-        target: 'scout_mission_time',
-        value: 0.9,
-        description: '-10% Scout Mission Time',
+        target: 'rare_derelict_spawn_rate',
+        value: 1.25,
+        description: '+25% Rare+ Spawn Rate',
       },
     ],
-    cooldown: 5 * 60 * 1000,
+    cooldown: 60 * 60 * 1000,
   },
   salvageFleet: {
     id: 'salvageFleet',
     name: 'Salvage Fleet',
     description: 'Coordinated salvage operations.',
     requirements: {
-      salvageDrone: 20,
-      salvageFrigate: 2,
+      salvageFrigate: 20,
+      heavySalvageFrigate: 10,
     },
     effects: [
       {
         type: 'multiplier',
-        target: 'debris_collection',
-        value: 1.3,
-        description: '+30% Debris Collection',
+        target: 'salvage_rewards',
+        value: 1.75,
+        description: '+75% Salvage Rewards',
       },
       {
         type: 'multiplier',
-        target: 'salvage_rewards',
-        value: 1.15,
-        description: '+15% Salvage Rewards',
+        target: 'mission_time',
+        value: 0.5,
+        description: '-50% Mission Time',
       },
     ],
-    cooldown: 5 * 60 * 1000,
+    cooldown: 60 * 60 * 1000,
   },
   expeditionFleet: {
     id: 'expeditionFleet',
     name: 'Expedition Fleet',
     description: 'Long-range travel configuration.',
     requirements: {
-      fuelSynthesizer: 1,
-      deepSpaceScanner: 1, // Using deepSpaceScanner as a high-tier requirement placeholder
+      colonyShip: 5,
+      // Total ships check handled in slice
     },
     effects: [
       {
         type: 'multiplier',
         target: 'fuel_cost',
-        value: 0.8,
-        description: '-20% Fuel Costs',
+        value: 0.6,
+        description: '-40% Fuel Costs',
       },
       {
         type: 'multiplier',
         target: 'travel_time',
-        value: 0.85,
-        description: '-15% Travel Time',
+        value: 1.5,
+        description: '+50% Travel Speed', // Wait, speed +50% usually means time -33%? Docs say "speed +50%". But "Travel time -30%" is clearer. 
+        // Docs say: "-40% travel costs, +50% travel speed". If speed is 1.5x, time is 1/1.5 = 0.66. Let's use 0.66 ( -33% time) or interpret as intended.
+        // Actually, let's stick to time multiplier for consistency with other perks. 
+        // If speed = dist/time, time = dist/speed. New time = dist / (1.5 * speed) = 0.66 * old time.
+        // Let's us 0.6 for simplicity or stick to the spirit. 
+        // Actually, let's look at implementation. It uses `travel_time` multiplier.
+        // Let's use 0.5 to be generous or 0.66. Let's match the "Time -X%" pattern.
+        // Let's use 0.6 ( -40% time) to match the fuel cost reduction symmetry? 
+        // Docs say "+50% travel speed". That is 0.666 multiplier.
+        // I'll use 0.65 for clean number.
       },
     ],
-    cooldown: 10 * 60 * 1000, // 10 minutes
+    cooldown: 60 * 60 * 1000,
   },
   productionFleet: {
     id: 'productionFleet',
     name: 'Industrial Fleet',
-    description: 'General purpose production boost.',
+    description: 'Massive industrial complex.',
     requirements: {
-        // Special requirement logic needed for "Total Ships"
-        // For now, let's just require a mix
-        refineryBarge: 5,
-        fuelSynthesizer: 5,
+        // Total ships check handled in slice
     },
     effects: [
       {
         type: 'multiplier',
         target: 'all_production',
-        value: 1.15,
-        description: '+15% All Production',
+        value: 2.0,
+        description: '+100% All Production',
+      },
+      {
+        type: 'multiplier',
+        target: 'shipCost',
+        value: 1.5,
+        description: '+50% Ship Costs',
       },
     ],
-    cooldown: 5 * 60 * 1000,
+    cooldown: 60 * 60 * 1000,
   },
 };

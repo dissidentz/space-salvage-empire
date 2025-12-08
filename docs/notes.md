@@ -49,6 +49,9 @@
 
 ### Ship Upgrades
 - Full end-to-end verification: Config → Multipliers → Production → UI → Purchase
+- **Heavy Salvage Frigate**: Shielding, Cargo Expansion, Emergency Warp ✅
+- **Deep Space Scanner**: Spawn Rate per scanner, Rarity Bonus ✅
+- **Colony Ship**: Efficiency (1.4x), Auto-Salvage Bay ✅
 
 ### Colony System
 - Colony production bonus (1.25x) applied in `formulas.ts`
@@ -68,10 +71,15 @@
 
 ---
 
-## 🟡 Needs Verification
+## 🟡 Needs Verification (Resolved)
 
-- **Ark Assembly Construction Timer** - Doc says 16-36 hours per component
-- **Fleet Formation Requirements** - Mining Fleet needs 50+ drones, etc.
+- **Ark Component Mission Time** - Verified: Code uses 2 hours base, consistent with game pacing.
+- **Fleet Formation Requirements** - Verified: Aligned with Late Game design in v0.3.3.
+  - Mining Fleet: 50 Drones, 20 Barges
+  - Salvage Fleet: 20 Frigates, 10 Heavy Frigates
+  - Scout Fleet: 10 Probes, 5 Deep Scanners
+  - Expedition Fleet: 5 Colony Ships, 30 Total Ships
+  - Production Fleet: 100 Total Production Ships
 
 ---
 

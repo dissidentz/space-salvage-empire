@@ -349,6 +349,103 @@ export const SHIP_UPGRADES: Record<string, ShipUpgrade> = {
       { type: 'multiplier', target: 'salvageFrigate_missionTime', value: 0.6 },
     ],
   },
+
+  // ===== HEAVY SALVAGE FRIGATE UPGRADES =====
+
+  military_grade_shielding: {
+    id: 'military_grade_shielding',
+    shipType: 'heavySalvageFrigate',
+    name: 'Military-Grade Shielding',
+    description: 'Increases mission success rate to 98%.',
+    maxLevel: 1,
+    baseCost: { metal: 50000, rareMaterials: 10000 },
+    costGrowth: 1.0,
+    effects: [
+      { type: 'flat_bonus', target: 'heavySalvageFrigate_successRate', value: 0.03 }, // Base 95% -> 98%
+    ],
+  },
+  
+  cargo_expansion: {
+    id: 'cargo_expansion',
+    shipType: 'heavySalvageFrigate',
+    name: 'Cargo Expansion',
+    description: '+50% loot capacity for Heavy Salvage Frigates.',
+    maxLevel: 1,
+    baseCost: { electronics: 20000 },
+    costGrowth: 1.0,
+    effects: [
+      { type: 'multiplier', target: 'heavySalvageFrigate_reward', value: 1.5 },
+    ],
+  },
+  
+  emergency_warp: {
+    id: 'emergency_warp',
+    shipType: 'heavySalvageFrigate',
+    name: 'Emergency Warp',
+    description: 'Abort failed missions to recover 50% fuel.',
+    maxLevel: 1,
+    baseCost: { rareMaterials: 5000 },
+    costGrowth: 1.0,
+    effects: [
+      { type: 'unlock', target: 'emergency_warp', value: 1 },
+    ],
+  },
+
+  // ===== DEEP SPACE SCANNER UPGRADES =====
+
+  quantum_entanglement_array: {
+    id: 'quantum_entanglement_array',
+    shipType: 'deepSpaceScanner',
+    name: 'Quantum Entanglement Array',
+    description: '+3% derelict spawn rate per scanner.',
+    maxLevel: 1,
+    baseCost: { rareMaterials: 50000 },
+    costGrowth: 1.0,
+    effects: [
+      { type: 'flat_bonus', target: 'deepSpaceScanner_spawnRate', value: 0.03 },
+    ],
+  },
+
+  predictive_algorithms: {
+    id: 'predictive_algorithms',
+    shipType: 'deepSpaceScanner',
+    name: 'Predictive Algorithms',
+    description: '+10% chance for rare+ derelicts.',
+    maxLevel: 1,
+    baseCost: { aiCores: 100 },
+    costGrowth: 1.0,
+    effects: [
+      { type: 'flat_bonus', target: 'rare_derelict_chance', value: 0.1 },
+    ],
+  },
+
+  // ===== COLONY SHIP UPGRADES =====
+
+  colony_efficiency: {
+    id: 'colony_efficiency',
+    shipType: 'colonyShip',
+    name: 'Colony Efficiency',
+    description: 'Colonies provide +40% production boost.',
+    maxLevel: 1,
+    baseCost: { metal: 500000, rareMaterials: 100000 },
+    costGrowth: 1.0,
+    effects: [
+      { type: 'unlock', target: 'colony_efficiency', value: 1 },
+    ],
+  },
+
+  auto_salvage_bay: {
+    id: 'auto_salvage_bay',
+    shipType: 'colonyShip',
+    name: 'Auto-Salvage Bay',
+    description: 'Colonies automatically salvage common derelicts.',
+    maxLevel: 1,
+    baseCost: { metal: 1000000, electronics: 50000 },
+    costGrowth: 1.0,
+    effects: [
+      { type: 'unlock', target: 'auto_salvage_bay', value: 1 },
+    ],
+  },
 };
 
 /**

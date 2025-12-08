@@ -12,6 +12,40 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.3.3',
+    date: '2025-12-08',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Heavy Salvage Frigate Upgrades: Military Grade Shielding (Success Rate), Cargo Expansion (Loot Bonus), Emergency Warp (Fuel Refund).',
+      },
+      {
+        category: 'feature',
+        description: 'Implemented Deep Space Scanner Upgrades: Quantum Entanglement Array (Spawn Rate), Predictive Algorithms (Rarity Bonus).',
+      },
+      {
+        category: 'feature',
+        description: 'Implemented Colony Ship Upgrades: Colony Efficiency (Production Bonus), Auto-Salvage Bay (Auto-salvage common derelicts).',
+      },
+      {
+        category: 'improvement',
+        description: 'Colony Auto-Salvage Bay functions independently of global automation settings, targeting common derelicts in colony orbits.',
+      },
+      {
+        category: 'balance',
+        description: 'Overhauled Fleet Formation system: Increased late-game ship requirements and significantly boosted effects (e.g., Mining Fleet now gives +50% Metal Production).',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Production Fleet "Total Ships" requirement logic and added missing Ship Cost multiplier support.',
+      },
+      {
+        category: 'improvement',
+        description: 'Tech Tree Audit complete: Verified all 45+ techs, including complex effects like Derelict Analysis (rarity masking) and Risk Assessment (hacking bonus).',
+      },
+    ],
+  },
+  {
     version: '0.3.2',
     date: '2025-12-07',
     changes: [

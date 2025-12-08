@@ -1,12 +1,13 @@
 import {
-    DERELICT_CONFIGS,
-    getArkComponentTypeForOrbit,
-    getRandomDerelictType,
-    rollDerelictRarity,
+  DERELICT_CONFIGS,
+  getArkComponentTypeForOrbit,
+  getRandomDerelictType,
+  rollDerelictRarity,
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, isOrbitUnlocked } from '@/config/orbits';
 import { getAlienTechMultipliers } from '@/engine/getAlienTechMultipliers';
 import { getTechEffects } from '@/engine/getTechMultipliers';
+import { getUpgradeMultipliers } from '@/engine/getUpgradeMultipliers';
 import type { Derelict } from '@/types';
 import type { GameSlice, OrbitSlice } from './types';
 
@@ -66,7 +67,7 @@ export const createOrbitSlice: GameSlice<OrbitSlice> = (set, get) => ({
     
     // Apply tech fuel cost multipliers
     const techEffects = getTechEffects(state.techTree?.purchased || []);
-    let fuelMultiplier = state.activeFormation === 'expeditionFleet' ? 0.8 : 1.0;
+    let fuelMultiplier = state.activeFormation === 'expeditionFleet' ? 0.6 : 1.0;
     if (techEffects.multipliers.fuel_cost) {
       fuelMultiplier *= techEffects.multipliers.fuel_cost;
     }
@@ -76,7 +77,7 @@ export const createOrbitSlice: GameSlice<OrbitSlice> = (set, get) => ({
     state.subtractResource('fuel', actualFuelCost);
   
     // Apply tech travel time multipliers
-    let travelMultiplier = state.activeFormation === 'expeditionFleet' ? 0.85 : 1.0;
+    let travelMultiplier = state.activeFormation === 'expeditionFleet' ? 0.65 : 1.0;
     if (techEffects.multipliers.travel_time) {
       travelMultiplier *= techEffects.multipliers.travel_time;
     }
@@ -182,7 +183,25 @@ export const createOrbitSlice: GameSlice<OrbitSlice> = (set, get) => ({
 
   spawnDerelict: (orbit) => {
     const orbitConfig = ORBIT_CONFIGS[orbit];
-    const rarity = rollDerelictRarity(orbitConfig.spawnRates);
+    const upgradeMultipliers = getUpgradeMultipliers(get());
+    const rarityBonus = upgradeMultipliers.flatBonus.rare_derelict_chance || 0;
+    
+    let spawnRates = orbitConfig.spawnRates;
+    if (rarityBonus > 0) {
+        // Apply bonus: reduce common, increase rare+
+        // Taking simplistic approach: shift probability from common to rare
+        // (Since rare is the entry point for "rare+")
+        const newCommon = Math.max(0, spawnRates.common - (rarityBonus * 100)); // rarityBonus is 0.1 for 10%
+        const shiftedAmount = spawnRates.common - newCommon;
+        
+        spawnRates = {
+            ...spawnRates,
+            common: newCommon,
+            rare: spawnRates.rare + shiftedAmount
+        };
+    }
+
+    const rarity = rollDerelictRarity(spawnRates);
     const type = getRandomDerelictType(orbit, rarity);
     
     console.log(`[DEBUG] spawnDerelict orbit=${orbit}, rarity=${rarity}, type=${type}`);

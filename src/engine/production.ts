@@ -166,7 +166,8 @@ function calculateMultipliers(state: GameState): {
       }
   }
   
-  const colonyMultiplier = hasColonyInOrbit(state) ? 1.25 : 1.0;
+  const baseColonyMult = upgradeMultipliers.unlocks['colony_efficiency'] ? 1.40 : 1.25;
+  const colonyMultiplier = hasColonyInOrbit(state) ? baseColonyMult : 1.0;
 
   return {
     orbit: orbitMultipliers,

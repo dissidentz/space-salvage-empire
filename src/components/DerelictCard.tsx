@@ -149,9 +149,18 @@ export function DerelictCard({ derelict }: DerelictCardProps) {
               <div className="flex items-center gap-2 flex-wrap">
                 <Target className={`w-4 h-4 ${getRarityColor(derelict.rarity)}`} />
                 <span className="font-medium">{displayName}</span>
-                <Badge className={getRarityBgColor(derelict.rarity)}>
-                  <span className={getRarityColor(derelict.rarity)}>{derelict.rarity}</span>
-                </Badge>
+                {(() => {
+                  const techTree = useGameStore(state => state.techTree);
+                  const showRarity = derelict.rarity === 'common' || techTree?.purchased.includes('derelict_analysis');
+                  
+                  return (
+                    <Badge className={showRarity ? getRarityBgColor(derelict.rarity) : 'bg-slate-700'}>
+                      <span className={showRarity ? getRarityColor(derelict.rarity) : 'text-slate-400'}>
+                        {showRarity ? derelict.rarity : 'Unknown Signal'}
+                      </span>
+                    </Badge>
+                  );
+                })()}
                 {/* Orbit Location Badge */}
                 <Badge variant="outline" className="bg-slate-700/50 border-slate-600">
                   <MapPin className={`w-3 h-3 mr-1 ${getOrbitColor(derelict.orbit)}`} />

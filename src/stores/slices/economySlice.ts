@@ -2,6 +2,7 @@ import { ALIEN_TECH } from '@/config/alienTech';
 import { TRADE_ROUTES } from '@/config/trading';
 import { generateRandomContract } from '@/engine/contracts';
 import { getTechMultipliers } from '@/engine/getTechMultipliers';
+import { getUpgradeMultipliers } from '@/engine/getUpgradeMultipliers';
 import type { ContractType, OrbitType, ResourceType } from '@/types';
 import type { EconomySlice, GameSlice } from './types';
 
@@ -124,7 +125,7 @@ export const createEconomySlice: GameSlice<EconomySlice> = (set, get) => ({
       }
     }
     
-    // Auto-Salvage Logic
+    // Auto-Salvage Logic (Standard)
     if (hasAutoSalvage && ui.automationSettings?.autoSalvageEnabled) {
       const colonizedOrbits = state.colonies.map(c => c.orbit);
       // Target ALL derelicts in colonized orbits
@@ -148,25 +149,49 @@ export const createEconomySlice: GameSlice<EconomySlice> = (set, get) => ({
         
         if (derelict.requiredShip === 'salvageFrigate' && availableSalvage > 0 && state.shipEnabled.salvageFrigate) {
             shipToUse = 'salvageFrigate';
+            availableSalvage--;
         } else if (derelict.requiredShip === 'heavySalvageFrigate' && availableHeavy > 0 && state.shipEnabled.heavySalvageFrigate) {
             shipToUse = 'heavySalvageFrigate';
+            availableHeavy--;
         }
   
         if (shipToUse) {
           // Check if already targeted
           const isTargeted = state.missions.some(m => m.targetDerelict === derelict.id);
           if (!isTargeted) {
-             const success = state.startSalvageMission(derelict.id, shipToUse, 'salvage', true);
-             if (success) {
-                 if (shipToUse === 'salvageFrigate') availableSalvage--;
-                 if (shipToUse === 'heavySalvageFrigate') availableHeavy--;
-             }
+             state.startSalvageMission(derelict.id, shipToUse, 'salvage', true);
           }
         }
         
         // Break if no ships left at all
         if (availableSalvage <= 0 && availableHeavy <= 0) break;
       }
+    }
+
+    // Auto-Salvage Bay Logic (Colony Ship Upgrade) - Independent of global automation setting
+    const upgradeMultipliers = getUpgradeMultipliers(state);
+    if (upgradeMultipliers.unlocks['auto_salvage_bay']) {
+       const colonizedOrbits = state.colonies.map(c => c.orbit);
+       // Target common derelicts in colonized orbits not already being salvaged
+       const bayTargets = state.derelicts.filter(d => 
+           colonizedOrbits.includes(d.orbit) && 
+           d.rarity === 'common' &&
+           !state.missions.some(m => m.targetDerelict === d.id)
+       );
+       
+       const hasDualMissions = techTree.purchased.includes('fleet_coordination') || hasTotalAutomation;
+       const maxMissionsPerShip = hasDualMissions ? 2 : 1;
+       
+       // Re-fetch busy counts to be safe
+       const busySalvage = state.missions.filter(m => m.shipType === 'salvageFrigate').length;
+       let availableSalvage = (state.ships.salvageFrigate || 0) * maxMissionsPerShip - busySalvage;
+       
+       for (const derelict of bayTargets) {
+           if (availableSalvage > 0 && state.shipEnabled.salvageFrigate) {
+               state.startSalvageMission(derelict.id, 'salvageFrigate', 'salvage', true);
+               availableSalvage--;
+           }
+       }
     }
   },
 

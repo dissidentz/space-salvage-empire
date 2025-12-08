@@ -64,6 +64,14 @@ export function calculateShipCost(
     // Specific ship cost reduction
     costMultiplier *= (multipliers.tech[`${shipType}_cost`] || 1.0);
   }
+  
+  // Apply formation cost multipliers
+  if (multipliers.formation && typeof multipliers.formation !== 'number') {
+      // Global ship cost modifier (using 'shipCost' key)
+      if (multipliers.formation['shipCost']) {
+          costMultiplier *= multipliers.formation['shipCost'];
+      }
+  }
 
   // Apply multiplier to each resource in base cost
   const cost: Partial<Resources> = {};
@@ -111,6 +119,13 @@ export function calculateBulkShipCost(
     costMultiplier *= (multipliers.tech['shipCost'] || 1.0);
     costMultiplier *= (multipliers.tech['all_costs'] || 1.0);
     costMultiplier *= (multipliers.tech[`${shipType}_cost`] || 1.0);
+  }
+
+  // Apply formation cost multipliers
+  if (multipliers.formation && typeof multipliers.formation !== 'number') {
+      if (multipliers.formation['shipCost']) {
+          costMultiplier *= multipliers.formation['shipCost'];
+      }
   }
 
   const totalMultiplier = firstCost * seriesSum * costMultiplier;

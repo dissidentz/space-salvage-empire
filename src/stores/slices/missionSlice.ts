@@ -1,6 +1,6 @@
 import {
-    DERELICT_CONFIGS,
-    calculateDerelictRewards
+  DERELICT_CONFIGS,
+  calculateDerelictRewards
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, getAdjacentOrbits } from '@/config/orbits';
 import { SHIP_CONFIGS } from '@/config/ships';
@@ -8,11 +8,11 @@ import { getAlienTechMultipliers } from '@/engine/getAlienTechMultipliers';
 import { getTechEffects } from '@/engine/getTechMultipliers';
 import { getUpgradeMultipliers } from '@/engine/getUpgradeMultipliers';
 import type {
-    DerelictAction,
-    Mission,
-    OrbitType,
-    ResourceType,
-    ShipType
+  DerelictAction,
+  Mission,
+  OrbitType,
+  ResourceType,
+  ShipType
 } from '@/types';
 import type { GameSlice, MissionSlice } from './types';
 
@@ -71,8 +71,9 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
     // We need to check types.ts if activeFormation is in GameState. Yes it is.
     // However, TypeScript might complain if we don't cast state to GameStore or extend types properly.
     // For now we assume state has it.
-    const activeFormation = (state as any).activeFormation; 
-    duration *= (activeFormation === 'scoutFleet' ? 0.9 : 1.0);
+    // For now we assume state has it.
+    // const activeFormation = (state as any).activeFormation; // Logic moved to MissionSlice checks below 
+    // duration *= (activeFormation === 'scoutFleet' ? 0.9 : 1.0); // REMOVED: New design is pure discovery bonus
   
     const mission: Mission = {
       id: Math.random().toString(36).substr(2, 9),
@@ -155,9 +156,14 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
     const alienTechMults = getAlienTechMultipliers(state.alienTech || {});
     duration *= alienTechMults.mission_time;
     
-    // DISMANTLE takes 3x time
     if (action === 'dismantle') {
       duration *= 3;
+    }
+
+    // Apply Formation Bonus (Salvage Fleet: -50% Time)
+    const activeFormation = (state as any).activeFormation;
+    if (activeFormation === 'salvageFleet') {
+        duration *= 0.5;
     }
   
     const mission: Mission = {
@@ -245,13 +251,18 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
         const shipConfig = SHIP_CONFIGS[mission.shipType];
         let successRate = shipConfig.baseSuccessRate || 0.5;
         
-        if (mission.action === 'hack') {
-            successRate = 0.85; // Fixed 85% success rate for hacking
-        }
-        
         // Apply tech bonuses to success rate
         const techEffects = getTechEffects(state.techTree?.purchased || []);
         const upgradeMultipliers = getUpgradeMultipliers(state);
+
+        if (mission.action === 'hack') {
+            successRate = 0.85; // Base hacking success rate
+            
+            // Apply Risk Assessment tech bonus
+            if (techEffects.flatBonuses.hack_success_rate) {
+                successRate += techEffects.flatBonuses.hack_success_rate;
+            }
+        }
       
         // Scout discovery rate bonus
         if (mission.type === 'scout') {
@@ -261,6 +272,12 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
              if (upgradeMultipliers.production.scoutProbe_discoveryChance) {
                  successRate *= upgradeMultipliers.production.scoutProbe_discoveryChance;
              }
+             
+             // Scout Fleet Formation: +100% Discovery Chance
+             const activeFormation = (state as any).activeFormation;
+             if (activeFormation === 'scoutFleet') {
+                 successRate *= 2.0;
+             }
         }
         // Salvage success rate bonus
         if (mission.type === 'salvage') {
@@ -269,6 +286,9 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
              }
              if (upgradeMultipliers.flatBonus.salvageFrigate_successRate) {
                  successRate += upgradeMultipliers.flatBonus.salvageFrigate_successRate;
+             }
+             if (upgradeMultipliers.flatBonus.heavySalvageFrigate_successRate) {
+                 successRate += upgradeMultipliers.flatBonus.heavySalvageFrigate_successRate;
              }
              
              // Hazardous derelict penalty for non-Heavy Salvage Frigates
@@ -339,6 +359,11 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
                         rewards[key as ResourceType]! *= 1.5;
                     }
                     if (rewards.dataFragments) rewards.dataFragments *= 2;
+
+                    // Contract Hook: Risky Business
+                    if (state.updateContractProgress) {
+                        state.updateContractProgress('riskyBusiness', 1);
+                    }
                 } else if (mission.action === 'dismantle') {
                     // DISMANTLE gives 200% of all rewards
                     for (const key of Object.keys(rewards)) {
@@ -350,10 +375,10 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
                 // Assuming activeFormation is on stats or root state.
                 const activeFormation = (state as any).activeFormation;
                 if (activeFormation === 'salvageFleet') {
-                    if (rewards.metal) rewards.metal *= 1.15;
-                    if (rewards.electronics) rewards.electronics *= 1.15;
-                    if (rewards.rareMaterials) rewards.rareMaterials *= 1.15;
-                    if (rewards.exoticAlloys) rewards.exoticAlloys *= 1.15;
+                    if (rewards.metal) rewards.metal *= 1.75;
+                    if (rewards.electronics) rewards.electronics *= 1.75;
+                    if (rewards.rareMaterials) rewards.rareMaterials *= 1.75;
+                    if (rewards.exoticAlloys) rewards.exoticAlloys *= 1.75;
                 }
     
                 // Ship Upgrade Loot Bonus
@@ -368,6 +393,15 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
                     }
                 }
                 
+                // Heavy Salvage Frigate Cargo Expansion
+                if (mission.shipType === 'heavySalvageFrigate' && upgradeMultipliers.production.heavySalvageFrigate_reward) {
+                     for (const key of Object.keys(rewards)) {
+                        if (key !== 'darkMatter') {
+                            rewards[key as ResourceType]! *= upgradeMultipliers.production.heavySalvageFrigate_reward;
+                        }
+                    }
+                }
+
                 // Apply Alien Tech salvage rewards multiplier (Matter Conversion)
                 const alienTechMults = getAlienTechMultipliers(state.alienTech || {});
                 for (const key of Object.keys(rewards)) {
@@ -386,6 +420,11 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
                 
                 state.removeDerelict(derelict.id);
                 state.onDerelictSalvaged(derelict.id, rewards, mission.isAutomated);
+
+                // Ark Discovery Hook
+                if (derelict.isArkComponent && derelict.arkComponentType) {
+                    state.discoverArkComponent(derelict.arkComponentType);
+                }
     
                 // Contract hook: Salvage
                 // Note: need contract hooks for 'salvageMission', 'clearDebris' (maybe?), 'collectResource' logic handled in addResource
@@ -402,6 +441,16 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
                 state.addNotification('warning', 'Hacking Failed! Security systems blocked access.');
             } else {
                 state.addNotification('warning', `${SHIP_CONFIGS[mission.shipType].name} mission failed.`);
+                
+                // Emergency Warp: Recover 50% fuel if unlocked
+                if (mission.shipType === 'heavySalvageFrigate' && upgradeMultipliers.unlocks['emergency_warp']) {
+                     const recoveredFuel = Math.floor(mission.fuelCost * 0.5);
+                     if (recoveredFuel > 0) {
+                         state.addResource('fuel', recoveredFuel);
+                         // Use strict notification to ensure user sees it
+                         setTimeout(() => state.addNotification('info', `Emergency Warp activated! Recovered ${recoveredFuel} Fuel.`), 100);
+                     }
+                }
             }
         }
     } catch (error) {
