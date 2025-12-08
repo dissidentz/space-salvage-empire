@@ -60,9 +60,37 @@
 
 ---
 
-## 📋 Future Features (Documented, Not Implemented)
+## � Not Implemented (from complete-system.md)
 
-### Priority: Medium
+### Ships/Systems
+- **Trading Post** - Sell excess resources (tech unlock)
+- **AI Core Fabricator** - Ship that produces AI Cores (Run 4+ unlock)
+- **Deep Space Scanner Upgrades** - Quantum Array (+3% spawn), Predictive Algorithms (+10% rare)
+- **Colony Ship Upgrades** - Colony Efficiency (+40%), Auto-Salvage Bay
+- **Heavy Salvage Frigate Upgrades** - Emergency Warp (abort failed missions, recover 50% fuel)
+
+### Prestige/Progression
+- **Tech Carry-Over** - Keep % of Data Fragments on prestige (prestige perk)
+- **Offline Efficiency Scaling** - Should scale 50%→65%→80%→95%→100% with perks
+- **Skip Orbit Perks** - Start in GEO/Mars/Belt (prestige perks)
+
+### Miscellaneous
+- **Blueprint Fragments** - Mentioned in loot tables, unclear system
+- **Tech Unlock Hints** - Research Probe reward
+- **Tech Breakthrough** - Research Megastation reward
+- **Alien Relay Special Mechanics** - "Unknown risk" derelict
+
+---
+
+## 🟡 Needs Verification
+
+- **Ark Assembly Construction Timer** - Doc says 16-36 hours per component
+- **Fleet Formation Requirements** - Mining Fleet needs 50+ drones, etc.
+
+---
+
+## 📋 Future Features (Optional)
+
 1. **New Game+ Challenges** - Post-victory alternative gameplay modes
 2. **Achievement System** - Listed as optional in GAME_DESIGN.md
 
