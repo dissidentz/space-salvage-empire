@@ -86,6 +86,10 @@
 - Working multipliers for Xenotech Efficiency (+50% production) and Neural Link (2x clicks)
 - Mission time, salvage rewards, and drop rate upgrades purchasable but effects not yet applied
 
+### Galaxy Map
+- Fixed orbit visibility - all 8 orbits now display correctly (Lunar, Mars, Kuiper, Deep Space)
+- Adjusted spacing and positioning to fit within viewport
+
 ---
 
 ## Balance Notes

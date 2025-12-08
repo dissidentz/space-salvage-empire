@@ -53,6 +53,10 @@ export const CHANGELOG: ChangelogEntry[] = [
       },
       {
         category: 'bugfix',
+        description: 'Fixed Galaxy Map to show all 8 orbits - adjusted spacing so Lunar, Mars, Kuiper, and Deep Space are visible.',
+      },
+      {
+        category: 'bugfix',
         description: 'Fixed hazardous derelict penalty - Normal Salvage Frigates now have -20% success rate on hazardous wrecks.',
       },
     ],
