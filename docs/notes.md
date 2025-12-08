@@ -68,7 +68,6 @@
 
 ### Ships/Systems
 - **AI Core Fabricator** - Ship that produces AI Cores (Run 4+ unlock)
-- **AI Core Fabricator** - Ship that produces AI Cores (Run 4+ unlock)
 - **Deep Space Scanner Upgrades** - Quantum Array (+3% spawn), Predictive Algorithms (+10% rare)
 - **Colony Ship Upgrades** - Colony Efficiency (+40%), Auto-Salvage Bay
 - **Heavy Salvage Frigate Upgrades** - Emergency Warp (abort failed missions, recover 50% fuel)
