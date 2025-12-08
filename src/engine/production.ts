@@ -138,6 +138,7 @@ function calculateMultipliers(state: GameState): {
     aiCores: orbitConfig.rareMultiplier, // AI cores use rare multiplier
     dataFragments: 1.0, // Data fragments not affected by orbit
     darkMatter: 1.0, // Dark matter not affected by orbit
+    alienArtifacts: 1.0, // Alien artifacts not affected by orbit
   };
 
   // Calculate tech multipliers from purchased technologies

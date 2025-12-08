@@ -19,6 +19,7 @@ describe('Automation Logic', () => {
         aiCores: 0,
         dataFragments: 0,
         darkMatter: 0,
+        alienArtifacts: 0,
       },
       ships: {
         salvageDrone: 0,

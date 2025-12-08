@@ -1,123 +1,106 @@
-✅ What IS Implemented
-For context, here's what is working:
+# Space Salvage Empire - Development Notes
 
-✅ All 11 ship types with production/costs
-✅ Mission system (Scout & Salvage missions)
-✅ Derelict spawning & salvaging
-✅ Orbit progression & travel
-✅ Tech tree (45 nodes across 3 branches)
-✅ Prestige/Dark Matter system
-✅ Ark components (discovery & assembly)
-✅ Ship upgrades
-✅ Colony deployment
-✅ Resource production & management
-✅ Instant Warp Ability (Tier 4 Exploration)
-✅ Adjacent Orbit Scouting (Tier 3 Exploration)
-✅ Fleet Formations System (Tier 4 Economy)
-✅ Contracts System (Tier 3 Economy)
-✅ Trading Post System (Tier 2 Economy)
-✅ Victory System & Endless Mode
-Ark Component Uniqueness: Properly implemented. Ark components now have specific types assigned upon generation.
-Deep Space Exclusivity: Implemented. The 'Navigation Array' component is exclusive to Deep Space orbit spawns.
-Hacking Risk/Reward Logic: Implemented. Hacking now applies a -10% penalty to mission success rate, balancing the increased rewards.
-Passive Spawn Rate Multipliers: Implemented. Connected `passive_spawn_rate` tech multiplier to the spawning engine.
-Automation (Auto-Scout/Auto-Salvage): Fully implemented in store and UI.
-Fleet Formations: Logic and UI exist.
-Instant Warp: Logic implemented in travelToOrbit.
-Dual Missions: Logic implemented (ships have individual states).
-Adjacent Orbit Scouting: Helper functions exist in config.
+*Last Updated: December 7, 2025*
 
+---
 
-⏳ Deferred (needs architecture change):
+## Feature Implementation Status
 
-Derelict spawn rate multipliers (Deep Space Sensors, Predictive Algorithms, Xenoarchaeology, Ark-Tech Integration)
-These would require passing game state to the derelicts module or refactoring how spawn rates work.
+### ✅ Fully Implemented
+| Feature | Version | Notes |
+|---------|---------|-------|
+| Orbit Progression (8 orbits) | 0.2.0 | LEO → Deep Space with fuel costs & travel times |
+| 11 Ship Types | 0.2.0 | All production & active ships functional |
+| Mission System | 0.2.0 | Scout, Salvage, Colony missions |
+| Derelict System | 0.2.0 | 5 rarities, passive spawning, expiration |
+| Tech Tree | 0.2.0 | 45+ nodes across 3 branches |
+| Prestige & Dark Matter | 0.2.0 | 12 perks, 5 tiers |
+| Adjacent Orbit Scouting | 0.1.5 | Quantum Entanglement Comms tech |
+| Fleet Page | 0.1.5 | Dedicated ship management view |
+| AI Core Fabricator | 0.1.4 | Consumes Exotic Alloys → AI Cores |
+| Event Log | 0.1.3 | Persistent game event tracking |
+| Changelog View | 0.1.1 | In-game update history |
+| Offline Earnings | 0.2.12 | Welcome back modal, 4hr cap |
+| 8 Ark Components | 0.2.13 | Unique types, Deep Space exclusive Navigation Array |
+| Contracts System | 0.2.14 | 4 contract types: Salvage Quota, Resource Rush, Discovery, Risky Business |
+| Trading Post | 0.2.15 | 5 trade routes, Market Mastery tech bonus |
+| Victory Screen | 0.2.16 | Ark completion celebration + stats |
+| Endless Mode | 0.2.16 | Post-victory continued play |
+| Hacking System | 0.2.17 | 50 Electronics cost, 2x Data Fragments, 1.5x resources |
+| Storage Limits | 0.2.19 | Resource capacity caps with UI indicators |
+| Deep Space Zone | 0.2.20 | Void Dimensions tech unlock |
+| Auto-Scout | 0.2.1 | Tier 3 Economy, 200 DF |
+| Auto-Salvage | 0.2.1 | Tier 4 Economy, 1500 DF, colonized orbits |
+| Total Automation | 0.2.1 | Tier 5 Economy, 5000 DF, dual missions |
+| Instant Warp | 0.2.2 | 1 free instant travel per run |
+| Fleet Formations | 0.2.3 | 5 types: Mining, Scout, Salvage, Expedition, Production |
+| Dual Missions | 0.2.4 | Fleet Coordination & Total Automation techs |
+| Economy Techs | 0.2.8 | Buy 10/100/Max, Offline Production, Passive Clicks |
+| DISMANTLE Action | 0.3.1 | 2x fuel, 3x duration, 100% success, 2x rewards |
+| Deep Space Scanner Bonus | 0.3.1 | +2% passive derelict spawn per scanner |
+| Scaled Offline Efficiency | 0.3.1 | 50% base → 100% with Economy techs |
 
+---
 
+## ⚠️ Needs Verification / Potentially Incomplete
 
+### Ship Upgrades
+- **Status:** ✅ VERIFIED - Config, UI (`ShipUpgradePanel.tsx`), store logic (`shipSlice.ts`) complete
+- **Documented:** Efficiency I-V, Swarm Protocol, Throughput Boost, etc. (see `complete-system.md`)
 
-Space Salvage Empire - Missing Features Report
-Based on a comprehensive review of the /docs folder, here is a summary of features documented but not yet implemented in the codebase.
+### Colony System
+- **Status:** ✅ VERIFIED - Colony production bonus (1.25x) applied in `formulas.ts` line 197
+- **Missing:** None
 
-🚫 Major Missing Features
-1. DISMANTLE Action for Derelicts
-Status: Not implemented.
-Documented in: complete-system.md, GAME_DESIGN.md
-Description: A third salvage choice (alongside SALVAGE and HACK) that takes 3x mission time, costs 2x fuel, but guarantees 200% loot and +50% Ark component chance.
-Impact: Missing strategic depth in salvage decisions.
+### Hazardous Derelicts
+- **Status:** ✅ FIXED (Dec 7, 2025) - Added -20% success rate penalty in `missionSlice.ts`
+- **Documented:** Normal Salvage Frigates now have reduced success on hazardous wrecks
+- **Heavy Salvage Frigate:** Immune to hazardous penalty
 
-2. AI Core Fabricator Ship
-Status: Ship type exists in config, but has no production logic.
-Documented in: complete-system.md
-Description: A production ship that passively generates AI Cores. Currently, AI Cores are ONLY obtainable from Epic/Legendary derelicts.
-Impact: Creates a late-game bottleneck for Ark assembly, which requires thousands of AI Cores.
+---
 
-3. Deep Space Scanner Passive Spawn Bonus
-Status: Ship exists, but its passive derelict spawn rate bonus (+2% per scanner) is not implemented.
-Documented in: complete-system.md, notes.md (deferred)
-Description: Owning Deep Space Scanners should increase the base derelict spawn rate.
-Impact: The ship has no purpose until this is implemented.
+## 📋 Future Features (Documented, Not Implemented)
 
-4. Buy1000 / BuyMax Buttons
-Status: Only Buy1, Buy10, Buy100 exist.
-Documented in: complete-system.md (Tech Tree: Bulk Purchasing III unlocks BuyMax)
-Impact: Minor QoL issue, but causes excessive clicking in late game.
+### Priority: Medium
+1. **New Game+ Challenges** - Post-victory alternative gameplay modes
+2. **Achievement System** - Listed as optional in GAME_DESIGN.md
 
-5. Offline Efficiency Tech Tiers
-Status: Offline production exists, but tech-based efficiency scaling (50% → 60% → 75% → 90% → 100%) is not fully wired up.
-Documented in: complete-system.md (Economy Branch Tiers)
-Impact: Players can't improve offline gains through the tech tree.
+### Priority: Low
+3. **Speed Run Contracts** - "Reach [Orbit] within 2 hours" type
+4. **Alien Artifacts** - Special currency from Epic/Legendary Kuiper/Deep Space derelicts
+5. **Alien Tech Fragments** - Unique upgrades from rare discoveries
 
-6. Colony Auto-Salvage Bay Upgrade
-Status: Colonies exist, but the Auto-Salvage Bay upgrade (auto-salvage common derelicts in colonized orbits) is not implemented.
-Documented in: complete-system.md
-Impact: Missing automation feature for late-game colony utility.
+---
 
-7. Ark Assembly Real-Time Construction UI
-Status: Ark component logic exists, but there's no visual Ark Assembly UI showing construction progress, resource requirements, and component slots.
-Documented in: complete-system.md, progression.md (Run 10 Phase 4)
-Impact: The endgame victory experience is missing a key visual element. Players just get a toast notification.
+## Balance Notes
 
-8. New Game+ / Challenge Modes
-Status: Not implemented.
-Documented in: GAME_DESIGN.md, progression.md
-Description: Post-victory content that provides replayability with optional challenges.
-Impact: No post-victory engagement.
-⚠️ Deferred (Architecture Change Needed)
-These features are documented but require refactoring spawn logic to accept game state:
+### Early Game (Run 1)
+- LEO/GEO fuel costs = 0 (bootstrap friendly)
+- Guaranteed fuel drops from LEO/GEO derelicts
+- Starting fuel bootstrap implemented
 
-Feature	Tech/Perk	Effect
-Deep Space Sensors	Tech Tier 3	+25% base derelict spawn rate
-Predictive Algorithms	Tech Tier 4	+15% Rare+ derelict spawn chance
-Xenoarchaeology	Tech Tier 5	+5% Legendary derelict spawn chance
-Ark-Tech Integration	Tech Tier 5	+10% Ark component drop chance
-Legendary Hunter	DM Perk Tier 4	+5% Legendary spawn chance
-Ark Seeker	DM Perk Tier 5	+10% Ark component drop chance
+### Mid Game (Runs 3-6)
+- Heavy Salvage Frigate unlocked via game progression
+- Trading Post and Contracts provide resource flexibility
 
+### Late Game (Runs 7-10)
+- Deep Space requires Tier 5 tech "Void Dimensions"
+- Navigation Array is Deep Space exclusive (0.5% spawn)
+- 206+ hours of Ark construction time ensures lengthy finale
 
+---
 
-✅ Already Implemented (For Context)
-Orbit Progression & Travel (8 zones)
-All 11 Ship Types (production + active missions)
-Mission System (Scout, Salvage, Colony)
-Derelict System (13 types, 5 rarities, SALVAGE/HACK actions)
-Tech Tree (45 nodes, 3 branches)
-Prestige System (Dark Matter reset, 35 perks)
-Contracts System
-Trading Post System
-Victory System & Endless Mode
-Ark Component Uniqueness
-Hacking Risk/Reward Logic
-Instant Warp
-Fleet Formations
-Adjacent Orbit Scouting
-Auto-Scout / Auto-Salvage
+## Technical Notes
 
+### State Management
+- Zustand store decomposed into modular slices (v0.3.0)
+- Slices: Resource, Ship, Mission, Tech, Orbit, Prestige, Economy, UI, Formation
 
+### Game Loop
+- 10 ticks/second for production
+- Offline efficiency scales with tech (50% base → 100% max)
+- Max offline time: 4 hours
 
-Recommended Next Steps
-High Impact / Low Effort: Implement DISMANTLE action.
-High Impact / Medium Effort: Wire up Deep Space Scanner spawn bonus.
-QoL: Add BuyMax button, locked behind tech.
-Endgame Polish: Create Ark Assembly UI.
-Post-Victory: Implement New Game+ mode.
+### Testing
+- Comprehensive test suite in `src/stores/*.test.ts`
+- Mission system, automation, and dual missions covered

@@ -1,17 +1,17 @@
 import {
-  DERELICT_CONFIGS,
-  calculateDerelictRewards
+    DERELICT_CONFIGS,
+    calculateDerelictRewards
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, getAdjacentOrbits } from '@/config/orbits';
 import { SHIP_CONFIGS } from '@/config/ships';
 import { getTechEffects } from '@/engine/getTechMultipliers';
 import { getUpgradeMultipliers } from '@/engine/getUpgradeMultipliers';
 import type {
-  DerelictAction,
-  Mission,
-  OrbitType,
-  ResourceType,
-  ShipType
+    DerelictAction,
+    Mission,
+    OrbitType,
+    ResourceType,
+    ShipType
 } from '@/types';
 import type { GameSlice, MissionSlice } from './types';
 
@@ -260,6 +260,14 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
              }
              if (upgradeMultipliers.flatBonus.salvageFrigate_successRate) {
                  successRate += upgradeMultipliers.flatBonus.salvageFrigate_successRate;
+             }
+             
+             // Hazardous derelict penalty for non-Heavy Salvage Frigates
+             if (mission.targetDerelict) {
+                 const targetDerelict = state.derelicts.find(d => d.id === mission.targetDerelict);
+                 if (targetDerelict?.isHazardous && mission.shipType !== 'heavySalvageFrigate') {
+                     successRate -= 0.2; // -20% penalty for hazardous derelicts
+                 }
              }
         }
         // Global mission success rate bonus

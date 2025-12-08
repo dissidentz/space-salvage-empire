@@ -29,6 +29,7 @@ export interface Resources {
   aiCores: number;
   dataFragments: number;
   darkMatter: number; // current spendable DM
+  alienArtifacts: number; // Special currency from Epic+ derelicts
 }
 
 export type ResourceType = keyof Resources;

@@ -8,6 +8,7 @@ import {
     Gem,
     Hexagon,
     Satellite,
+    Skull,
     Sparkles
 } from 'lucide-react';
 
@@ -62,5 +63,10 @@ export const RESOURCE_THEME: Record<ResourceType, ResourceTheme> = {
     icon: Sparkles,
     color: 'text-indigo-400',
     label: 'Dark Matter'
+  },
+  alienArtifacts: {
+    icon: Skull,
+    color: 'text-teal-400',
+    label: 'Alien Artifacts'
   }
 };

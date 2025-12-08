@@ -19,6 +19,7 @@ describe('Bug Reproduction: Scout Mission Accumulation', () => {
         aiCores: 0,
         dataFragments: 0,
         darkMatter: 0,
+        alienArtifacts: 0,
       },
       ships: {
         salvageDrone: 0,

@@ -86,6 +86,7 @@ export const createPrestigeSlice: GameSlice<PrestigeSlice> = (set, get) => ({
             aiCores: 0,
             dataFragments: 0,
             darkMatter: state.prestige.darkMatter + dmGain,
+            alienArtifacts: 0,
         },
         ships: {
             salvageDrone: 0,

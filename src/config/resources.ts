@@ -15,4 +15,5 @@ export const RESOURCE_DEFINITIONS: Record<ResourceType, ResourceDefinition> = {
   aiCores: { name: 'AI Cores', description: 'Advanced artificial intelligence' },
   dataFragments: { name: 'Data Fragments', description: 'Recovered data' },
   darkMatter: { name: 'Dark Matter', description: 'Exotic matter for prestige' },
+  alienArtifacts: { name: 'Alien Artifacts', description: 'Mysterious alien technology' },
 };

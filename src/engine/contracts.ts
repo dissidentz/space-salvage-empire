@@ -78,9 +78,8 @@ export function generateRandomContract(currentOrbitId: OrbitType): Contract {
     const orbitConfig = ORBIT_CONFIGS[currentOrbitId];
     const orbitIndex = orbitConfig.index;
     
-    // Pick a random type
-    // Excluding speedRun for random generation as it's specific to progression
-    const types: ContractType[] = ['salvageQuota', 'resourceRush', 'discoveryMission', 'riskyBusiness'];
+    // Pick a random type - including speedRun now
+    const types: ContractType[] = ['salvageQuota', 'resourceRush', 'discoveryMission', 'riskyBusiness', 'speedRun'];
     const type = types[Math.floor(Math.random() * types.length)];
     const template = CONTRACT_TEMPLATES[type];
 
@@ -102,9 +101,17 @@ export function generateRandomContract(currentOrbitId: OrbitType): Contract {
     });
 
     // Determine target orbit for location-based contracts
-    const targetOrbit = (type === 'salvageQuota' || type === 'discoveryMission') 
-        ? currentOrbitId 
-        : undefined;
+    let targetOrbit: OrbitType | undefined;
+    if (type === 'salvageQuota' || type === 'discoveryMission') {
+        targetOrbit = currentOrbitId;
+    } else if (type === 'speedRun') {
+        // For speedRun, target the next orbit in progression
+        const orbitOrder: OrbitType[] = ['leo', 'geo', 'lunar', 'mars', 'asteroidBelt', 'jovian', 'kuiper', 'deepSpace'];
+        const currentIndex = orbitOrder.indexOf(currentOrbitId);
+        // Target 2 orbits ahead if possible, otherwise next orbit, or current if at end
+        const targetIndex = Math.min(currentIndex + 2, orbitOrder.length - 1);
+        targetOrbit = orbitOrder[targetIndex];
+    }
 
     const startTime = Date.now();
     

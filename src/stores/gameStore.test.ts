@@ -23,6 +23,7 @@ describe('Travel State Persistence', () => {
         aiCores: 0,
         dataFragments: 0,
         darkMatter: 0,
+        alienArtifacts: 0,
       },
       stats: {
         totalDebrisCollected: 0,
@@ -236,6 +237,7 @@ describe('Travel State Persistence', () => {
         aiCores: 0,
         dataFragments: 0,
         darkMatter: 0,
+        alienArtifacts: 0,
       },
       ships: {
         salvageDrone: 10,
@@ -269,6 +271,7 @@ describe('Travel State Persistence', () => {
       milestones: {},
       prestige: {
         darkMatter: 0,
+        alienArtifacts: 0,
         totalDarkMatter: 0,
         purchasedPerks: [],
         arkComponents: {},

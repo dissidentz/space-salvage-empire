@@ -15,6 +15,7 @@ describe('Tech Tree System', () => {
                 aiCores: 0,
                 dataFragments: 100, // Enough for tier 1 techs
                 darkMatter: 0,
+        alienArtifacts: 0,
             },
             techTree: {
                 purchased: [],

@@ -15,6 +15,7 @@ export const createResourceSlice: GameSlice<ResourceSlice> = (set, get) => ({
     aiCores: 0,
     dataFragments: 0,
     darkMatter: 0,
+    alienArtifacts: 0,
   },
 
   addResource: (type: ResourceType, amount: number) => {

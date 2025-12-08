@@ -201,6 +201,7 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
       { resource: 'dataFragments', min: 100, max: 500, dropChance: 1.0 },
       { resource: 'exoticAlloys', min: 50, max: 200, dropChance: 0.8 },
       { resource: 'aiCores', min: 5, max: 15, dropChance: 0.8 },
+      { resource: 'alienArtifacts', min: 1, max: 1, dropChance: 0.4 }, // Alien Tech Fragment
     ],
   },
 
@@ -260,6 +261,7 @@ export const DERELICT_CONFIGS: Record<DerelictType, DerelictConfig> = {
       { resource: 'exoticAlloys', min: 500, max: 2000, dropChance: 1.0 },
       { resource: 'aiCores', min: 50, max: 200, dropChance: 1.0 },
       { resource: 'dataFragments', min: 2000, max: 10000, dropChance: 0.9 },
+      { resource: 'alienArtifacts', min: 1, max: 3, dropChance: 0.8 }, // Alien Artifacts
     ],
   },
 
