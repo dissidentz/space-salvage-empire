@@ -244,6 +244,7 @@ export interface MissionLog {
   startTime: number;
   endTime: number;
   success: boolean;
+  action?: DerelictAction; // Track whether it was salvage/hack/dismantle
   rewards?: Partial<Resources>;
   discoveredDerelict?: string;
   derelictType?: DerelictType;

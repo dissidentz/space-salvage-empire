@@ -50,7 +50,11 @@ export function MissionHistory() {
                         <AlertCircle className="h-4 w-4 text-red-400" />
                       )}
                       <span className={`font-medium ${log.success ? 'text-green-300' : 'text-red-300'}`}>
-                        {log.type === 'scout' ? 'Scout Mission' : 'Salvage Mission'}
+                        {log.type === 'scout' 
+                          ? 'Scout Mission' 
+                          : log.action 
+                            ? `${log.action.charAt(0).toUpperCase() + log.action.slice(1)} Mission` 
+                            : 'Salvage Mission'}
                       </span>
                     </div>
                     <span className="text-xs text-gray-400">
