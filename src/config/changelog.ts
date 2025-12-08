@@ -36,6 +36,22 @@ export const CHANGELOG: ChangelogEntry[] = [
         description: 'Neural Link alien tech doubles manual click power.',
       },
       {
+        category: 'improvement',
+        description: 'Mission logs now show specific action type (Hack/Salvage/Dismantle) instead of generic "Salvage Mission".',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Mission Log display - now shows "No missions completed yet" and "No recent events" instead of blank sections.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Recent Events - notifications now persist in event log for mission log viewing.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed Asteroid Belt unlock - removed non-existent asteroidBeltAccess tech requirement, now unlocks with 100k metal.',
+      },
+      {
         category: 'bugfix',
         description: 'Fixed hazardous derelict penalty - Normal Salvage Frigates now have -20% success rate on hazardous wrecks.',
       },

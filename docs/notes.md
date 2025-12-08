@@ -70,6 +70,24 @@
 
 ---
 
+## Recent Fixes (v0.3.2)
+
+### Mission Log System
+- Mission History now shows "No missions completed yet" instead of blank display
+- Recent Events now populates from all notifications (was blank before)
+- Mission logs show specific action: "Hack Mission", "Salvage Mission", "Dismantle Mission"
+
+### Asteroid Belt Unlock
+- Fixed: Removed non-existent `asteroidBeltAccess` tech requirement
+- Now unlocks properly with 100,000 Metal
+
+### Alien Tech Shop
+- 6 unique upgrades: production boost, click power, travel time, etc.
+- Working multipliers for Xenotech Efficiency (+50% production) and Neural Link (2x clicks)
+- Mission time, salvage rewards, and drop rate upgrades purchasable but effects not yet applied
+
+---
+
 ## Balance Notes
 
 ### Early Game (Run 1)
