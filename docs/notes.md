@@ -45,20 +45,18 @@
 
 ---
 
-## ⚠️ Needs Verification / Potentially Incomplete
+## ✅ Verified Systems (Dec 8, 2025)
 
 ### Ship Upgrades
-- **Status:** ✅ VERIFIED (Dec 8, 2025) - Full end-to-end verification completed
-- **Trace:** Config (`shipUpgrades.ts`) → Multipliers (`getUpgradeMultipliers.ts`) → Production (`formulas.ts:200-209`) → UI (`ShipUpgradePanel.tsx`) → Purchase (`shipSlice.ts:182-216`)
+- Full end-to-end verification: Config → Multipliers → Production → UI → Purchase
 
 ### Colony System
-- **Status:** ✅ VERIFIED - Colony production bonus (1.25x) applied in `formulas.ts` line 197
-- **Missing:** None
+- Colony production bonus (1.25x) applied in `formulas.ts`
 
 ### Hazardous Derelicts
-- **Status:** ✅ FIXED (Dec 7, 2025) - Added -20% success rate penalty in `missionSlice.ts`
-- **Documented:** Normal Salvage Frigates now have reduced success on hazardous wrecks
-- **Heavy Salvage Frigate:** Immune to hazardous penalty
+- -20% success rate penalty for non-Heavy Salvage Frigates
+- Heavy Salvage Frigate immune to hazardous penalty
+- Dismantle action bypasses with 100% success
 
 ---
 
