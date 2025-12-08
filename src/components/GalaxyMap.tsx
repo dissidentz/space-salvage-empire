@@ -111,9 +111,9 @@ export function GalaxyMap() {
       OrbitNode
     >;
     const centerX = 300;
-    const centerY = 180; // Adjusted for better vertical fit
-    const baseRadius = 40;
-    const radiusIncrement = 35; // Reduced from 45 to fit all orbits
+    const centerY = 192; // Centered in 384px container
+    const baseRadius = 30; // Reduced to fit all orbits
+    const radiusIncrement = 20; // Further reduced for Deep Space to fit
 
     const orbitOrder: OrbitType[] = [
       'leo',
@@ -216,7 +216,7 @@ export function GalaxyMap() {
           </div>
 
           {/* Central Sun */}
-          <div className="absolute" style={{ left: 292, top: 172 }}>
+          <div className="absolute" style={{ left: 292, top: 184 }}>
             <div className="w-8 h-8 bg-linear-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg shadow-yellow-400/50 animate-pulse" />
             <div className="absolute inset-0 w-8 h-8 bg-yellow-400/30 rounded-full animate-ping" />
           </div>
@@ -230,7 +230,7 @@ export function GalaxyMap() {
                 width: node.radius * 2,
                 height: node.radius * 2,
                 left: 300 - node.radius,
-                top: 180 - node.radius, // Updated to match new centerY
+                top: 192 - node.radius, // Updated to match new centerY
               }}
             />
           ))}
