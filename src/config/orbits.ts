@@ -140,7 +140,7 @@ export const ORBIT_CONFIGS: Record<OrbitType, OrbitConfig> = {
     travelTime: 30 * 60 * 1000, // 30 minutes
     unlockRequirements: {
       resources: { metal: 100000 },
-      tech: ['asteroidBeltAccess'],
+      // Removed non-existent 'asteroidBeltAccess' tech requirement
     },
     spawnRates: {
       common: 30,
