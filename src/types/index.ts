@@ -346,7 +346,7 @@ export interface EventLog {
 
 export interface UIState {
   activeTab: 'fleet' | 'tech' | 'prestige' | 'ark' | 'solar';
-  activeView: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts' | 'trading' | 'victory';
+  activeView: 'dashboard' | 'fleet' | 'galaxyMap' | 'settings' | 'techTree' | 'prestige' | 'changelog' | 'missionLog' | 'contracts' | 'trading' | 'alienTech' | 'victory';
   openModal: string | null;
   modalData?: unknown;
   notifications: Notification[];
@@ -489,6 +489,7 @@ export interface GameState {
   activeFormation: FormationType | null;
   formationCooldownEnd: number;
   computedRates: Partial<Record<ResourceType, number>>;
+  alienTech: Record<string, boolean>; // Purchased alien tech upgrades
   // Travel state for orbit progression
   travelState: {
     traveling: boolean;

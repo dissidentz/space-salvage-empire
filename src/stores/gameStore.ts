@@ -162,6 +162,9 @@ const RESET_STATE = {
     // Formations
     activeFormation: null,
     formationCooldownEnd: 0,
+    
+    // Alien Tech
+    alienTech: {},
 
     // UI
     ui: {

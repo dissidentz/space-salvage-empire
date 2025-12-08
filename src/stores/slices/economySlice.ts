@@ -1,3 +1,4 @@
+import { ALIEN_TECH } from '@/config/alienTech';
 import { TRADE_ROUTES } from '@/config/trading';
 import { generateRandomContract } from '@/engine/contracts';
 import { getTechMultipliers } from '@/engine/getTechMultipliers';
@@ -15,6 +16,7 @@ export const createEconomySlice: GameSlice<EconomySlice> = (set, get) => ({
   contracts: [],
   trading: {}, // Placeholder if needed, but defining tradeResources logic here
   victory: false, // Actually logic seems to use `ui.activeView === 'victory'` combined with `prestige.arkComplete`
+  alienTech: {}, // Purchased alien tech upgrades
 
   toggleAutoScout: () => {
     set((state) => ({
@@ -317,6 +319,41 @@ export const createEconomySlice: GameSlice<EconomySlice> = (set, get) => ({
     }));
   
     state.addNotification('success', `Traded ${cost} ${route.input} for ${finalOutput} ${route.output}`);
+  },
+
+  // Alien Tech
+  
+  purchaseAlienTech: (techId: string) => {
+      const state = get();
+      const tech = ALIEN_TECH[techId];
+      if (!tech) return false;
+      
+      // Check if already purchased
+      if (state.alienTech[techId]) {
+          state.addNotification('warning', 'Already purchased this alien tech!');
+          return false;
+      }
+      
+      // Check if can afford
+      if (state.resources.alienArtifacts < tech.cost) {
+          state.addNotification('error', `Need ${tech.cost} Alien Artifacts!`);
+          return false;
+      }
+      
+      // Deduct cost and add to purchased
+      set((s) => ({
+          resources: {
+              ...s.resources,
+              alienArtifacts: s.resources.alienArtifacts - tech.cost,
+          },
+          alienTech: {
+              ...s.alienTech,
+              [techId]: true,
+          },
+      }));
+      
+      state.addNotification('success', `Purchased ${tech.name}!`);
+      return true;
   },
 
   // Victory

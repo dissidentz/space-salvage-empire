@@ -194,7 +194,8 @@ export function calculateProduction(
     techMultiplier *
     (multipliers.prestige ?? 1) *
     formationMultiplier *
-    (multipliers.colony ?? 1);
+    (multipliers.colony ?? 1) *
+    ((multipliers as any).alienTech ?? 1); // Alien tech global production boost
 
   // Calculate upgrade multiplier and flat bonus
   let upgradeMultiplier = 1.0;

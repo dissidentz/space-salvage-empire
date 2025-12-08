@@ -126,6 +126,10 @@ export interface EconomySlice {
     trading: any; // GameState['trading'] not in index.ts logic
     tradeResources: (routeId: string, amount: number) => void;
     
+    // Alien Tech
+    alienTech: GameState['alienTech'];
+    purchaseAlienTech: (techId: string) => boolean;
+    
     // Victory
     victory: boolean; 
     continueEndlessMode: () => void;

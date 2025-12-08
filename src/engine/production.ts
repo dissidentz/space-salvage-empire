@@ -9,6 +9,7 @@ import {
     calculatePerTickProduction,
     calculateProduction,
 } from '@/utils/formulas';
+import { getAlienTechMultipliers } from './getAlienTechMultipliers';
 import { getTechEffects, getTechMultipliers } from './getTechMultipliers';
 import { getUpgradeMultipliers, type UpgradeMultipliers } from './getUpgradeMultipliers';
 
@@ -124,6 +125,7 @@ function calculateMultipliers(state: GameState): {
   formation: Record<string, number>;
   colony: number;
   upgrade: UpgradeMultipliers;
+  alienTech: number; // Global all_production multiplier from alien tech
 } {
   const orbitConfig = ORBIT_CONFIGS[state.currentOrbit];
 
@@ -141,9 +143,13 @@ function calculateMultipliers(state: GameState): {
     alienArtifacts: 1.0, // Alien artifacts not affected by orbit
   };
 
-  // Calculate tech multipliers from purchased technologies
+  //Calculate tech multipliers from purchased technologies
   const techMultipliers = getTechMultipliers(state.techTree.purchased);
   const upgradeMultipliers = getUpgradeMultipliers(state);
+  
+  // Calculate alien tech multipliers
+  const alienTechMults = getAlienTechMultipliers(state.alienTech || {});
+  const alienTechGlobalMult = alienTechMults.all_production;
   
   const prestigeMultiplier = 1.0; // TODO: Calculate from prestige perks
   
@@ -169,6 +175,7 @@ function calculateMultipliers(state: GameState): {
     formation: formationMultipliers,
     colony: colonyMultiplier,
     upgrade: upgradeMultipliers,
+    alienTech: alienTechGlobalMult,
   };
 }
 

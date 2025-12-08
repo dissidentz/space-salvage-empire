@@ -11,12 +11,14 @@ import {
     Map,
     Rocket,
     ScrollText,
-    Settings
+    Settings,
+    Skull
 } from 'lucide-react';
 
 export function TopNav() {
   const setActiveView = useGameStore(state => state.setActiveView);
   const activeView = useGameStore(state => state.ui.activeView);
+  const resources = useGameStore(state => state.resources);
 
   const navItems = [
     { 
@@ -56,6 +58,13 @@ export function TopNav() {
       view: 'trading' as const
     },
     { 
+      id: 'alienTech', 
+      label: 'Alien Tech', 
+      icon: Skull,
+      view: 'alienTech' as const,
+      hidden: resources.alienArtifacts <= 0 // Only show when player has artifacts
+    },
+    { 
       id: 'contracts', 
       label: 'Contracts', 
       icon: FileText,
@@ -85,7 +94,7 @@ export function TopNav() {
     <div className="flex items-center gap-1 flex-1">
       {/* Navigation Items */}
       <nav className="flex items-center gap-1">
-        {navItems.map((item) => {
+        {navItems.filter(item => !item.hidden).map((item) => {
           const Icon = item.icon;
           const isActive = activeView === item.view;
           

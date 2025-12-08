@@ -1,4 +1,5 @@
 import { BASE_STORAGE_LIMITS } from '@/config/storage';
+import { getAlienTechMultipliers } from '@/engine/getAlienTechMultipliers';
 import { getTechEffects } from '@/engine/getTechMultipliers';
 import { calculateProductionRates } from '@/engine/production';
 import type { ResourceType } from '@/types';
@@ -101,6 +102,10 @@ export const createResourceSlice: GameSlice<ResourceSlice> = (set, get) => ({
     if (techEffects.multipliers.click_power) {
       clickValue *= techEffects.multipliers.click_power;
     }
+
+    // Apply alien tech multipliers
+    const alienTechMults = getAlienTechMultipliers(state.alienTech || {});
+    clickValue *= alienTechMults.click_power;
 
     // Apply upgrades
     const clickUpgrade = state.upgrades?.debris_click_power; // Legacy/Basic upgrades

@@ -14,6 +14,7 @@ import { Toaster } from '@/components/ui/sonner';
 import type { ErrorInfo } from 'react';
 import { Component } from 'react';
 import { NotificationManager } from './components/NotificationManager';
+import { AlienTechView } from './components/views/AlienTechView';
 import { ChangelogView } from './components/views/ChangelogView';
 import { ContractsView } from './components/views/ContractsView';
 import { DashboardView } from './components/views/DashboardView';
@@ -62,6 +63,8 @@ function App() {
         return <ContractsView />;
       case 'trading':
         return <TradingView />;
+      case 'alienTech':
+        return <AlienTechView />;
       case 'victory':
         return <VictoryView />;
       case 'dashboard':
