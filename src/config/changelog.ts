@@ -12,6 +12,36 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.3.2',
+    date: '2025-12-07',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Implemented Alien Tech Shop - 6 unique upgrades purchasable with Alien Artifacts from Epic+ derelicts.',
+      },
+      {
+        category: 'feature',
+        description: 'Alien Artifacts resource now drops from Ancient Probe (40% chance) and Alien Relay (80% chance).',
+      },
+      {
+        category: 'feature',
+        description: 'Speed Run Contracts now appear in random contract generation, challenging players to reach distant orbits quickly.',
+      },
+      {
+        category: 'improvement',
+        description: 'Xenotech Efficiency alien tech provides +50% global production boost.',
+      },
+      {
+        category: 'improvement',
+        description: 'Neural Link alien tech doubles manual click power.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed hazardous derelict penalty - Normal Salvage Frigates now have -20% success rate on hazardous wrecks.',
+      },
+    ],
+  },
+  {
     version: '0.3.1',
     date: '2025-12-06',
     changes: [

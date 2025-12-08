@@ -39,6 +39,9 @@
 | DISMANTLE Action | 0.3.1 | 2x fuel, 3x duration, 100% success, 2x rewards |
 | Deep Space Scanner Bonus | 0.3.1 | +2% passive derelict spawn per scanner |
 | Scaled Offline Efficiency | 0.3.1 | 50% base → 100% with Economy techs |
+| Speed Run Contracts | 0.3.2 | Time-limited contracts to reach distant orbits |
+| Alien Artifacts System | 0.3.2 | Drops from Ancient Probe (40%) & Alien Relay (80%) |
+| Alien Tech Shop | 0.3.2 | 6 unique upgrades: production, click power, etc. |
 
 ---
 
@@ -64,11 +67,6 @@
 ### Priority: Medium
 1. **New Game+ Challenges** - Post-victory alternative gameplay modes
 2. **Achievement System** - Listed as optional in GAME_DESIGN.md
-
-### Priority: Low
-3. **Speed Run Contracts** - "Reach [Orbit] within 2 hours" type
-4. **Alien Artifacts** - Special currency from Epic/Legendary Kuiper/Deep Space derelicts
-5. **Alien Tech Fragments** - Unique upgrades from rare discoveries
 
 ---
 
