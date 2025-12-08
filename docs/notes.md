@@ -82,9 +82,13 @@
 - Now unlocks properly with 100,000 Metal
 
 ### Alien Tech Shop
-- 6 unique upgrades: production boost, click power, travel time, etc.
-- Working multipliers for Xenotech Efficiency (+50% production) and Neural Link (2x clicks)
-- Mission time, salvage rewards, and drop rate upgrades purchasable but effects not yet applied
+- 6 unique upgrades - **ALL NOW FULLY IMPLEMENTED**:
+  - Xenotech Efficiency: +50% all production ✓
+  - Void Navigation: -50% travel time ✓
+  - Matter Conversion: +100% salvage rewards ✓
+  - Neural Link: +100% click power ✓
+  - Temporal Shift: -50% mission times ✓
+  - Artifact Resonance: +100% artifact drops ✓
 
 ### Galaxy Map
 - Fixed orbit visibility - all 8 orbits now display correctly (Lunar, Mars, Kuiper, Deep Space)

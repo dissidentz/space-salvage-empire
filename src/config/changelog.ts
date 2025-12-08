@@ -37,6 +37,22 @@ export const CHANGELOG: ChangelogEntry[] = [
       },
       {
         category: 'improvement',
+        description: 'Void Navigation alien tech halves travel time.',
+      },
+      {
+        category: 'improvement',
+        description: 'Matter Conversion alien tech doubles salvage rewards.',
+      },
+      {
+        category: 'improvement',
+        description: 'Temporal Shift alien tech halves mission times.',
+      },
+      {
+        category: 'improvement',
+        description: 'Artifact Resonance alien tech doubles alien artifact drops.',
+      },
+      {
+        category: 'improvement',
         description: 'Mission logs now show specific action type (Hack/Salvage/Dismantle) instead of generic "Salvage Mission".',
       },
       {
