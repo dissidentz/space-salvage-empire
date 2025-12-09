@@ -93,6 +93,36 @@ export function calculateTickProduction(
       const resource = config.producesResource;
 
       deltas[resource] = (deltas[resource] || 0) + productionPerTick;
+
+      // Handle secondary resource generation from upgrades
+      if (multipliers.upgrade && multipliers.upgrade.unlocks) {
+        // Electronics Extractor -> Rare Materials (Precision Extraction)
+        if (shipType === 'electronicsExtractor') {
+             const rareRate = multipliers.upgrade.unlocks['electronicsExtractor_rareMaterials'] || 0;
+             if (rareRate > 0) {
+                 const bonusPerTick = calculatePerTickProduction(rareRate * count);
+                 deltas['rareMaterials'] = (deltas['rareMaterials'] || 0) + bonusPerTick;
+             }
+        }
+
+        // Matter Extractor -> Electronics (Atmospheric Filtration)
+        if (shipType === 'matterExtractor') {
+             const elecRate = multipliers.upgrade.unlocks['matterExtractor_electronics'] || 0;
+             if (elecRate > 0) {
+                 const bonusPerTick = calculatePerTickProduction(elecRate * count);
+                 deltas['electronics'] = (deltas['electronics'] || 0) + bonusPerTick;
+             }
+        }
+        
+        // Quantum Miner -> Rare Materials (Zero-Point Extraction)
+        if (shipType === 'quantumMiner') {
+             const rareRate = multipliers.upgrade.unlocks['quantumMiner_rareMaterials'] || 0;
+             if (rareRate > 0) {
+                 const bonusPerTick = calculatePerTickProduction(rareRate * count);
+                 deltas['rareMaterials'] = (deltas['rareMaterials'] || 0) + bonusPerTick;
+             }
+        }
+      }
     }
   }
 
@@ -217,6 +247,7 @@ export function calculateProductionRates(
       let efficiencyMultiplier = 1.0;
       if (multipliers.tech && typeof multipliers.tech !== 'number') {
            efficiencyMultiplier *= (multipliers.tech[`${shipType}_efficiency`] || 1.0);
+           efficiencyMultiplier *= (multipliers.tech['all_production'] || 1.0);
       }
       // Also apply orbit multiplier to output
       const outputResource = config.producesResource!;
@@ -260,6 +291,34 @@ export function calculateProductionRates(
 
       const resource = config.producesResource;
       rates[resource] = (rates[resource] || 0) + productionPerSecond;
+
+      // Handle secondary resource generation from upgrades
+      if (multipliers.upgrade && multipliers.upgrade.unlocks) {
+        // Electronics Extractor -> Rare Materials (Precision Extraction)
+        if (shipType === 'electronicsExtractor') {
+             const rareRate = multipliers.upgrade.unlocks['electronicsExtractor_rareMaterials'] || 0;
+             if (rareRate > 0) {
+                 rates['rareMaterials'] = (rates['rareMaterials'] || 0) + (rareRate * count);
+             }
+        }
+
+        
+        // Matter Extractor -> Electronics (Atmospheric Filtration)
+        if (shipType === 'matterExtractor') {
+             const elecRate = multipliers.upgrade.unlocks['matterExtractor_electronics'] || 0;
+             if (elecRate > 0) {
+                 rates['electronics'] = (rates['electronics'] || 0) + (elecRate * count);
+             }
+        }
+        
+        // Quantum Miner -> Rare Materials (Zero-Point Extraction)
+        if (shipType === 'quantumMiner') {
+             const rareRate = multipliers.upgrade.unlocks['quantumMiner_rareMaterials'] || 0;
+             if (rareRate > 0) {
+                 rates['rareMaterials'] = (rates['rareMaterials'] || 0) + (rareRate * count);
+             }
+        }
+      }
     }
   }
 

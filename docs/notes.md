@@ -52,6 +52,10 @@
 - **Heavy Salvage Frigate**: Shielding, Cargo Expansion, Emergency Warp ✅
 - **Deep Space Scanner**: Spawn Rate per scanner, Rarity Bonus ✅
 - **Colony Ship**: Efficiency (1.4x), Auto-Salvage Bay ✅
+- **Electronics Extractor**: Precision Extraction (Rare Materials) ✅
+- **Matter Extractor**: Atmospheric Filtration (Electronics) ✅
+- **Quantum Miner**: Zero-Point Extraction (Rare Materials) ✅
+- **Scout Probe**: Long-Range Comms (Adjacent Scouting) ✅
 
 ### Colony System
 - Colony production bonus (1.25x) applied in `formulas.ts`

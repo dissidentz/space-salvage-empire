@@ -32,7 +32,7 @@ const EFFICIENCY_TECHS: TechNode[] = [
     prerequisites: [],
 
     effects: [
-      { type: 'multiplier', target: 'refineryBarge_production', value: 1.25 },
+      { type: 'multiplier', target: 'refineryBarge_efficiency', value: 1.25 },
     ],
   },
   {
@@ -82,7 +82,7 @@ const EFFICIENCY_TECHS: TechNode[] = [
     prerequisites: ['refinery_throughput_1'],
 
     effects: [
-      { type: 'multiplier', target: 'refineryBarge_production', value: 1.25 },
+      { type: 'multiplier', target: 'refineryBarge_efficiency', value: 1.25 },
     ],
   },
   {

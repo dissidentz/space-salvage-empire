@@ -12,6 +12,36 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.3.4',
+    date: '2025-12-08',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed "Precision Extraction" (Electronics Extractor) to correctly generate Rare Materials.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed "Long-Range Comms" (Scout Probe) to correctly unlock adjacent orbit scouting.',
+      },
+      {
+        category: 'feature',
+        description: 'Enabled missing secondary resource generation for "Atmospheric Filtration" (Matter Extractor) and "Zero-Point Extraction" (Quantum Miner).',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed "Refinery Throughput" tech applying to wrong target.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed "Bulk Processing" bonus not showing correctly in UI efficiency calculations.',
+      },
+      {
+        category: 'improvement',
+        description: 'Comprehensive audit and verification of all Active Ship upgrades (Scanners, Frigates, Colony Ships).',
+      },
+    ],
+  },
+  {
     version: '0.3.3',
     date: '2025-12-08',
     changes: [

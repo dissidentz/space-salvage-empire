@@ -20,10 +20,14 @@ export function getUpgradeMultipliers(state: GameState): UpgradeMultipliers {
 
   // Iterate through purchased upgrades
   for (const [upgradeId, upgradeState] of Object.entries(state.shipUpgrades)) {
+    console.log(`Processing upgrade: ${upgradeId}`, upgradeState);
     if (!upgradeState || upgradeState.currentLevel === 0) continue;
 
     const config = SHIP_UPGRADES[upgradeId];
-    if (!config) continue;
+    if (!config) {
+        console.warn(`Missing config for upgrade: ${upgradeId}`);
+        continue;
+    }
 
     for (const effect of config.effects) {
       switch (effect.type) {

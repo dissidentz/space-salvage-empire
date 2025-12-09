@@ -1,6 +1,6 @@
 import {
-  DERELICT_CONFIGS,
-  calculateDerelictRewards
+    DERELICT_CONFIGS,
+    calculateDerelictRewards
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, getAdjacentOrbits } from '@/config/orbits';
 import { SHIP_CONFIGS } from '@/config/ships';
@@ -8,11 +8,11 @@ import { getAlienTechMultipliers } from '@/engine/getAlienTechMultipliers';
 import { getTechEffects } from '@/engine/getTechMultipliers';
 import { getUpgradeMultipliers } from '@/engine/getUpgradeMultipliers';
 import type {
-  DerelictAction,
-  Mission,
-  OrbitType,
-  ResourceType,
-  ShipType
+    DerelictAction,
+    Mission,
+    OrbitType,
+    ResourceType,
+    ShipType
 } from '@/types';
 import type { GameSlice, MissionSlice } from './types';
 
@@ -320,7 +320,9 @@ export const createMissionSlice: GameSlice<MissionSlice> = (set, get) => ({
              // Determine which orbit to spawn derelict in
              let spawnOrbit = mission.targetOrbit;
              
-             const hasAdjacentScouting = state.techTree?.purchased.includes('quantum_entanglement_comms');
+             const hasAdjacentScouting = 
+                 state.techTree?.purchased.includes('quantum_entanglement_comms') || 
+                 upgradeMultipliers.unlocks['scoutProbe_adjacentOrbits'];
              
              if (hasAdjacentScouting) {
                const adjacentOrbits = getAdjacentOrbits(mission.targetOrbit);
