@@ -23,7 +23,7 @@ export function checkPassiveSpawning() {
   const orbitMult = orbitConfig.spawnMultiplier || 1.0;
   
   // Tech multipliers
-  const techMult = state.getTechMultiplier('passive_spawn_rate');
+  const techMult = state.getTechMultiplier('derelict_spawn_rate');
   
   // Deep Space Scanner bonus: +2% per scanner owned + upgrade bonus
   const upgradeMultipliers = getUpgradeMultipliers(state);

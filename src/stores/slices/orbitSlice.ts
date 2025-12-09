@@ -1,8 +1,8 @@
 import {
-  DERELICT_CONFIGS,
-  getArkComponentTypeForOrbit,
-  getRandomDerelictType,
-  rollDerelictRarity,
+    DERELICT_CONFIGS,
+    getArkComponentTypeForOrbit,
+    getRandomDerelictType,
+    rollDerelictRarity,
 } from '@/config/derelicts';
 import { ORBIT_CONFIGS, isOrbitUnlocked } from '@/config/orbits';
 import { getAlienTechMultipliers } from '@/engine/getAlienTechMultipliers';
@@ -184,27 +184,46 @@ export const createOrbitSlice: GameSlice<OrbitSlice> = (set, get) => ({
   spawnDerelict: (orbit) => {
     const orbitConfig = ORBIT_CONFIGS[orbit];
     const upgradeMultipliers = getUpgradeMultipliers(get());
-    const rarityBonus = upgradeMultipliers.flatBonus.rare_derelict_chance || 0;
+    const techEffects = getTechEffects(get().techTree.purchased);
     
-    let spawnRates = orbitConfig.spawnRates;
+    const rarityBonus = upgradeMultipliers.flatBonus.rare_derelict_chance || 0;
+    const rareMult = techEffects.multipliers.rare_derelict_spawn_rate || 1.0;
+    const legendaryMult = techEffects.multipliers.legendary_derelict_spawn_rate || 1.0;
+    
+    let spawnRates = { ...orbitConfig.spawnRates };
+
+    // Apply Upgrade Flat Bonus (shift from common to rare)
     if (rarityBonus > 0) {
-        // Apply bonus: reduce common, increase rare+
-        // Taking simplistic approach: shift probability from common to rare
-        // (Since rare is the entry point for "rare+")
-        const newCommon = Math.max(0, spawnRates.common - (rarityBonus * 100)); // rarityBonus is 0.1 for 10%
+        const newCommon = Math.max(0, spawnRates.common - (rarityBonus * 100));
         const shiftedAmount = spawnRates.common - newCommon;
-        
-        spawnRates = {
-            ...spawnRates,
-            common: newCommon,
-            rare: spawnRates.rare + shiftedAmount
-        };
+        spawnRates.common = newCommon;
+        spawnRates.rare += shiftedAmount;
+    }
+
+    // Apply Tech Multipliers (Rare)
+    if (rareMult > 1.0) {
+        // Increase rare rate by multiplier, reduce common to compensate
+        const rareIncrease = spawnRates.rare * (rareMult - 1.0);
+        if (spawnRates.common > rareIncrease) {
+             spawnRates.rare *= rareMult;
+             spawnRates.common -= rareIncrease;
+        }
+    }
+
+    // Apply Tech Multipliers (Legendary)
+    if (legendaryMult > 1.0) {
+        // Increase legendary rate by multiplier, reduce common to compensate
+        const legIncrease = spawnRates.legendary * (legendaryMult - 1.0);
+        if (spawnRates.common > legIncrease) {
+             spawnRates.legendary *= legendaryMult;
+             spawnRates.common -= legIncrease;
+        }
     }
 
     const rarity = rollDerelictRarity(spawnRates);
     const type = getRandomDerelictType(orbit, rarity);
     
-    console.log(`[DEBUG] spawnDerelict orbit=${orbit}, rarity=${rarity}, type=${type}`);
+    console.log(`[DEBUG] spawnDerelict orbit=${orbit}, rarity=${rarity}, type=${type}, rates=`, spawnRates);
 
     if (!type) return null;
   

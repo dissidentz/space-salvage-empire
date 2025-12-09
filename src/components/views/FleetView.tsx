@@ -108,7 +108,7 @@ export function FleetView() {
             <h3 className="text-xl font-semibold mb-3 text-gray-300">
               Tier {tier} Ships
             </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(340px,1fr))] gap-4">
               {shipList.map((shipType: ShipType) => {
                 const status = shipUnlockStatus[shipType];
 

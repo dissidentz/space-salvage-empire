@@ -12,6 +12,56 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.4.0',
+    date: '2025-12-08',
+    changes: [
+      {
+        category: 'feature',
+        description: 'Tech Tree Visual Overhaul: Responsive grid, glow effects, and clearer tier separators.',
+      },
+      {
+        category: 'feature',
+        description: 'Tech Dependencies: Hovering a tech now highlights Prerequisites (Amber) and Unlocks (Purple).',
+      },
+      {
+        category: 'feature',
+        description: 'Fleet UI Redesign: Compact ship cards with expandable "Manage Upgrades" drawer and icons.',
+      },
+      {
+        category: 'feature',
+        description: 'Upgrade Counter: Added (Purchased/Total) indicator to Fleet upgrade buttons.',
+      },
+    ],
+  },
+  {
+    version: '0.3.7',
+    date: '2025-12-08',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed "Predictive Algorithms" tech not applying its +15% Rare derelict spawn chance bonus.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed "Xenoarchaeology" tech not applying its +5% Legendary derelict spawn chance bonus.',
+      },
+      {
+        category: 'bugfix',
+        description: 'Fixed "Deep Space Sensors" tech not applying its +25% base derelict spawn rate bonus (was targeting invalid stat).',
+      },
+    ],
+  },
+  {
+    version: '0.3.6',
+    date: '2025-12-08',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed "Resource Compression" tech not applying its +50% storage capacity bonus (was targeting invalid stat).',
+      },
+    ],
+  },
+  {
     version: '0.3.5',
     date: '2025-12-08',
     changes: [

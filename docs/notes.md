@@ -157,3 +157,25 @@
 ### Testing
 - Comprehensive test suite in `src/stores/*.test.ts`
 - Mission system, automation, and dual missions covered
+
+## Recent Updates (v0.4.0) - The Visual Polish Update
+
+### 🎨 Tech Tree Overhaul
+- **Responsive Grid**: Tech cards now scale perfectly with screen width (no more jagged rows).
+- **Dependency Visualization**:
+  - **Hover Effects**: Hovering a tech highlights its **Prerequisites (Amber)** and **Unlocks (Purple)**.
+  - **Explicit Requirements**: Cards now list "REQUIRES: [Tech Name]" directly on the face.
+  - **Dimming**: Unrelated cards fade out to focus on the active tech path.
+- **Visual Polish**: Improved borders, shadows, and glassmorphism effects.
+
+### 🚀 Fleet UI Redesign
+- **Compact Cards**: Reduced card size by ~40%, allowing 3 ships per row.
+- **Expandable Upgrades**: Replaced bulky Tabs with a sleek "Manage Upgrades" drawer.
+- **Upgrade Counter**: "Manage Upgrades" button now shows `(Purchased/Total)` levels (e.g., `(3/5)`).
+- **Smart Layout**: Grouped "Buy" buttons (1/10/100/Max) into a single row; used icons for resources.
+
+### 🐛 Tech Audit & Fixes (v0.3.7)
+- **Deep Space Sensors**: Fixed +25% spawn rate bonus (was targeting invalid stat).
+- **Predictive Algorithms**: Fixed +15% Rare Derelict chance (was unimplemented).
+- **Xenoarchaeology**: Fixed +5% Legendary Derelict chance (was unimplemented).
+- **Refinery/Fuel Efficiency**: Verified working correctly via `formulas.ts`.

@@ -604,7 +604,7 @@ const ECONOMY_TECHS: TechNode[] = [
     dataFragmentCost: 15,
     prerequisites: [],
 
-    effects: [{ type: 'multiplier', target: 'storage_limit', value: 1.5 }],
+    effects: [{ type: 'multiplier', target: 'storage_capacity', value: 1.5 }],
   },
   {
     id: 'basic_automation',
