@@ -94,6 +94,11 @@
 
 ---
 
+## Recent Fixes (v0.3.5)
+
+### Offline Earnings
+- Fixed missing "Welcome Back" modal on game startup - now correctly checks for offline time overlap on initialization.
+
 ## Recent Fixes (v0.3.2)
 
 ### Mission Log System

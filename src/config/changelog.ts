@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.3.5',
+    date: '2025-12-08',
+    changes: [
+      {
+        category: 'bugfix',
+        description: 'Fixed regression where "Welcome Back" offline earnings modal was not appearing on game load.',
+      },
+    ],
+  },
+  {
     version: '0.3.4',
     date: '2025-12-08',
     changes: [

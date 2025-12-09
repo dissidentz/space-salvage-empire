@@ -160,4 +160,26 @@ export function useGameLoop() {
       clearInterval(rateUpdateInterval);
     };
   }, []); // Empty deps - only run once
-}
+
+  // Check for offline earnings on mount
+  useEffect(() => {
+     const state = useGameStore.getState();
+     const now = Date.now();
+     const lastSaveTime = state.lastSaveTime;
+     
+     if (lastSaveTime && now > lastSaveTime) {
+         const offlineTime = now - lastSaveTime;
+         // Minimum 5 seconds to trigger offline consideration
+         if (offlineTime > 5000) {
+              const MAX_OFFLINE_TIME = 4 * 60 * 60 * 1000; // 4 hours
+              const effectiveTime = Math.min(offlineTime, MAX_OFFLINE_TIME);
+              
+              // Process gains
+              state.processOfflineGains(effectiveTime);
+              
+              // Also complete any travel that finished while offline
+              // Note: game loop calls completeTravelIfReady() every tick, which handles this naturally
+              // as long as we don't reset the state.
+         }
+     }
+  }, []);}
