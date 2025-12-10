@@ -34,6 +34,20 @@ export const CHANGELOG: ChangelogEntry[] = [
     ],
   },
   {
+    version: '0.4.2',
+    date: '2025-12-09',
+    changes: [
+      {
+        category: 'balance',
+        description: 'Storage Buff: Significantly increased base storage (Metal 2M, Fuel/Debris 1M) to unblock Kuiper Belt progression.',
+      },
+      {
+        category: 'improvement',
+        description: 'Galaxy Map: Added "Unlock Requirements" display to tooltips for locked orbits (shows missing resources/tech/colonies).',
+      },
+    ],
+  },
+  {
     version: '0.4.0',
     date: '2025-12-08',
     changes: [

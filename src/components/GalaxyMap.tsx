@@ -11,7 +11,7 @@ import {
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { OrbitType } from '@/types';
-import { Building2, Clock, Fuel, MapPin, Star, Target, Zap } from 'lucide-react';
+import { Building2, Clock, Fuel, Lock, MapPin, Star, Target, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface OrbitNode {
@@ -179,6 +179,32 @@ export function GalaxyMap() {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
     return num.toString();
+  };
+
+  const getRequirementsText = (orbit: OrbitType) => {
+    const config = ORBIT_CONFIGS[orbit];
+    const req = config.unlockRequirements;
+    const requirements: string[] = [];
+
+    if (req.resources) {
+      for (const [resource, amount] of Object.entries(req.resources)) {
+        const current = resources[resource as keyof typeof resources];
+        const met = current >= amount;
+        requirements.push(
+          `${formatNumber(amount)} ${resource} ${met ? '✓' : `(${formatNumber(current)})`}`
+        );
+      }
+    }
+
+    if (req.tech) {
+      requirements.push(`Tech: ${req.tech.join(', ')}`);
+    }
+
+    if (req.colonies) {
+      requirements.push(`Colonies: ${req.colonies.join(', ')}`);
+    }
+
+    return requirements;
   };
 
   return (
@@ -390,6 +416,24 @@ export function GalaxyMap() {
                           </div>
                         )}
                       </div>
+
+                      {/* Unlock Requirements (Locked Only) */}
+                      {status === 'locked' && (
+                        <div className="rounded bg-gray-900/50 p-2 text-xs text-gray-400 border border-gray-700/50">
+                          <div className="flex items-center gap-1 font-semibold text-gray-300 mb-1">
+                             <Lock className="w-3 h-3" />
+                             <span>Requirements:</span>
+                          </div>
+                          <ul className="space-y-0.5 ml-1">
+                            {getRequirementsText(orbit).map((req, i) => (
+                                <li key={i} className="flex items-center gap-1">
+                                    <span className="w-1 h-1 rounded-full bg-gray-500"></span>
+                                    <span>{req}</span>
+                                </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
 
                       {/* Action Button */}
                       {status === 'available' && canAfford && (
