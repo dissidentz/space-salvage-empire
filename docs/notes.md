@@ -1,6 +1,6 @@
 # Space Salvage Empire - Development Notes
 
-*Last Updated: December 7, 2025*
+*Last Updated: December 9, 2025*
 
 ---
 
@@ -167,6 +167,12 @@
   - **Explicit Requirements**: Cards now list "REQUIRES: [Tech Name]" directly on the face.
   - **Dimming**: Unrelated cards fade out to focus on the active tech path.
 - **Visual Polish**: Improved borders, shadows, and glassmorphism effects.
+
+### 📚 Documentation & UI Polish (v0.4.1)
+- **Walkthrough Guide**: Added a complete guide for new players.
+- **Colony Indicators**: 
+  - Galaxy Map: Added distinct icons for colonized orbits.
+  - Cards: Added badges and bonus text to orbit cards.
 
 ### 🚀 Fleet UI Redesign
 - **Compact Cards**: Reduced card size by ~40%, allowing 3 ships per row.

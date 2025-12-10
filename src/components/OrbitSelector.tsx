@@ -22,6 +22,7 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
   const canTravelToOrbit = useGameStore(state => state.canTravelToOrbit);
   const travelToOrbit = useGameStore(state => state.travelToOrbit);
   const addNotification = useGameStore(state => state.addNotification);
+  const colonies = useGameStore(state => state.colonies);
 
   const orbits: OrbitType[] = [
     'leo',
@@ -82,6 +83,7 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
               const isCurrent = orbit === currentOrbit;
               const isUnlocked = canTravelToOrbit(orbit) || isCurrent;
               const canAfford = resources.fuel >= config.fuelCost;
+              const hasColony = colonies.some(c => c.orbit === orbit);
 
               return (
                 <OrbitCard
@@ -92,6 +94,7 @@ export function OrbitSelector({ open, onClose }: OrbitSelectorProps) {
                   canAfford={canAfford}
                   instantWarpAvailable={instantWarpAvailable}
                   hasInstantWarpTech={hasInstantWarpTech}
+                  hasColony={hasColony}
                   onTravel={() => handleTravel(orbit, false)}
                   onInstantWarp={() => handleTravel(orbit, true)}
                 />

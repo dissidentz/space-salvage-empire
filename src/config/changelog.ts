@@ -12,6 +12,28 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.4.1',
+    date: '2025-12-09',
+    changes: [
+      {
+        category: 'feature',
+        description: 'New Player Walkthrough Guide: Added a comprehensive in-game guide covering progression, mechanics, and tips.',
+      },
+      {
+        category: 'feature',
+        description: 'Colony Indicators: Added visual indicators (Building icon) to Galaxy Map nodes for colonized orbits.',
+      },
+      {
+        category: 'improvement',
+        description: 'Orbit Card UI: Added "Colony Established" badge and bonus display (+25% Production) to Orbit Cards.',
+      },
+      {
+        category: 'improvement',
+        description: 'Mission Launcher: Added colony indicators to target orbit selection dropdown.',
+      },
+    ],
+  },
+  {
     version: '0.4.0',
     date: '2025-12-08',
     changes: [

@@ -11,7 +11,7 @@ import {
 import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { OrbitType } from '@/types';
-import { Clock, Fuel, MapPin, Star, Target, Zap } from 'lucide-react';
+import { Building2, Clock, Fuel, MapPin, Star, Target, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface OrbitNode {
@@ -29,6 +29,7 @@ export function GalaxyMap() {
   const travelToOrbit = useGameStore(state => state.travelToOrbit);
   const resources = useGameStore(state => state.resources);
   const derelicts = useGameStore(state => state.derelicts);
+  const colonies = useGameStore(state => state.colonies);
   const getTravelProgress = useGameStore(state => state.getTravelProgress);
 
   const [progress, setProgress] = useState(0);
@@ -241,6 +242,7 @@ export function GalaxyMap() {
             const config = ORBIT_CONFIGS[orbit];
             const status = getOrbitStatus(orbit);
             const derelictsInOrbit = getDerelictsInOrbit(orbit);
+            const hasColony = colonies.some(c => c.orbit === orbit);
             const canAfford = resources.fuel >= config.fuelCost;
 
             return (
@@ -286,6 +288,13 @@ export function GalaxyMap() {
                             <Target className="w-2 h-2 text-yellow-900" />
                           </div>
                         )}
+
+                        {/* Colony indicator */}
+                        {hasColony && (
+                          <div className="absolute -top-1 -left-1 w-3 h-3 bg-emerald-400 rounded-full flex items-center justify-center shadow-lg shadow-emerald-400/50">
+                            <Building2 className="w-2 h-2 text-emerald-900" />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </TooltipTrigger>
@@ -323,6 +332,14 @@ export function GalaxyMap() {
                                 : 'Locked'}
                         </Badge>
                       </div>
+
+                      {/* Colony Status */}
+                      {hasColony && (
+                        <div className="flex items-center gap-2 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
+                          <Building2 className="w-3 h-3" />
+                          <span>Colony: +25% Production</span>
+                        </div>
+                      )}
 
                       {/* Production Multipliers */}
                       <div className="grid grid-cols-3 gap-1 text-xs">
@@ -415,6 +432,12 @@ export function GalaxyMap() {
               <Target className="w-2 h-2 text-yellow-900" />
             </div>
             <span>Derelicts</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-emerald-400 rounded-full flex items-center justify-center">
+              <Building2 className="w-2 h-2 text-emerald-900" />
+            </div>
+            <span>Colony</span>
           </div>
         </div>
 

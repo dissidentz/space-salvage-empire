@@ -2,7 +2,7 @@ import { ORBIT_CONFIGS, getOrbitColor } from '@/config/orbits';
 import { useGameStore } from '@/stores/gameStore';
 import type { OrbitType } from '@/types';
 import { formatNumber, formatTime } from '@/utils/format';
-import { CheckCircle2, Lock, Rocket } from 'lucide-react';
+import { Building2, CheckCircle2, Lock, Rocket } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
@@ -13,6 +13,7 @@ interface OrbitCardProps {
   canAfford: boolean;
   instantWarpAvailable: boolean;
   hasInstantWarpTech: boolean;
+  hasColony: boolean;
   onTravel: () => void;
   onInstantWarp: () => void;
 }
@@ -24,6 +25,7 @@ export function OrbitCard({
   canAfford,
   instantWarpAvailable,
   hasInstantWarpTech,
+  hasColony,
   onTravel,
   onInstantWarp,
 }: OrbitCardProps) {
@@ -74,9 +76,17 @@ export function OrbitCard({
             {!isUnlocked && <Lock className="h-5 w-5" />}
             {config.name}
           </span>
-          {isCurrent && (
-            <span className="text-xs font-normal text-blue-400">Current</span>
-          )}
+          <div className="flex items-center gap-2">
+            {hasColony && (
+              <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-500/30">
+                <Building2 className="w-3 h-3" />
+                Colony
+              </span>
+            )}
+            {isCurrent && (
+              <span className="text-xs font-normal text-blue-400">Current</span>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -98,6 +108,14 @@ export function OrbitCard({
             </span>
           )}
         </div>
+
+        {/* Colony Bonus */}
+         {hasColony && (
+          <div className="flex items-center gap-2 rounded bg-emerald-900/20 border border-emerald-500/20 p-2 text-xs text-emerald-300">
+            <Building2 className="h-4 w-4 shrink-0" />
+            <span>Colony Established: <span className="font-bold">+25% Production</span></span>
+          </div>
+        )}
 
         {/* Travel Info */}
         {!isCurrent && (
