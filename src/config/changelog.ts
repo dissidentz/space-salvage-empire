@@ -48,6 +48,16 @@ export const CHANGELOG: ChangelogEntry[] = [
     ],
   },
   {
+    version: '0.4.3',
+    date: '2025-12-09',
+    changes: [
+      {
+        category: 'balance',
+        description: 'Advanced Storage Buff: Increased base storage for Rare Materials (5k -> 50k) and Electronics (50k -> 150k) to unblock late-game upgrades.',
+      },
+    ],
+  },
+  {
     version: '0.4.0',
     date: '2025-12-08',
     changes: [

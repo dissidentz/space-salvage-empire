@@ -178,6 +178,9 @@
 - **Critical Storage Fix**: Increased base Metal/Fuel/Debris storage to 1M+ to resolve Kuiper Belt unlock blocker.
 - **Enhanced Tooltips**: Galaxy Map now clearly lists exact requirements for locked orbits.
 
+### 💎 Late Game fixes (v0.4.3)
+- **Advanced Storage**: Increased base Rare Materials and Electronics storage to resolve upgrade cost blockers (e.g. Colony Efficiency).
+
 ### 🚀 Fleet UI Redesign
 - **Compact Cards**: Reduced card size by ~40%, allowing 3 ships per row.
 - **Expandable Upgrades**: Replaced bulky Tabs with a sleek "Manage Upgrades" drawer.
